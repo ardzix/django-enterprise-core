@@ -1,3 +1,5 @@
 # Apps-
 Django==1.11.1
 djangorestframework==3.6.3
+
+-e git+https://github.com/ardzix/django-datatable.git#egg=datatable

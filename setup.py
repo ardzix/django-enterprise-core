@@ -9,18 +9,18 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='datatable',
+    name='panel',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.2.1',
+    version='0.1.0',
 
-    description='Ardzix datatable django serverside',
+    description='A bunch of libraries for building backend panel on django',
     long_description=long_description,
 
     # The project's main homepage.
-    url='http://www.helloyuna.io',
+    url='https://github.com/ardzix/',
 
     # Author details
     author='Arif Dzikrullah',
@@ -46,13 +46,11 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
     ],
 
     # What does your project relate to?
-    keywords='datatable',
+    keywords='panel, backend, admin, crud, django',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
