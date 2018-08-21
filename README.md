@@ -23,7 +23,7 @@ Some apps included to handle basic functions on a django application, such as:
     ]
 ```
 
-* Include app's url
+* Include the app's url
 
 ```python
 from django.contrib import admin
