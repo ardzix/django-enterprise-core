@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 import json
 import timeago
 from datetime import timedelta
@@ -18,7 +17,7 @@ class Log(models.Model):
     logged_by = models.ForeignKey(User, db_index=True, on_delete="cascade")
     message = models.TextField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.logged_by.username
 
     def get_logged_at(self):
@@ -71,7 +70,7 @@ class APILog(models.Model):
     province = models.CharField(max_length=50)
     country = models.CharField(max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.app_id
 
     class Meta:
