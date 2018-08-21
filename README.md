@@ -4,9 +4,9 @@ A bunch of libraries for building backend panel on django
 # Installation
 just `pip install -e git+https://github.com/ardzix/django-panel-core.git#egg=panel` in your python environment
 
-#Usage
+# Usage
 
-## Model lib
+### Model lib
 You can follow this example to create a model
 
 ```python
