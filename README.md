@@ -28,16 +28,15 @@ Some apps included to handle basic functions on a django application, such as:
 ```python
 from django.contrib import admin
 from django.conf.urls import url, include
-from django.conf import settings
 
 from panel.apps.account import urls as account
 from panel.apps.superuser import urls as superuser
-from django.urls import path
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    # ...
     url(r'^account/', include((account, 'account'), namespace='account')),
     url(r'^superuser/', include((superuser, 'superuser'), namespace='superuser')),
+    # ...
 ]
 ```
 
