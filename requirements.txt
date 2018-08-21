@@ -1,4 +1,2 @@
 # Apps-
-Django==2.1
-djangorestframework==3.8.2
-timeago==1.0.8
+-e git+https://github.com/ardzix/django-datatable.git#egg=datatable
