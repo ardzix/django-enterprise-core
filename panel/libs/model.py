@@ -27,6 +27,7 @@ from panel.structures.common.models import Log
 from django.db import models
 from django.utils import timezone
 from django.db.models import Manager as GeoManager
+from django.contrib.gis.db.models import PointField
 from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
@@ -77,7 +78,7 @@ class _BaseAbstract(models.Model):
         [
             self.set_lat_lng(name, getattr(self, name))
             for name in self.get_all_field_names()
-            if isinstance(self._meta.get_field(name), geo.PointField)
+            if isinstance(self._meta.get_field(name), PointField)
         ]
 
         # create first time record
