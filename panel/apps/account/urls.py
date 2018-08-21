@@ -17,11 +17,19 @@
 '''
 
 
-from django.urls import path
-
-from . import views
+from django.conf.urls import url, include
+from .views import *
 
 urlpatterns = [
-    # ex: /polls/
-    path('', views.index, name='index'),
+    # url(r'^admin/', admin.site.urls),
+
+    # login
+    url(r'^$', LoginView.as_view(), name='login'),
+    url(r'^login/success/$', LoginSuccessView.as_view(), name='login-success'),
+
+    # logout
+    url(r'^logout/$', LogoutView.as_view(), name='logout'),
+
+    # change password
+    # url(r'^change-password/$', ChangePasswordView.as_view(), name='change-password'),
 ]
