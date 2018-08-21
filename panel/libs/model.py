@@ -21,51 +21,51 @@ from __future__ import unicode_literals
 import timeago
 from datetime import timedelta
 from itertools import chain
-from core.libs.moment import to_timestamp
-from core.libs.base62 import base62_encode
-from core.structures.common.models import Log
+from panel.libs.moment import to_timestamp
+from panel.libs.base62 import base62_encode
+from panel.structures.common.models import Log
 from django.db import models
 from django.utils import timezone
-from django.contrib.gis.db import models as geo
+from django.db.models import Manager as GeoManager
 from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 class _BaseAbstract(models.Model):
-    site = models.ForeignKey(Site, related_name="%(app_label)s_%(class)s_site", blank=True, null=True)
+    site = models.ForeignKey(Site, related_name="%(app_label)s_%(class)s_site", blank=True, null=True, on_delete="cascade")
     nonce = models.CharField(max_length=128, blank=True, null=True)
     id62 = models.CharField(max_length=100, db_index=True, blank=True, null=True)
     
     created_at = models.DateTimeField(db_index=True)
     created_at_timestamp = models.PositiveIntegerField(db_index=True)
-    created_by = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_created_by")
+    created_by = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_created_by", on_delete="cascade")
 
     updated_at = models.DateTimeField(db_index=True, blank=True, null=True)
     updated_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    updated_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_updated_by")
+    updated_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_updated_by", on_delete="cascade")
     
     published_at = models.DateTimeField(blank=True, null=True)
     published_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    published_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_published_by")
+    published_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_published_by", on_delete="cascade")
     
     unpublished_at = models.DateTimeField(blank=True, null=True)
     unpublished_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    unpublished_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_unpublished_by")
+    unpublished_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_unpublished_by", on_delete="cascade")
     
     approved_at = models.DateTimeField(blank=True, null=True)
     approved_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    approved_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_approved_by")
+    approved_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_approved_by", on_delete="cascade")
 
     unapproved_at = models.DateTimeField(blank=True, null=True)
     unapproved_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    unapproved_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_unapproved_by")
+    unapproved_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_unapproved_by", on_delete="cascade")
 
     deleted_at = models.DateTimeField(blank=True, null=True)
     deleted_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    deleted_by = models.ForeignKey(User, db_index=True, blank=True, null=True, related_name="%(app_label)s_%(class)s_deleted_by")
+    deleted_by = models.ForeignKey(User, db_index=True, blank=True, null=True, related_name="%(app_label)s_%(class)s_deleted_by", on_delete="cascade")
     
-    objects = geo.GeoManager() # http://stackoverflow.com/questions/7880691/using-geodjango-model-as-an-abstract-class
+    objects = GeoManager() # http://stackoverflow.com/questions/7880691/using-geodjango-model-as-an-abstract-class
     
     def is_owner(self, user):
         return self.created_by.pk == user.pk
@@ -287,13 +287,13 @@ class _BaseAbstract(models.Model):
         abstract = True
 
 class BaseModelGeneric(_BaseAbstract):
-    created_by = models.ForeignKey(User, db_index=True, related_name="%(app_label)s_%(class)s_created_by")
+    created_by = models.ForeignKey(User, db_index=True, related_name="%(app_label)s_%(class)s_created_by", on_delete="cascade")
 
     class Meta:
         abstract = True
 
 class BaseModelUnique(_BaseAbstract):
-    created_by = models.OneToOneField(User, db_index=True, related_name="%(app_label)s_%(class)s_created_by")
+    created_by = models.OneToOneField(User, db_index=True, related_name="%(app_label)s_%(class)s_created_by", on_delete="cascade")
 
     class Meta:
         abstract = True
