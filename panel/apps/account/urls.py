@@ -31,5 +31,6 @@ urlpatterns = [
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
 
     # change password
-    # url(r'^change-password/$', ChangePasswordView.as_view(), name='change-password'),
+    url(r'^change-password/$', ChangePasswordView.as_view(), name='change-password'),
+    url(r'^change-password/success/$', ChangePasswordSuccessView.as_view(), name='change-password-success'),
 ]

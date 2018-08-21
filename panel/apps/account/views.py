@@ -25,6 +25,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 
 from panel.libs.form import *
+from panel.libs.view import ProtectedMixin
 
 # Create your views here.
 class LoginView(TemplateView):
@@ -33,7 +34,7 @@ class LoginView(TemplateView):
     def get(self, request):
         if request.user.is_authenticated:
             return redirect("account:login-success")
-            
+
         return self.render_to_response({
             "form" : AuthForm(request)
         })
@@ -65,20 +66,26 @@ class LogoutView(TemplateView):
         logout(request)
         return self.render_to_response({})
 
-# class ChangePasswordView(ProtectedMixin, TemplateView):
-#     template_name = "change-password.html"
+class ChangePasswordView(ProtectedMixin, TemplateView):
+    template_name = "change-password.html"
     
-#     def get(self, request):
-#         return self.render_to_response({
-#             "form": ChangePasswordForm(request.user)
-#         })
+    def get(self, request):
+        return self.render_to_response({
+            "form": ChangePasswordForm(request.user)
+        })
 
-#     def post(self, request):
-#         form = ChangePasswordForm(request.user, request.POST)
+    def post(self, request):
+        form = ChangePasswordForm(request.user, request.POST)
 
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, 'Your password has been changed.')
-#             return redirect("home:home")
-#         else:
-#             return self.render_to_response({"form":form})
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your password has been changed.')
+            return redirect("account:change-password-success")
+        else:
+            return self.render_to_response({"form":form})
+
+class ChangePasswordSuccessView(TemplateView):
+    template_name = "change-password-success.html"
+    
+    def get(self, request):
+        return self.render_to_response({})

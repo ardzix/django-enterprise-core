@@ -45,7 +45,7 @@ class ProtectedMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         
         # If user not logged in, redirect to login page
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect("account:login")
 
         # If user is not staff nor super, 403 will be given
