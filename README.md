@@ -4,9 +4,58 @@ A bunch of libraries for building backend panel on django
 # Installation
 just `pip install -e git+https://github.com/ardzix/django-panel-core.git#egg=panel` in your python environment
 
+# Apps
+Some apps included to handle basic functions on a django application, such as:
+
+* **_Account_** app to handle authentication _(login, logout and change password)_
+* **_Super User_** app to manage superuser administration _(users, groups and permissions)_
+
+## Usage
+
+* Insert desired app(s) to installed_apps in your settings.py
+
+```python
+    INSTALLED_APPS = [
+        # ........
+        'panel.apps.account',
+        'panel.apps.superuser',
+        # ........
+    ]
+```
+
+* Include app's url
+
+```python
+from django.contrib import admin
+from django.conf.urls import url, include
+from django.conf import settings
+
+from panel.apps.account import urls as account
+from panel.apps.superuser import urls as superuser
+from django.urls import path
+
+urlpatterns = [
+    # path('admin/', admin.site.urls),
+    url(r'^account/', include((account, 'account'), namespace='account')),
+    url(r'^superuser/', include((superuser, 'superuser'), namespace='superuser')),
+]
+```
+
 # Libraries
 
 ## Model lib
+
+### First thing first
+
+Insert path bellow to your settings.py
+```python
+    INSTALLED_APPS = [
+        # ........
+        'panel.structures.common',
+        # ........
+    ]
+```
+
 You can follow this example to create a model
 
 ```python
@@ -26,7 +75,6 @@ Just specify the namespace and model of the view
 
 Example:
 ```python
-
 from panel.libs.view import ProtectedMixin
 from django.views.generic import TemplateView 
 
