@@ -63,7 +63,9 @@ setup(
     install_requires=[
         'Django==2.1',
         'djangorestframework==3.8.2',
-        'timeago==1.0.8'
+        'timeago==1.0.8',
+        'psycopg2==2.7.5',
+        'postgis==1.0.4'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).
