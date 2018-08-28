@@ -297,3 +297,25 @@ class BaseModelUnique(_BaseAbstract):
 
     class Meta:
         abstract = True
+
+class NonceObject(object):
+    MODEL = None
+    NONCE = None
+    OBJ = None
+
+    def __init__(self, *args, **kwargs):
+        self.MODEL = kwargs.get("model")
+        self.NONCE = kwargs.get("nonce")
+        obj = self.MODEL.objects.filter(nonce=self.NONCE).first()
+        if not obj:
+            obj = self.MODEL(nonce=self.NONCE)
+        self.OBJ = obj
+
+    def get_object(self):
+        return self.OBJ
+
+    def is_exist(self):
+        if self.OBJ.id:
+            return True
+        else:
+            return False

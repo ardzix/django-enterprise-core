@@ -19,32 +19,32 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/af-2.3.0/b-1.5.2/b-flash-1.5.2/b-print-1.5.2/r-2.2.2/rg-1.0.3/rr-1.2.4/datatables.min.css"/>
 
 <style>
-        .error {
-            color:red;
-        }
-        .info {
-            color:blue;
-        }
-        .success {
-            color:green;
-        }
-        .warning {
-            color:yellow;
-        }
-    </style>
-    {% for message in messages %}
-        <div class="{{message.tags}}">
-            <!-- START card -->
-            
-                <div>
-                {% autoescape off %}
-                <p><strong>{{message.tags|upper}}: </strong>{{ message }}</p>
-                {% endautoescape %}
-                </div>
-    
-            <!-- END card -->
-        </div>
-    {% endfor %}
+    .error {
+        color:red;
+    }
+    .info {
+        color:blue;
+    }
+    .success {
+        color:green;
+    }
+    .warning {
+        color:yellow;
+    }
+</style>
+{% for message in messages %}
+    <div class="{{message.tags}}">
+        <!-- START card -->
+        
+            <div>
+            {% autoescape off %}
+            <p><strong>{{message.tags|upper}}: </strong>{{ message }}</p>
+            {% endautoescape %}
+            </div>
+
+        <!-- END card -->
+    </div>
+{% endfor %}
 <button type="button" onclick="back()">
     <span><i class="fa fa-pencil"></i>&nbsp;Back</span>
 </button>

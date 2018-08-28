@@ -1,3 +1,4 @@
 *.pyc
 .vscode
 panel.egg-info
+__pycache__

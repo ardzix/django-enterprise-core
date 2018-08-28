@@ -28,7 +28,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework.authtoken.models import Token
@@ -46,7 +46,7 @@ class ProtectedMixin(LoginRequiredMixin):
         
         # If user not logged in, redirect to login page
         if not request.user.is_authenticated:
-            return redirect("account:login")
+            return redirect(reverse("account:login")+"?next="+request.path_info)
 
         # If user is not staff nor super, 403 will be given
         if not self.is_staff(request):
