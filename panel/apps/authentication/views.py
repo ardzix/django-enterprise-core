@@ -33,7 +33,7 @@ class LoginView(TemplateView):
     
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect("account:login-success")
+            return redirect("authentication:login-success")
 
         return self.render_to_response({
             "form" : AuthForm(request)
@@ -49,7 +49,7 @@ class LoginView(TemplateView):
             if next:
                 return redirect(next)
             else:
-                return redirect("account:login-success")
+                return redirect("authentication:login-success")
         else:
             return self.render_to_response({"form":form})
 
@@ -80,7 +80,7 @@ class ChangePasswordView(ProtectedMixin, TemplateView):
         if form.is_valid():
             form.save()
             messages.success(request, 'Your password has been changed.')
-            return redirect("account:change-password-success")
+            return redirect("authentication:change-password-success")
         else:
             return self.render_to_response({"form":form})
 
