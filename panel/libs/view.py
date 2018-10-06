@@ -38,7 +38,7 @@ class ProtectedMixin(LoginRequiredMixin):
     """
     Mixin that will perform user access checking
     """
-    login_url = "/account/login/"
+    login_url = "/authentication/login/"
     name_space = None
     model = None
     
@@ -46,7 +46,7 @@ class ProtectedMixin(LoginRequiredMixin):
         
         # If user not logged in, redirect to login page
         if not request.user.is_authenticated:
-            return redirect(reverse("account:login")+"?next="+request.path_info)
+            return redirect(reverse("authentication:login")+"?next="+request.path_info)
 
         # If user is not staff nor super, 403 will be given
         if not self.is_staff(request):
