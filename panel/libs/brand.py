@@ -49,12 +49,12 @@ class BrandManager(object):
         self.change_instance()
 
     def set_by_staff(self, staff):
-        self.instance = Brand.objects.filter(staffs = staff).all()
+        self.brands = Brand.objects.filter(staffs = staff).all()
         self.change_instance()
 
     def set_by_user(self, user):
-        self.instance = Brand.objects.filter(
-            Q(owned_by=kwargs.get('user')) | Q(executive=kwargs.get('user')) | Q(staffs=kwargs.get('user'))
+        self.brands = Brand.objects.filter(
+            Q(owned_by=user) | Q(executive=user) | Q(staffs=user)
         ).all()
         self.change_instance()
 

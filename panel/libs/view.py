@@ -32,6 +32,7 @@ from django.shortcuts import redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework.authtoken.models import Token
+from .brand import BrandManager
 
 
 class ProtectedMixin(LoginRequiredMixin):
@@ -123,21 +124,22 @@ class ProtectedMixin(LoginRequiredMixin):
 
 
 class BrandProtectedMixin(ProtectedMixin):
-    def dispatch(self, request):
+    def dispatch(self, request, *args, **kwargs):
         # If user not logged in, redirect to login page
-        if not request.user.is_authenticated():
-            return redirect("authentication:login")
+        if not request.user.is_authenticated:
+            return redirect(reverse("authentication:login")+"?next="+request.path_info)
 
         # If user not set the brand to interact with, redirect to set_brand page
         if not request.session.get('brand'):
-            return redirect("authentication:set_brand")
+            return redirect(reverse("authentication:set_brand")+"?next="+request.path_info)
 
         brand_manager = BrandManager(user=request.user)
         brands = brand_manager.get_brands()
+
         if not brands:
             return self.handle_no_permission(request, *args, **kwargs)
 
-        if not request.session.get('brand') in brands:
+        if not request.session.get('brand') in brands.values_list('id62', flat=True):
             return self.handle_no_permission(request, *args, **kwargs)
 
         return super(ProtectedMixin, self).dispatch(request, *args, **kwargs)
