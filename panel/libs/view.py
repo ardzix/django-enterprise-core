@@ -121,6 +121,27 @@ class ProtectedMixin(LoginRequiredMixin):
     def is_staff(self, request):
         return (request.user.is_staff or request.user.is_superuser)
 
+
+class BrandProtectedMixin(ProtectedMixin):
+    def dispatch(self, request):
+        # If user not logged in, redirect to login page
+        if not request.user.is_authenticated():
+            return redirect("authentication:login")
+
+        # If user not set the brand to interact with, redirect to set_brand page
+        if not request.session.get('brand'):
+            return redirect("authentication:set_brand")
+
+        brand_manager = BrandManager(user=request.user)
+        brands = brand_manager.get_brands()
+        if not brands:
+            return self.handle_no_permission(request, *args, **kwargs)
+
+        if not request.session.get('brand') in brands:
+            return self.handle_no_permission(request, *args, **kwargs)
+
+        return super(ProtectedMixin, self).dispatch(request, *args, **kwargs)
+
 class JSONResponseMixin(object):
     """
     A mixin that can be used to render a JSON response.
