@@ -1,31 +1,23 @@
-import json
-import timeago
-from datetime import timedelta
-from panel.libs.moment import to_timestamp
+from __future__ import unicode_literals
+from core.libs.moment import to_timestamp
 from django.db import models
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from core.structures.authentication.models import LakonUser as User
 import json
 
 # Create your models here.
 class Log(models.Model):
-    content_type = models.ForeignKey(ContentType, related_name="%(app_label)s_%(class)s_content_type", blank=True, null=True, on_delete="cascade")
+    content_type = models.ForeignKey(ContentType, 
+                    related_name="%(app_label)s_%(class)s_content_type", 
+                    blank=True, null=True, on_delete=models.CASCADE,)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     logged_at = models.DateTimeField(blank=True, null=True)
     logged_at_timestamp = models.PositiveIntegerField(blank=True, null=True)
-    logged_by = models.ForeignKey(User, db_index=True, on_delete="cascade")
-    message = models.TextField(blank=True, null=True)
-
-    def __str__(self):
+    logged_by = models.ForeignKey(User, db_index=True,  on_delete=models.CASCADE,)
+    
+    def __unicode__(self):
         return self.logged_by.username
-
-    def get_logged_at(self):
-        return {
-            'utc': self.logged_at,
-            'timestamp': self.logged_at_timestamp,
-            'timeago': timeago.format(self.logged_at.replace(tzinfo=None) + timedelta(hours=7))
-        }
 
     def get_message_dict(self):
         try:
@@ -40,12 +32,20 @@ class Log(models.Model):
         else:
             return "-"
 
+    def get_mentions(self):
+        return ', '.join(self.mentions.values_list("username", flat=True))
+
     def save(self, *args, **kwargs):
         self.logged_at = timezone.now()
         self.logged_at_timestamp = to_timestamp(self.logged_at)
 
         return super(Log, self).save(*args, **kwargs)
 
+    def read(self, *args, **kwargs):
+        self.read_at = timezone.now()
+        self.read_at_timestamp = to_timestamp(self.read_at)
+
+        return self.save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Log"
@@ -58,7 +58,7 @@ class APILog(models.Model):
     """
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, blank=True, null=True, on_delete="cascade")
+    user = models.ForeignKey(User, blank=True, null=True,  on_delete=models.CASCADE)
 
     app_id = models.CharField(max_length=100)
     uid = models.CharField(max_length=100, blank=True, null=True)
@@ -70,7 +70,7 @@ class APILog(models.Model):
     province = models.CharField(max_length=50)
     country = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.app_id
 
     class Meta:
