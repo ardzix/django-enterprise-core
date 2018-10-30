@@ -16,8 +16,6 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '''
 from django.db.models import Q
-from core.structures.account.models import Brand, Company
-from core.structures.authentication.models import LakonUser
 
 
 class BrandManager(object):
@@ -36,24 +34,28 @@ class BrandManager(object):
         if kwargs.get('user'):
             self.set_by_user(kwargs.get('user'))
 
+    def brand_objects(self):
+        from core.structures.account.models import Brand
+        return Brand.objects
+
     def set_by_instance(self, instance):
         self.brands.append(instance)
         self.change_instance()
 
     def set_by_owner(self, owner):
-        self.brands = Brand.objects.filter(owned_by = owner).all()
+        self.brands = self.brand_objects().filter(owned_by = owner).all()
         self.change_instance()
 
     def set_by_executive(self, executive):
-        self.brands = Brand.objects.filter(executive = executive).all()
+        self.brands = self.brand_objects().filter(executive = executive).all()
         self.change_instance()
 
     def set_by_staff(self, staff):
-        self.brands = Brand.objects.filter(staffs = staff).all()
+        self.brands = self.brand_objects().filter(staffs = staff).all()
         self.change_instance()
 
     def set_by_user(self, user):
-        self.brands = Brand.objects.filter(
+        self.brands = self.brand_objects().filter(
             Q(owned_by=user) | Q(executive=user) | Q(staffs=user)
         ).all()
         self.change_instance()
