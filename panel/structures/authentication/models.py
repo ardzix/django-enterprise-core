@@ -87,7 +87,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         """Return the short name for the user."""
-        return self.stage_name
+        return self.nick_name
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""
@@ -111,7 +111,7 @@ class User(AbstractUser):
     """
 
     def __str__(self):
-        return self.stage_name
+        return self.nick_name
 
     def get_profile(self):
         from core.structures.account.models import Profile
@@ -119,7 +119,7 @@ class User(AbstractUser):
 
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
-        unique_together = ('phone_number', 'stage_name')
+        unique_together = ('phone_number', 'nick_name')
 
 
 class RegisterToken(models.Model):

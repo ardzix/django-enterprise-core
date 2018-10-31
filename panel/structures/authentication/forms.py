@@ -5,7 +5,7 @@ from django.contrib.auth import (
 from django.contrib.auth.models import User
 from django.utils.translation import gettext, gettext_lazy as _
 from django.contrib.auth.forms import UsernameField, ReadOnlyPasswordHashField
-from .models import LakonUser
+from .models import User
 
 class CustomUserCreationForm(forms.ModelForm):
     """
@@ -29,7 +29,7 @@ class CustomUserCreationForm(forms.ModelForm):
     )
 
     class Meta:
-        model = LakonUser
+        model = User
         fields = ("phone_number",)
         field_classes = {'phone_number': UsernameField}
 
@@ -78,7 +78,7 @@ class CustomUserChangeForm(forms.ModelForm):
     )
 
     class Meta:
-        model = LakonUser
+        model = User
         fields = '__all__'
         field_classes = {'phone_number': UsernameField}
 

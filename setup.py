@@ -67,7 +67,9 @@ setup(
         'psycopg2==2.7.5',
         'postgis==1.0.4',
         'arrow==0.12.1',
-        'pycountry==17.5.14'
+        'pycountry==17.5.14',
+        'rackspacesdk==0.7.5',
+        'openstacksdk==0.17.2'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).
