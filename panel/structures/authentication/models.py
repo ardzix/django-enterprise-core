@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from core.libs.base62 import base62_encode
+from ...libs.base62 import base62_encode
 
 
 class UserManager(BaseUserManager):
