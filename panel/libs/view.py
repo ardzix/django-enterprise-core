@@ -124,6 +124,8 @@ class ProtectedMixin(LoginRequiredMixin):
 
 
 class BrandProtectedMixin(ProtectedMixin):
+    brand = None
+
     def dispatch(self, request, *args, **kwargs):
         # If user not logged in, redirect to login page
         if not request.user.is_authenticated:
@@ -141,6 +143,8 @@ class BrandProtectedMixin(ProtectedMixin):
 
         if not request.session.get('brand') in brands.values_list('id62', flat=True):
             return self.handle_no_permission(request, *args, **kwargs)
+
+        self.brand = brands.get(id62=request.session.get('brand'))
 
         return super(ProtectedMixin, self).dispatch(request, *args, **kwargs)
 

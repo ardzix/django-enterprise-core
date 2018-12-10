@@ -1,0 +1,44 @@
+
+
+<style>
+        .error {
+            color:red;
+        }
+        .info {
+            color:blue;
+        }
+        .success {
+            color:green;
+        }
+        .warning {
+            color:yellow;
+        }
+    </style>
+    {% for message in messages %}
+        <div class="{{message.tags}}">
+            <!-- START card -->
+            
+                <div>
+                {% autoescape off %}
+                <p><strong>{{message.tags|upper}}: </strong>{{ message }}</p>
+                {% endautoescape %}
+                </div>
+    
+            <!-- END card -->
+        </div>
+    {% endfor %}
+
+<form method="POST">
+        {% csrf_token %}
+        <h3>User</h3>
+        {{form.as_p}}
+        <button>Save</button>
+</form>
+<button onclick="back()">Back</button>
+
+<script>
+function back(){
+    document.location = "{% url 'superuser:group' %}"
+}
+</script>
+        

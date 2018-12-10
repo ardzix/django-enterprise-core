@@ -20,11 +20,16 @@
 
 from django.conf.urls import url, include
 from .views import *
+from .views.user import *
 from .views.group import *
 from .views.permission import *
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
+
+    # User
+    url(r'^user/$', UserView.as_view(), name='user'),
+    url(r'^user/form/$', UserFormView.as_view(), name='user-form'),
 
     # Group
     url(r'^group/$', GroupView.as_view(), name='group'),

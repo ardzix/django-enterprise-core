@@ -18,8 +18,22 @@
 
 from django.forms import *
 from .models import *
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import Group, Permission
+from django.contrib.auth import get_user_model as U
 from django.contrib.contenttypes.models import ContentType
+
+
+class UserForm(ModelForm):
+    class Meta:
+        model = U()
+        fields = {
+            'full_name' :  models.CharField(max_length=255),
+            'email' :  models.EmailField(),
+            'phone_number' :  models.CharField(),
+            'is_active' :  models.BooleanField(),
+            'is_staff' :  models.BooleanField(),
+            'is_superuser' :  models.BooleanField(),
+        }
 
 
 class GroupForm(ModelForm):
@@ -31,6 +45,7 @@ class GroupForm(ModelForm):
                     queryset = Permission.objects.all(),
                 )
         }
+
 
 class PermissionForm(ModelForm):
     class Meta:
