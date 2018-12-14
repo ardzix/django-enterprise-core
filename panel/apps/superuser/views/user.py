@@ -77,10 +77,11 @@ class UserFormView(ProtectedMixin, TemplateView):
 
         if form.is_valid():
             user = form.save(commit=False)
-            user.save()            
-            user.permissions.set(form.cleaned_data.get('permissions'))
             user.save()
-            messages.success(request, 'User (%s) has been saved.' % user.name)
+            if hasattr(user, 'permissions'):
+                user.permissions.set(form.cleaned_data.get('permissions'))
+                user.save()
+            messages.success(request, 'User (%s) has been saved.' % user.full_name)
             return redirect("superuser:user")
         else:
             return self.render_to_response({"form":form})
