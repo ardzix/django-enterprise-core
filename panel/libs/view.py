@@ -67,11 +67,10 @@ class ProtectedMixin(LoginRequiredMixin):
         # Then store the app_access and model_access to the request            
         request.app_access = app_access
         request.model_access = model_access
-        
         if not self.name_space:
             self.name_space = request.resolver_match.namespace
         if not self.model:
-            self.model = request.resolver_match.url_name.split("-")[0]
+            self.model = request.resolver_match.url_name.replace("_", "").split("-")[0]
         
         if not self.app_allowed(request):
             return self.handle_no_permission(request, *args, **kwargs)
