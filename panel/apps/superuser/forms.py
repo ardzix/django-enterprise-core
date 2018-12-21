@@ -26,14 +26,15 @@ from django.contrib.contenttypes.models import ContentType
 class UserForm(ModelForm):
     class Meta:
         model = U()
-        fields = {
-            'full_name' :  models.CharField(max_length=255),
-            'email' :  models.EmailField(),
-            'phone_number' :  models.CharField(),
-            'is_active' :  models.BooleanField(),
-            'is_staff' :  models.BooleanField(),
-            'is_superuser' :  models.BooleanField(),
-        }
+        fields = [
+            'full_name',
+            'email',
+            'phone_number',
+            'groups',
+            'is_active',
+            'is_staff',
+            'is_superuser',
+        ]
 
 
 class GroupForm(ModelForm):
