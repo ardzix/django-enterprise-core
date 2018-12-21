@@ -24,17 +24,23 @@ from django.contrib.contenttypes.models import ContentType
 
 
 class UserForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['password'].required = False
+
     class Meta:
         model = U()
-        fields = [
+        fields = (
             'full_name',
             'email',
             'phone_number',
             'groups',
+            'password',
             'is_active',
             'is_staff',
             'is_superuser',
-        ]
+        )
 
 
 class GroupForm(ModelForm):

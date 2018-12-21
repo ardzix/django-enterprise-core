@@ -60,7 +60,7 @@ class UserFormView(ProtectedMixin, TemplateView):
         User = get_user_model()
 
         if edit:
-            form = UserForm(instance=User.objects.get(id=edit))
+            form = UserForm(instance=User.objects.get(id=edit), initial={'password':''})
         else:
             form = UserForm()
 
@@ -71,13 +71,21 @@ class UserFormView(ProtectedMixin, TemplateView):
         User = get_user_model()
 
         if edit:
-            form = UserForm(request.POST, instance=User.objects.get(id=edit))
+            u = User.objects.get(id=edit)
+            u_pass = u.password
+            form = UserForm(request.POST, instance=u, initial={'password':''})
         else:
             form = UserForm(request.POST)
 
         if form.is_valid():
             user = form.save(commit=False)
             user.groups.set(form.cleaned_data.get('groups'))
+
+            if form.cleaned_data.get('password') and form.cleaned_data.get('password')!='':
+                user.set_password(form.cleaned_data.get('password'))
+            else:
+                user.password = u_pass
+
             user.save()
             if hasattr(user, 'permissions'):
                 user.permissions.set(form.cleaned_data.get('permissions'))
