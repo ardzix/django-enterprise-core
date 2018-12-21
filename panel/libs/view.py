@@ -94,7 +94,8 @@ class ProtectedMixin(LoginRequiredMixin):
 
         edit = request.GET.get("edit")
         if request.method == "GET":
-            return True
+            if "view_"+self.model in self.get_permissions(request):
+                return True
         elif edit and request.method == "POST":
             if "change_"+self.model in self.get_permissions(request):
                 return True
