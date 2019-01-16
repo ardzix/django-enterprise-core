@@ -27,7 +27,6 @@ from django.utils.crypto import get_random_string
 from django.utils.deconstruct import deconstructible
 from django.utils.encoding import force_text as force_unicode, smart_str
 from django.utils.functional import cached_property
-# from core.structures.integration.models import ResizeImageTemp
 
 """
 https://developer.openstack.org/sdks/python/openstacksdk/users/resource.html#openstack.resource.Resource
@@ -98,6 +97,7 @@ class RackspaceStorage(FileSystemStorage):
 
         # resize here, send to celery
         if self.purpose and hasattr(uploaded, "name"):
+            from core.structures.integration.models import ResizeImageTemp
             rit = ResizeImageTemp(image=self.url(uploaded.name), purpose=self.purpose)
             rit.created_by_id = 1
             rit.save()
