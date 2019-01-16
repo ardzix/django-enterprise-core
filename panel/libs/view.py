@@ -42,7 +42,8 @@ class ProtectedMixin(LoginRequiredMixin):
     login_url = "/authentication/login/"
     name_space = None
     model = None
-    
+    is_index_page = False
+
     def dispatch(self, request, *args, **kwargs):
         
         # If user not logged in, redirect to login page
@@ -66,11 +67,10 @@ class ProtectedMixin(LoginRequiredMixin):
         # Then store the app_access and model_access to the request            
         request.app_access = app_access
         request.model_access = model_access
-        
         if not self.name_space:
             self.name_space = request.resolver_match.namespace
         if not self.model:
-            self.model = request.resolver_match.url_name.split("-")[0]
+            self.model = request.resolver_match.url_name.replace("_", "").split("-")[0]
         
         if not self.app_allowed(request):
             return self.handle_no_permission(request, *args, **kwargs)
@@ -94,7 +94,10 @@ class ProtectedMixin(LoginRequiredMixin):
 
         edit = request.GET.get("edit")
         if request.method == "GET":
-            return True
+            if "view_"+self.model in self.get_permissions(request):
+                return True
+            if self.is_index_page:
+                return True
         elif edit and request.method == "POST":
             if "change_"+self.model in self.get_permissions(request):
                 return True
@@ -116,6 +119,8 @@ class ProtectedMixin(LoginRequiredMixin):
         if request.user.is_superuser:
             return True
         if self.name_space in request.app_access:
+            return True
+        if self.is_index_page:
             return True
         return False
 
