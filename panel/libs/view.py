@@ -150,6 +150,7 @@ class BrandProtectedMixin(ProtectedMixin):
             return self.handle_no_permission(request, *args, **kwargs)
 
         self.brand = brands.get(id62=request.session.get('brand'))
+        request.brand = self.brand
 
         return super(ProtectedMixin, self).dispatch(request, *args, **kwargs)
 
