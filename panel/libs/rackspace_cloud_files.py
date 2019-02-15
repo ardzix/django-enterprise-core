@@ -90,6 +90,7 @@ class RackspaceStorage(FileSystemStorage):
         # Should return the actual name of name of the file saved (usually the name passed in, but if the storage needs to change the file name return the new name instead).
         if encode_name:
             name = self.get_valid_name(name)
+
         uploaded = conn.object_store.upload_object(
             container = self.container,
             name = name,
