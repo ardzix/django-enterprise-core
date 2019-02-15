@@ -86,7 +86,6 @@ class RackspaceStorage(FileSystemStorage):
         return ContentFile(conn.object_store.get_object(name, container = self.container))
 
     def _save(self, name, content, encode_name=True):
-        name = remote path + new_name
         # Should return the actual name of name of the file saved (usually the name passed in, but if the storage needs to change the file name return the new name instead).
         if encode_name:
             name = self.get_valid_name(name)
