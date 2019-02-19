@@ -42,7 +42,7 @@ class TrackerMixin(object):
         tracker.ip = ip_address
         tracker.useragent = useragent
         tracker.referer = referer
-        tracker.trigger_action = "visit"
+        tracker.trigger_action = request.method
         tracker.tracking_id = tracking_id
         tracker.visited_page = "%s%s" % (
             request.META['HTTP_HOST'], 
