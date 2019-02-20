@@ -33,7 +33,9 @@ class PermissionView(ProtectedMixin, TemplateView):
         if request.GET.get('draw', None) != None:
             return self.datatable(request)
 
-        return self.render_to_response({})
+        return self.render_to_response({
+            'title' : "Tracker Panel - %s" % Permission.__name__,
+        })
 
     def delete(self, request):
         o_id = request.body.decode('utf-8').split("=")[1]
