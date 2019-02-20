@@ -1,0 +1,154 @@
+{% load staticfiles %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/af-2.3.0/b-1.5.2/b-flash-1.5.2/b-print-1.5.2/r-2.2.2/rg-1.0.3/rr-1.2.4/datatables.min.css"/>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- font -->
+    <link href="https://fonts.googleapis.com/css?family=Barlow:300,400,700,700i|Montserrat" rel="stylesheet">
+
+    <!-- awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+    <style>
+        .btn-circle.btn-xl {
+            width: 50px;
+            height: 50px;
+            padding: 7px 10px;
+            border-radius: 35px;
+            font-size: 24px;
+            line-height: 1.33;
+        }
+
+        .btn-circle {
+            width: 30px;
+            height: 30px;
+            padding: 6px 0px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.42857;
+            margin: 2px;
+        }
+
+        .header{
+            background-color:#333;
+            color:#fff;
+        }
+
+        .btn-datatable {
+            padding: 10px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .datatable{
+            font-size:10pt;
+        }
+    </style>
+
+    <title>{{title}}</title>
+  </head>
+  <body>
+    <div class="container-fluid">
+        <section class="content">
+
+            <div class="row header">
+                <div class="col-xs-3">
+                    <button 
+                        class="btn btn-default btn-circle btn-xl"
+                        onclick="document.location='{% url 'post:index' %}'"
+                    >
+                    <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="col-xs-9">
+                    <h3 style="margin-top:10px">{{title}}</h3>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top:10px">
+                <div class="col-md-12">
+                    <input class="form-control" id="search-table" placeholder="search">
+                </div>
+            </div>
+            
+            <br>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="datatable" id="mainTable">
+                        <thead>
+                            <tr>
+                            <th>Date</th>
+                            <th>User</th>
+                            <th>Visited</th>
+                            <th>Referer</th>
+                            <th>IP</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.3.1/dt-1.10.18/af-2.3.0/b-1.5.2/b-flash-1.5.2/b-print-1.5.2/r-2.2.2/rg-1.0.3/rr-1.2.4/datatables.min.js"></script>
+<script src="{% static 'datatable/js/button_handler.js' %}"></script>
+
+<script>
+
+    $(function () {
+        var table = $('#mainTable');
+
+        var settings = {
+            "sDom": "<t><'row'<p i>>",
+            "destroy": true,
+            "scrollCollapse": true,
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ ",
+                "sInfo": "Showing <b>_START_ to _END_</b> of _TOTAL_ entries"
+            },
+            "iDisplayLength": 20,
+            "processing": true,
+            "serverSide": true,
+            "columns": [
+                {'searchable':false},
+                null,
+                null,
+                {'sortable':false},
+                null,
+            ],
+            "ajax": ""
+
+        };
+
+        table.dataTable(settings);
+
+        // search box for table
+        $('#search-table').keypress(function(e) {
+            var key = e.which;
+            if(key == 13)  // the enter key code
+            {
+                table.fnFilter($(this).val());
+            }
+        });
+    });
+
+</script>
+  </body>
+</html>
+

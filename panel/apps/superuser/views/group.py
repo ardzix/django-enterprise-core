@@ -27,7 +27,7 @@ from ..forms import GroupForm
 
 
 class GroupView(ProtectedMixin, TemplateView):
-    template_name = "group.html"
+    template_name = "superuser/group.html"
 
     def get(self, request, *args, **kwargs):
 
@@ -55,7 +55,7 @@ class GroupView(ProtectedMixin, TemplateView):
 
 
 class GroupFormView(ProtectedMixin, TemplateView):
-    template_name = "group.form.html"
+    template_name = "superuser/group.form.html"
 
     def get(self, request, *args, **kwargs):
         edit = request.GET.get("edit")

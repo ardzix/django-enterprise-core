@@ -27,7 +27,7 @@ from ..forms import PermissionForm
 
 
 class PermissionView(ProtectedMixin, TemplateView):
-    template_name = "permission.html"
+    template_name = "superuser/permission.html"
 
     def get(self, request, *args, **kwargs):
         if request.GET.get('draw', None) != None:
@@ -50,7 +50,7 @@ class PermissionView(ProtectedMixin, TemplateView):
 
 
 class PermissionFormView(ProtectedMixin, TemplateView):
-    template_name = "permission.form.html"
+    template_name = "superuser/permission.form.html"
 
     def get(self, request, *args, **kwargs):
         edit = request.GET.get("edit")

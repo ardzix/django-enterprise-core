@@ -27,7 +27,7 @@ from ..forms import UserForm
 
 
 class UserView(ProtectedMixin, TemplateView):
-    template_name = "user.html"
+    template_name = "superuser/user.html"
 
     def get(self, request, *args, **kwargs):
 
@@ -53,7 +53,7 @@ class UserView(ProtectedMixin, TemplateView):
 
 
 class UserFormView(ProtectedMixin, TemplateView):
-    template_name = "user.form.html"
+    template_name = "superuser/user.form.html"
 
     def get(self, request, *args, **kwargs):
         edit = request.GET.get("edit")
