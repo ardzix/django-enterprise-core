@@ -6,13 +6,14 @@ from django.db.models import Manager as GeoManager
 
 from core.libs.moment import to_timestamp
 from core.libs.ip_address import get_client_ip
-from core.structures.authentication.models import LakonUser
+
+from ...structures.authentication.models import User
 
 
 class Tracker(models.Model):
     created_at = models.DateTimeField(db_index=True, auto_now_add=True)
     created_at_timestamp = models.PositiveIntegerField(db_index=True)
-    created_by = models.ForeignKey(LakonUser, on_delete=models.CASCADE, blank=True, null=True,
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True,
                                 related_name="%(app_label)s_%(class)s_created_by")
     modified_at = models.DateTimeField(auto_now=True)
     point = geo.PointField(null=True,)
