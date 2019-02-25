@@ -17,6 +17,7 @@
 '''
 
 
+from django.conf import settings
 from core.libs.ip_address import get_client_ip
 
 class TrackerMixin(object):
@@ -49,6 +50,8 @@ class TrackerMixin(object):
             request.get_full_path()
         )
         tracker.save()
+
+        request.fb_app_id = getattr(settings, 'SOCIAL_AUTH_FACEBOOK_KEY')
 
         return super().dispatch(request, *args, **kwargs)
 
