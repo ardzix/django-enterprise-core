@@ -32,8 +32,7 @@ class TrackerMixin(object):
         if not tracking_id:
             tracking_id = request.GET.get('t_id')
 
-        if request.META.get('HTTP_REFERER'):
-            referer = request.META.get('HTTP_REFERER')[0:128]
+        referer = request.META.get('HTTP_REFERER')
         useragent = request.META['HTTP_USER_AGENT']
         ip_address = get_client_ip(request)
 
@@ -43,7 +42,7 @@ class TrackerMixin(object):
         tracker.created_by = user
         tracker.ip = ip_address
         tracker.useragent = useragent
-        tracker.referer = referer
+        tracker.referer = referer[0:128] if referer else None
         tracker.trigger_action = request.method
         tracker.tracking_id = tracking_id
         tracker.visited_page = "%s%s" % (
