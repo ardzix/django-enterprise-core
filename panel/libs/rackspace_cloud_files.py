@@ -85,9 +85,10 @@ class RackspaceStorage(FileSystemStorage):
         # This must return a File object
         return ContentFile(conn.object_store.get_object(name, container = self.container))
 
-    def _save(self, name, content, is_encode_name=True):
+    def _save(self, name, content, encode_name=True):
         # Should return the actual name of name of the file saved (usually the name passed in, but if the storage needs to change the file name return the new name instead).
-        name = self.get_valid_name(name, is_encode_name)
+        if encode_name:
+            name = self.get_valid_name(name)
 
         uploaded = conn.object_store.upload_object(
             container = self.container,
@@ -114,7 +115,7 @@ class RackspaceStorage(FileSystemStorage):
             self._base_url += '/'
         return self._base_url
 
-    def get_valid_name(self, name, is_encode_name):
+    def get_valid_name(self, name):
         form = "%Y-%m-%d"
         extension = os.path.splitext(name)[1]
         date = os.path.normpath(
@@ -124,9 +125,8 @@ class RackspaceStorage(FileSystemStorage):
                 )
             )
         )
-        if is_encode_name:
-            name = '%s%s' % (get_random_string(), extension)
-        return '%s%s/%s' % (self.location, date, name)
+        rand_name = '%s%s' % (get_random_string(), extension)
+        return '%s%s/%s' % (self.location, date, rand_name)
 
     def delete(self, name):
         # delete object
