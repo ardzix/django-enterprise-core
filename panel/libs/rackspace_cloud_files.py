@@ -116,7 +116,8 @@ class RackspaceStorage(FileSystemStorage):
         return self._base_url
 
     def get_valid_name(self, name):
-        form = "%Y-%m-%d"
+        form = "%Y-%m-%d-%H%M%S"
+        extension = os.path.splitext(name)[1]
         prefix = os.path.normpath(
             force_unicode(
                 timezone.now().strftime(
@@ -124,11 +125,8 @@ class RackspaceStorage(FileSystemStorage):
                 )
             )
         )
-        print (self.location)
-        print (prefix)
-        print (name)
-
-        return '%s%s/%s' % (self.location, prefix, name)
+        suffix = '%s%s' % (get_random_string(), extension)
+        return '%s%s-%s' % (self.location, prefix, suffix)
 
     def delete(self, name):
         # delete object
