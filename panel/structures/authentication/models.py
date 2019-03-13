@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.core.mail import send_mail
@@ -46,8 +46,8 @@ class UserManager(BaseUserManager):
 class AbstractUser(AbstractBaseUser, PermissionsMixin):
     id62 = models.CharField(max_length=100, db_index=True, blank=True, null=True)
     phone_number = models.CharField(unique=True, max_length=20,
-    	help_text=_('Required. 20 characters or fewer. digits only.'),
-	)
+        help_text=_('Required. 20 characters or fewer. digits only.'),
+    )
 
     full_name = models.CharField(_('full name'), max_length=150, blank=True)
     nick_name = models.CharField(_('nick name'), max_length=150, blank=True)
@@ -127,13 +127,23 @@ class User(AbstractUser):
 
 class RegisterToken(models.Model):
     phone_number = models.CharField(unique=True, max_length=20,
-    	help_text=_('Required. 20 characters or fewer. digits only.'),
-	)
+        help_text=_('Required. 20 characters or fewer. digits only.'),
+    )
     token = models.CharField(_('token'), max_length=150, blank=True)
 
     class Meta:
         verbose_name = _('register token')
         verbose_name_plural = _('register tokens')
+
+
+class EmailVerification(models.Model): 
+    email = models.EmailField()
+    code = models.CharField(max_length=100)
+    is_verified = models.BooleanField(default=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+            return self.email
 
 
 def send_verification_email(email, user):
@@ -145,7 +155,7 @@ def send_verification_email(email, user):
     email_template_name = html_email_template_name
     code = str(uuid.uuid4())
     context = {
-        "url" : getattr(settings, 'BASE_URL')+"email_verify?c="+code,
+        "url" : getattr(settings, 'BASE_URL')+"authentication/email_verify?c="+code,
         "name" : user.full_name
     }
 
@@ -157,12 +167,29 @@ def send_verification_email(email, user):
         email, cc=getattr(settings, "MAIL_NOTIFICATION_CC", [])
     )
 
+    ev, created = EmailVerification.objects.get_or_create(
+        email = email
+    )
+    ev.code = code
+    ev.is_verified = False
+    ev.save()
+
 @receiver(pre_save, sender=User)
 def verify_email(sender, instance, **kwargs):
     from django.conf import settings
 
-    if getattr(settings, 'EMAIL_HOST') and getattr(settings, 'FROM_EMAIL'):
+    if getattr(settings, 'AUTO_VERIFY_EMAIL'):
         email = instance.email
         existed_user = User.objects.filter(id=instance.id).first()
         if not existed_user:
             send_verification_email(email, instance)
+        else:
+            if email != existed_user.email:
+                send_verification_email(email, instance)
+
+@receiver(post_save, sender=User)
+def save_ev(sender, instance, **kwargs):
+    ev = EmailVerification.objects.filter(email = instance.email).first()
+    if ev:
+        ev.user = instance
+        ev.save()
