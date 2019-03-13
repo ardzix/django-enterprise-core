@@ -21,11 +21,12 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import TemplateView 
 from django.contrib.auth import login, logout
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 
 from panel.libs.form import *
 from panel.libs.view import ProtectedMixin
+from panel.structures.authentication.models import EmailVerification
 
 # Create your views here.
 class LoginView(TemplateView):
@@ -88,4 +89,12 @@ class ChangePasswordSuccessView(TemplateView):
     template_name = "change-password-success.html"
     
     def get(self, request):
+        return self.render_to_response({})
+
+class EmailVerifyView(TemplateView):
+    template_name = "email_verify.html"
+    
+    def get(self, request):
+        code = request.GET.get('c')
+        get_object_or_404(EmailVerification, code=code)
         return self.render_to_response({})

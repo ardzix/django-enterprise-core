@@ -33,4 +33,6 @@ urlpatterns = [
     # change password
     url(r'^change-password/$', ChangePasswordView.as_view(), name='change-password'),
     url(r'^change-password/success/$', ChangePasswordSuccessView.as_view(), name='change-password-success'),
+
+    url(r'^email_verify/$', EmailVerifyView.as_view(), name='email_verify'),
 ]
