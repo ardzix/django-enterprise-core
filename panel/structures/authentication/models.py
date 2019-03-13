@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
@@ -131,3 +133,35 @@ class RegisterToken(models.Model):
     class Meta:
         verbose_name = _('register token')
         verbose_name_plural = _('register tokens')
+
+
+def send_verification_email(email, user):
+    from ...libs.email import send_mail
+    from django.conf import settings
+
+    subject_template_name = "email/email_verify.txt"
+    html_email_template_name = "email/email_verify.html"
+    email_template_name = html_email_template_name
+    code = str(uuid.uuid4())
+    context = {
+        "url" : "email_verify?c="+code,
+        "name" : user.full_name
+    }
+
+    send_mail(
+        subject_template_name,
+        email_template_name,
+        html_email_template_name,
+        context,
+        email, cc=getattr(settings, "MAIL_NOTIFICATION_CC", [])
+    )
+
+@receiver(pre_save, sender=User)
+def verify_email(sender, instance, **kwargs):
+    from django.conf import settings
+
+    if getattr(settings, 'EMAIL_HOST') and getattr(settings, 'FROM_EMAIL'):
+        email = instance.email
+        existed_user = User.objects.filter(id=instance.id).first()
+        if not existed_user:
+            send_mail(email, instance)a
