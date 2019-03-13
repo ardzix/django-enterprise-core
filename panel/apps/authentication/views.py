@@ -96,5 +96,9 @@ class EmailVerifyView(TemplateView):
     
     def get(self, request):
         code = request.GET.get('c')
-        get_object_or_404(EmailVerification, code=code)
-        return self.render_to_response({})
+        ev = get_object_or_404(EmailVerification, code=code, is_verified=False)
+        ev.is_verified = True
+        ev.save()
+        return self.render_to_response({
+            'word' : 'Dear %s, your email <%s> has been verified' % (ev.user.full_name, ev.email)
+        })
