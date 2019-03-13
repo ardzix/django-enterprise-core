@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -164,4 +165,4 @@ def verify_email(sender, instance, **kwargs):
         email = instance.email
         existed_user = User.objects.filter(id=instance.id).first()
         if not existed_user:
-            send_mail(email, instance)
+            send_verification_email(email, instance)
