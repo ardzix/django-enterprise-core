@@ -145,7 +145,7 @@ def send_verification_email(email, user):
     email_template_name = html_email_template_name
     code = str(uuid.uuid4())
     context = {
-        "url" : getattr(settings, 'BASE_URL')+"/email_verify?c="+code,
+        "url" : getattr(settings, 'BASE_URL')+"email_verify?c="+code,
         "name" : user.full_name
     }
 
