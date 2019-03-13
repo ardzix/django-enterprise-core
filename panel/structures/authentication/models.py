@@ -164,4 +164,4 @@ def verify_email(sender, instance, **kwargs):
         email = instance.email
         existed_user = User.objects.filter(id=instance.id).first()
         if not existed_user:
-            send_mail(email, instance)a
+            send_mail(email, instance)
