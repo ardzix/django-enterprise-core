@@ -1,1 +1,1 @@
-Wecare.Id: Email Verification
+Email Verification
