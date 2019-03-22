@@ -33,10 +33,9 @@ else:
     MEDIA_ROOT = settings.MEDIA_ROOT
     UPLOAD_ROOT = "%sstatic/upload/" % settings.BASE_URL
 
-BASE_URL = "https://70867a2ef4c36f4d1885-185a360f54556c7e8b9c7a9b6e422c6e.ssl.cf6.rackcdn.com"
-
 
 if settings.USE_RACKSPACE:
+    BASE_URL = settings.RACKSPACE_BASE_URL
     VIDEO_STORAGE = RackspaceStorage(
        location = "%svideo/" % ROOT_URL,
        base_url = BASE_URL,

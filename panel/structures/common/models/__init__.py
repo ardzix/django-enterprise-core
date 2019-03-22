@@ -9,9 +9,9 @@ from django.conf import settings
 # from panel.structures.authentication.models import User
 from panel.libs.moment import to_timestamp
 from panel.libs import storage
+from panel.structures.common.models.base import BaseModelGeneric
 
 from core.libs import constant
-from core.structures.common.models.base import BaseModelGeneric
 
 
 User = settings.AUTH_USER_MODEL
