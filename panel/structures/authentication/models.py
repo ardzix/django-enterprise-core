@@ -51,7 +51,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
 
     full_name = models.CharField(_('full name'), max_length=150, blank=True)
     nick_name = models.CharField(_('nick name'), max_length=150, blank=True)
-    email = models.EmailField(_('email address'), blank=True)
+    email = models.EmailField(_('email address'), unique=True)
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
