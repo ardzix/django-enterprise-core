@@ -51,7 +51,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
 
     full_name = models.CharField(_('full name'), max_length=150, blank=True)
     nick_name = models.CharField(_('nick name'), max_length=150, blank=True)
-    email = models.EmailField(_('email address'), blank=True)
+    email = models.EmailField(_('email address'), unique=True)
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -140,7 +140,7 @@ class EmailVerification(models.Model):
     email = models.EmailField()
     code = models.CharField(max_length=100)
     is_verified = models.BooleanField(default=False)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
             return self.email

@@ -24,7 +24,7 @@ urlpatterns = [
     # url(r'^admin/', admin.site.urls),
 
     # login
-    url(r'^$', LoginView.as_view(), name='login'),
+    url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^login/success/$', LoginSuccessView.as_view(), name='login-success'),
 
     # logout
