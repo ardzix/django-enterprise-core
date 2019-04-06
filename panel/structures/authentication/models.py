@@ -178,7 +178,7 @@ def send_verification_email(email, user):
 def verify_email(sender, instance, **kwargs):
     from django.conf import settings
 
-    if getattr(settings, 'AUTO_VERIFY_EMAIL'):
+    if getattr(settings, 'AUTO_VERIFY_EMAIL', False):
         email = instance.email
         existed_user = User.objects.filter(id=instance.id).first()
         if not existed_user:
