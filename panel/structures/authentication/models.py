@@ -174,6 +174,8 @@ def send_verification_email(email, user):
     ev.is_verified = False
     ev.save()
 
+    return ev
+
 @receiver(pre_save, sender=User)
 def verify_email(sender, instance, **kwargs):
     from django.conf import settings

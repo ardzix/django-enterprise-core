@@ -99,6 +99,26 @@ class EmailVerifyView(TemplateView):
         ev = get_object_or_404(EmailVerification, code=code, is_verified=False)
         ev.is_verified = True
         ev.save()
+        ev.user.is_active = True
+        ev.user.save()
+        form = SetPasswordForm(ev.user)
         return self.render_to_response({
-            'word' : 'Dear %s, your email <%s> has been verified' % (ev.user.full_name, ev.email)
+            'word' : 'Dear %s, your email <%s> has been verified' % (ev.user.full_name, ev.email),
+            'form' : form
         })
+
+    def post(self, request):
+        code = request.GET.get('c')
+        ev = get_object_or_404(EmailVerification, code=code)
+        form = SetPasswordForm(ev.user, request.POST)
+        print(ev.user.email)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your password has been set.')
+            return redirect("authentication:login")
+        else:
+            messages.error(request, form.errors)
+            return self.render_to_response({
+                'is_failed_set_password' : True,
+                'form' : form
+            })

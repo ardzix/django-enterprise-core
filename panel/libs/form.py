@@ -63,3 +63,16 @@ class ChangePasswordForm(PasswordChangeForm):
         self.fields["new_password2"].widget.attrs = {
             "class": "form-control"
         }
+
+class SetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(SetPasswordForm, self).__init__(*args, **kwargs)
+
+        self.error_class = ErrorDiv
+
+        self.fields["new_password1"].widget.attrs = {
+            "class": "form-control"
+        }
+        self.fields["new_password2"].widget.attrs = {
+            "class": "form-control"
+        }
