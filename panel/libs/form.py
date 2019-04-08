@@ -57,16 +57,29 @@ class AuthForm(AuthenticationForm):
         password = self.cleaned_data.get('password')
 
         if username is not None and password:
-            self.user_cache = authenticate(self.request, username=username, password=password)
+            self.user_cache = authenticate(
+                self.request, 
+                username=username, 
+                password=password
+            )
             if self.user_cache is None:
-                user_temp = User.objects.filter(email=phone_number).first()
+                user_temp = User.objects.filter(email=username).first()
                 if user_temp and user_temp.is_active:
-                    ev = EmailVerification.objects.filter(email=phone_number).first()
+                    ev = EmailVerification.objects.filter(email=username).first()
                     if ev and ev.is_verified:
-                        self.user_cache = authenticate(self.request, username=username, password=password)
-                
-                if self.user_cache is None:
-                    self.verify_email(username, user_temp)
+                        self.user_cache = authenticate(
+                            self.request, 
+                            username=user_temp.phone_number, 
+                            password=password
+                        )
+                        if self.user_cache is None:
+                            raise self.get_invalid_login_error()
+                        else:
+                            self.confirm_login_allowed(self.user_cache)
+                            return self.cleaned_data
+
+                    else:
+                        self.verify_email(username, user_temp)
 
                 raise self.get_invalid_login_error()
             else:
