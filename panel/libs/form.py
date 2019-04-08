@@ -20,6 +20,8 @@
 from django.forms.utils import ErrorList
 from django.contrib.auth.forms import *
 
+from panel.structures.authentication.models import User, EmailVerification, send_verification_email
+
 class ErrorDiv(ErrorList):
     def __str__(self):
         return self.as_divs()
@@ -44,9 +46,43 @@ class AuthForm(AuthenticationForm):
             "class": "form-control"
         }
 
+        self.fields["username"].label = "Email/Phone Number"
+
         self.fields["password"].widget.attrs = {
             "class": "form-control"
         }
+
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username is not None and password:
+            self.user_cache = authenticate(self.request, username=username, password=password)
+            if self.user_cache is None:
+                user_temp = User.objects.filter(email=phone_number).first()
+                if user_temp and user_temp.is_active:
+                    ev = EmailVerification.objects.filter(email=phone_number).first()
+                    if ev and ev.is_verified:
+                        self.user_cache = authenticate(self.request, username=username, password=password)
+                
+                if self.user_cache is None:
+                    self.verify_email(username, user_temp)
+
+                raise self.get_invalid_login_error()
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data
+
+
+    def verify_email(self, email, user):
+        try:
+            ev = send_verification_email(email, user)
+            ev.user = user
+            ev.save()
+        except Exception as e:
+            raise forms.ValidationError(e)
+        raise forms.ValidationError("Your email has not been verified, we sent you an email to verify it")
 
 class ChangePasswordForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
