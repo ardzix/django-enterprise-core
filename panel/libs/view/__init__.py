@@ -67,6 +67,7 @@ class ProtectedMixin(LoginRequiredMixin):
         # Then store the app_access and model_access to the request            
         request.app_access = app_access
         request.model_access = model_access
+        request.permission_codenames = request.user.groups.values_list('permissions__codename', flat = True)
         if not self.name_space:
             self.name_space = request.resolver_match.namespace
         if not self.model:
