@@ -128,6 +128,9 @@ class _BaseAbstract(models.Model):
             # save it
             return super(_BaseAbstract, self).save(*args, **kwargs)
 
+    def reject(self, user=None, *args, **kwargs):
+        self.unapprove(user, *args, **kwargs)
+
     def publish(self, user=None, *args, **kwargs):
         if user:
             # mark when the record deleted
