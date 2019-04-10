@@ -1,46 +1,167 @@
-
-
-
 {% load static %}
+{% load crispy_forms_tags %}
+
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{% static 'form/css/main.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
     <link href="https://fonts.googleapis.com/css?family=Barlow:300,400,700,700i|Montserrat" rel="stylesheet">
 
     <title>Succes</title>
-    <style>
-        .middle{
-            width:400px; 
-            margin:10% auto;
-        }
+</head>
 
-    </style>
-  </head>
-  <body>
-    <div class="middle">
-            <h2 class="name no-margin">Email Verification</h2>
+<body>
+    <div class="wrapper-page">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-5 col-md-8 col-sm-8 col-12 align-self-center">
+                    <div class="wrapper-panel-box text-center">
+                        <div class="panel-body">
+                            <img class="mb-3" src="{% static 'images/img_success_register.png' %}" alt="">
+                            <div class="panel-title text-center p-0 mt-3 mb-4">
+                                <h3>Verifikasi Email dan Atur Password</h3>
+                            </div>
+                            {% if not is_failed_set_password %}
+                            <p class="logged hint-text no-margin">
+                                {{word}}
+                            </p>
+                            <h5 class="logged hint-text no-margin">
+                                Silahkan <a href="../../login">klik di sini</a> untuk login
+                            </h5>
 
-    <p class="logged hint-text no-margin">
-        {{word}}
-    </p>
+                            <br><p>Atau</p>
+                            {% endif %}
 
-    <h5 class="logged hint-text no-margin">
-        Please <a href="{% url 'authentication:login' %}">click here</a> to login
-    </h5>
+                            <h5 class="logged hint-text no-margin">
+                                Isi form di bawah untuk mengatur password kamu
+                            </h5>
 
-<!--END Login Form-->
+                            <form enctype="multipart/form-data" method="POST" id="form"  class="uniForm">
+                            {% csrf_token %}
+                                <div class="form">
+                                    {% crispy form %}
+
+                                    <button class="btn btn-primary btn-block" type="submit">KIRIM</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="panel-body text-center bg-light-blue register-sec">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <section class="sec-global">
+            <div class="sec-body-single">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-5 col-12 ">
+                            <div class="info">
+                                <div style="margin-top:0;">
+                                    <img alt="WeCare.id" src="{% static 'images/logo_wecareid-blue@2x.png' %}" style="display:inline-block;height:48px;vertical-align:middle; margin-bottom:10px;">
+                                    <div class="cl-logo d-none d-sm-none d-md-inline-block">
+                                        <span class="w_word">We</span>
+                                        <span class="c_word">Care.id</span>
+                                    </div>
+                                </div>
+                                <div class="content-footer">
+                                    <p><span class="text-color font-bold"> WeCare.id </span> adalah situs web yang
+                                        dibangun khusus untuk menggalang dana bantuan kesehatan</p>
+                                </div>
+
+                                <div class="content-footer">
+                                    <p><span class="text-color font-bold">LAB515</span><br>Jalan Salihara No. 41A,
+                                        Pasar Minggu, Jakarta Selatan <a href="mailto:support@wecare.id" class="">support@wecare.id</a></p>
+                                </div>
+
+                                <div class="content-footer">
+                                    <ul class="socmed-list">
+                                        <li>
+                                            <a href="" class="socmed-badge socmed-facebook"><span class="fab fa-facebook-f"></span></a>
+                                        </li>
+                                        <li>
+                                            <a href="" class="socmed-badge socmed-twitter"><span class="fab fa-twitter"></span></a>
+                                        </li>
+                                        <li>
+                                            <a href="" class="socmed-badge socmed-youtube"><span class="fab fa-youtube"></span></a>
+                                        </li>
+                                        <li>
+                                            <a href="" class="socmed-badge socmed-instagram"><span class="fab fa-instagram"></span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-2 ">
+                            <div class="title-footer">UTAMA</div>
+                            <div class="content-footer">
+                                <ul class="menu-footer">
+                                    <li><a href="{% url 'campaign:campaign' %}">Bantu Pasien</a></li>
+                                    <li><a href="{% url 'donation:donasi-sehati' %}">Donasi Rutin #Sehati</a></li>
+                                    <li><a href="">Bantu Inisiatif</a></li>
+
+                                </ul>
+                            </div>
+                            <hr>
+                            <div class="content-footer">
+                                <ul class="menu-footer">
+                                    <li><a href="{% url 'donation:donasi-universal' %}">Donasi Untuk Semua</a></li>
+                                    <li><a href="{% url 'home:ajukan-pasien' %}">Ajukan Pasien</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <div class="title-footer">PELAJARI</div>
+                            <div class="content-footer">
+                                <ul class="menu-footer">
+                                    <li><a href="">Tentang Kami</a></li>
+                                    <li><a href="{% url 'home:faq' %}">Pertanyaan Umum</a></li>
+                                    <li><a href="{% url 'home:transparency' %}">Transparansi</a></li>
+                                    <li><a href="{% url 'donation:bantu-keberlangsungan' %}">Keberlangsungan</a></li>
+                                    <li><a href="https://blog.wecare.id" target="_blank">Blog</a></li>
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="title-footer">CAMPAIGN</div>
+                            <div class="content-footer">
+                                <ul class="menu-footer">
+                                    <li><a href="">Menjadi Fundraiser</a></li>
+                                    <li><a href="{% url 'home:bandung' %}">Wecare.id di Bandung</a></li>
+                                    <li><a href="">Donasi Go-Pay</a></li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </footer>
+
+    <!--END Login Form-->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</div>  
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    </div>
 </body>
+
 </html>
