@@ -10,9 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
     <link href="https://fonts.googleapis.com/css?family=Barlow:300,400,700,700i|Montserrat" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Succes</title>
 </head>
 
@@ -20,26 +19,25 @@
     <div class="wrapper-page">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-5 col-md-8 col-sm-8 col-12 align-self-center">
+                <div class="col-lg-5 col-md-8 col-sm-8 col-12 align-self-center bg-light">
                     <div class="wrapper-panel-box text-center">
                         <div class="panel-body">
-                            <img class="mb-3" src="{% static 'images/img_success_register.png' %}" alt="">
                             <div class="panel-title text-center p-0 mt-3 mb-4">
-                                <h3>Verifikasi Email dan Atur Password</h3>
+                                <h3>Email Verification and Set Password</h3>
                             </div>
                             {% if not is_failed_set_password %}
                             <p class="logged hint-text no-margin">
                                 {{word}}
                             </p>
                             <h5 class="logged hint-text no-margin">
-                                Silahkan <a href="../../login">klik di sini</a> untuk login
+                                Please <a href="../../login">click here</a> to login
                             </h5>
 
-                            <br><p>Atau</p>
+                            <br><p>Or</p>
                             {% endif %}
 
                             <h5 class="logged hint-text no-margin">
-                                Isi form di bawah untuk mengatur password kamu
+                                Fill the form bellow to set your password
                             </h5>
 
                             <form enctype="multipart/form-data" method="POST" id="form"  class="uniForm">
@@ -47,110 +45,15 @@
                                 <div class="form">
                                     {% crispy form %}
 
-                                    <button class="btn btn-primary btn-block" type="submit">KIRIM</button>
+                                    <button class="btn btn-primary btn-block" type="submit">SEND</button>
                                 </div>
                             </form>
-                        </div>
-
-                        <div class="panel-body text-center bg-light-blue register-sec">
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <footer>
-        <section class="sec-global">
-            <div class="sec-body-single">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-5 col-12 ">
-                            <div class="info">
-                                <div style="margin-top:0;">
-                                    <img alt="WeCare.id" src="{% static 'images/logo_wecareid-blue@2x.png' %}" style="display:inline-block;height:48px;vertical-align:middle; margin-bottom:10px;">
-                                    <div class="cl-logo d-none d-sm-none d-md-inline-block">
-                                        <span class="w_word">We</span>
-                                        <span class="c_word">Care.id</span>
-                                    </div>
-                                </div>
-                                <div class="content-footer">
-                                    <p><span class="text-color font-bold"> WeCare.id </span> adalah situs web yang
-                                        dibangun khusus untuk menggalang dana bantuan kesehatan</p>
-                                </div>
-
-                                <div class="content-footer">
-                                    <p><span class="text-color font-bold">LAB515</span><br>Jalan Salihara No. 41A,
-                                        Pasar Minggu, Jakarta Selatan <a href="mailto:support@wecare.id" class="">support@wecare.id</a></p>
-                                </div>
-
-                                <div class="content-footer">
-                                    <ul class="socmed-list">
-                                        <li>
-                                            <a href="" class="socmed-badge socmed-facebook"><span class="fab fa-facebook-f"></span></a>
-                                        </li>
-                                        <li>
-                                            <a href="" class="socmed-badge socmed-twitter"><span class="fab fa-twitter"></span></a>
-                                        </li>
-                                        <li>
-                                            <a href="" class="socmed-badge socmed-youtube"><span class="fab fa-youtube"></span></a>
-                                        </li>
-                                        <li>
-                                            <a href="" class="socmed-badge socmed-instagram"><span class="fab fa-instagram"></span></a>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="col-md-2 ">
-                            <div class="title-footer">UTAMA</div>
-                            <div class="content-footer">
-                                <ul class="menu-footer">
-                                    <li><a href="{% url 'campaign:campaign' %}">Bantu Pasien</a></li>
-                                    <li><a href="{% url 'donation:donasi-sehati' %}">Donasi Rutin #Sehati</a></li>
-                                    <li><a href="">Bantu Inisiatif</a></li>
-
-                                </ul>
-                            </div>
-                            <hr>
-                            <div class="content-footer">
-                                <ul class="menu-footer">
-                                    <li><a href="{% url 'donation:donasi-universal' %}">Donasi Untuk Semua</a></li>
-                                    <li><a href="{% url 'home:ajukan-pasien' %}">Ajukan Pasien</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-2 col-6">
-                            <div class="title-footer">PELAJARI</div>
-                            <div class="content-footer">
-                                <ul class="menu-footer">
-                                    <li><a href="">Tentang Kami</a></li>
-                                    <li><a href="{% url 'home:faq' %}">Pertanyaan Umum</a></li>
-                                    <li><a href="{% url 'home:transparency' %}">Transparansi</a></li>
-                                    <li><a href="{% url 'donation:bantu-keberlangsungan' %}">Keberlangsungan</a></li>
-                                    <li><a href="https://blog.wecare.id" target="_blank">Blog</a></li>
-
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-6">
-                            <div class="title-footer">CAMPAIGN</div>
-                            <div class="content-footer">
-                                <ul class="menu-footer">
-                                    <li><a href="">Menjadi Fundraiser</a></li>
-                                    <li><a href="{% url 'home:bandung' %}">Wecare.id di Bandung</a></li>
-                                    <li><a href="">Donasi Go-Pay</a></li>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </footer>
 
     <!--END Login Form-->
     <!-- Optional JavaScript -->

@@ -91,12 +91,37 @@ class ChangePasswordSuccessView(TemplateView):
     def get(self, request):
         return self.render_to_response({})
 
+
+class ResetPasswordView(TemplateView):
+
+    template_name = 'reset-password.html'
+
+    def get(self, request):
+        reset_form = SetPasswordForm()
+        return self.render_to_response({
+            'reset_form' : reset_form,
+            'base_url' : settings.BASE_URL,
+        })
+
+    def post(self, request):
+        reset_form = SetPasswordForm(request.POST)
+        if reset_form.is_valid():
+            messages.success(request, 'Permintaan reset password kamu sedang diproses, silahkan cek email kamu.')
+        else:
+            messages.error(request, form.errors)
+
+        return self.render_to_response({
+            'reset_form' : reset_form,
+            'base_url' : settings.BASE_URL,
+        })
+
 class EmailVerifyView(TemplateView):
     template_name = "email_verify.html"
     
     def get(self, request):
         code = request.GET.get('c')
-        ev = get_object_or_404(EmailVerification, code=code, is_verified=False)
+        # ev = get_object_or_404(EmailVerification, code=code, is_verified=False)
+        ev = get_object_or_404(EmailVerification, code=code)
         ev.is_verified = True
         ev.save()
         ev.user.is_active = True
