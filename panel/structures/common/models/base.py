@@ -275,7 +275,7 @@ class _BaseAbstract(models.Model):
     def set_lat_lng(self, field_name, value):
         point = None
 
-        if hasattr(self, field_name) and "longitude" in value and "latitude" in value:
+        if hasattr(self, field_name) and value and "longitude" in value and "latitude" in value:
             point = Point(value["longitude"], value["latitude"])
             setattr(self, field_name, point)
 
