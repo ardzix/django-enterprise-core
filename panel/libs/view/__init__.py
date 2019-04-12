@@ -149,7 +149,7 @@ class BrandProtectedMixin(ProtectedMixin):
         if not request.session.get('brand') in brands.values_list('id62', flat=True):
             return self.handle_no_permission(request, *args, **kwargs)
 
-        self.brand = brands.get(id62=request.session.get('brand'))
+        self.brand = brands.filter(id62=request.session.get('brand')).first()
         request.brand = self.brand
 
         return super(BrandProtectedMixin, self).dispatch(request, *args, **kwargs)
