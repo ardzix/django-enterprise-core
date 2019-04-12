@@ -154,6 +154,12 @@ class BrandProtectedMixin(ProtectedMixin):
 
         return super(BrandProtectedMixin, self).dispatch(request, *args, **kwargs)
 
+    def permission_allowed(self, request):
+        return True
+
+    def app_allowed(self, request):
+        return True
+
 class JSONResponseMixin(object):
     """
     A mixin that can be used to render a JSON response.
