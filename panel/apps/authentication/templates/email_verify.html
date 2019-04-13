@@ -1,46 +1,70 @@
-
-
-
 {% load static %}
+{% load crispy_forms_tags %}
+
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{% static 'form/css/main.css' %}"/>
     <link href="https://fonts.googleapis.com/css?family=Barlow:300,400,700,700i|Montserrat" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Succes</title>
-    <style>
-        .middle{
-            width:400px; 
-            margin:10% auto;
-        }
+</head>
 
-    </style>
-  </head>
-  <body>
-    <div class="middle">
-            <h2 class="name no-margin">Email Verification</h2>
+<body>
+    <div class="wrapper-page">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-5 col-md-8 col-sm-8 col-12 align-self-center bg-light">
+                    <div class="wrapper-panel-box text-center">
+                        <div class="panel-body">
+                            <div class="panel-title text-center p-0 mt-3 mb-4">
+                                <h3>Email Verification and Set Password</h3>
+                            </div>
+                            {% if not is_failed_set_password %}
+                            <p class="logged hint-text no-margin">
+                                {{word}}
+                            </p>
+                            <h5 class="logged hint-text no-margin">
+                                Please <a href="../../login">click here</a> to login
+                            </h5>
 
-    <p class="logged hint-text no-margin">
-        {{word}}
-    </p>
+                            <br><p>Or</p>
+                            {% endif %}
 
-    <h5 class="logged hint-text no-margin">
-        Please <a href="{% url 'authentication:login' %}">click here</a> to login
-    </h5>
+                            <h5 class="logged hint-text no-margin">
+                                Fill the form bellow to set your password
+                            </h5>
 
-<!--END Login Form-->
+                            <form enctype="multipart/form-data" method="POST" id="form"  class="uniForm">
+                            {% csrf_token %}
+                                <div class="form">
+                                    {% crispy form %}
+
+                                    <button class="btn btn-primary btn-block" type="submit">SEND</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--END Login Form-->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</div>  
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    </div>
 </body>
+
 </html>

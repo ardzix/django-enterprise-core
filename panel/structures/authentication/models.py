@@ -114,7 +114,7 @@ class User(AbstractUser):
     """
 
     def __str__(self):
-        return self.nick_name
+        return '%s <%s>' % (self.full_name, self.email)
 
     def get_profile(self):
         from core.structures.account.models import Profile
@@ -122,7 +122,7 @@ class User(AbstractUser):
 
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
-        unique_together = ('phone_number', 'nick_name')
+        unique_together = ('phone_number', 'full_name')
 
 
 class RegisterToken(models.Model):
