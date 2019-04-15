@@ -19,6 +19,7 @@
 
 from django.forms.utils import ErrorList
 from django.contrib.auth.forms import *
+from django import forms
 
 from panel.structures.authentication.models import User, EmailVerification, send_verification_email
 
@@ -42,14 +43,14 @@ class AuthForm(AuthenticationForm):
 
         self.error_class = ErrorDiv
 
-        self.fields["username"].widget.attrs = {
-            "class": "form-control"
+        self.fields['username'].widget.attrs = {
+            'class': 'form-control'
         }
 
-        self.fields["username"].label = "Email/Phone Number"
+        self.fields['username'].label = 'Email/Phone Number'
 
-        self.fields["password"].widget.attrs = {
-            "class": "form-control"
+        self.fields['password'].widget.attrs = {
+            'class': 'form-control'
         }
 
     def clean(self):
@@ -95,7 +96,7 @@ class AuthForm(AuthenticationForm):
             ev.save()
         except Exception as e:
             raise forms.ValidationError(e)
-        raise forms.ValidationError("Your email has not been verified, we sent you an email to verify it")
+        raise forms.ValidationError('Your email has not been verified, we sent you an email to verify it')
 
 class ChangePasswordForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
@@ -103,14 +104,14 @@ class ChangePasswordForm(PasswordChangeForm):
 
         self.error_class = ErrorDiv
 
-        self.fields["old_password"].widget.attrs = {
-            "class": "form-control"
+        self.fields['old_password'].widget.attrs = {
+            'class': 'form-control'
         }
-        self.fields["new_password1"].widget.attrs = {
-            "class": "form-control"
+        self.fields['new_password1'].widget.attrs = {
+            'class': 'form-control'
         }
-        self.fields["new_password2"].widget.attrs = {
-            "class": "form-control"
+        self.fields['new_password2'].widget.attrs = {
+            'class': 'form-control'
         }
 
 class SetPasswordForm(SetPasswordForm):
@@ -119,9 +120,18 @@ class SetPasswordForm(SetPasswordForm):
 
         self.error_class = ErrorDiv
 
-        self.fields["new_password1"].widget.attrs = {
-            "class": "form-control"
+        self.fields['new_password1'].widget.attrs = {
+            'class': 'form-control'
         }
-        self.fields["new_password2"].widget.attrs = {
-            "class": "form-control"
+        self.fields['new_password2'].widget.attrs = {
+            'class': 'form-control'
         }
+
+
+class RegisterForm(forms.Form):
+    full_name = forms.CharField(widget=forms.TextInput(
+        attrs={'placeholder': 'Full Name', 'class': 'form-control'}
+    ))
+    phone_number = forms.CharField(widget=forms.TextInput(
+        attrs={'placeholder': 'Phone Number', 'class': 'form-control'}
+    ))

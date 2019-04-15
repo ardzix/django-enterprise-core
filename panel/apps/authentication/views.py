@@ -23,6 +23,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
+from django.db import IntegrityError
 
 from panel.libs.form import *
 from panel.libs.view import ProtectedMixin
@@ -126,24 +127,59 @@ class EmailVerifyView(TemplateView):
         ev.save()
         ev.user.is_active = True
         ev.user.save()
-        form = SetPasswordForm(ev.user)
+
+        set_password_form = SetPasswordForm(ev.user) \
+            if request.GET.get('is_reset_password') \
+            else None
+
+        register_form = RegisterForm() \
+            if request.GET.get('is_acquire_account') \
+            else None
+
         return self.render_to_response({
             'word' : 'Dear %s, your email <%s> has been verified' % (ev.user.full_name, ev.email),
-            'form' : form
+            'set_password_form' : set_password_form,
+            'register_form' : register_form,
         })
 
     def post(self, request):
         code = request.GET.get('c')
         ev = get_object_or_404(EmailVerification, code=code)
-        form = SetPasswordForm(ev.user, request.POST)
-        print(ev.user.email)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your password has been set.')
-            return redirect("authentication:login")
-        else:
-            messages.error(request, form.errors)
-            return self.render_to_response({
-                'is_failed_set_password' : True,
-                'form' : form
-            })
+
+        set_password_form = SetPasswordForm(ev.user, request.POST) \
+            if request.GET.get('is_reset_password') \
+            else None
+
+        register_form = RegisterForm(request.POST) \
+            if request.GET.get('is_acquire_account') \
+            else None
+
+        if set_password_form:
+            if set_password_form.is_valid():
+                set_password_form.save()
+                messages.success(request, 'Your password has been set.')
+                return redirect("authentication:login")
+            else:
+                messages.error(request, set_password_form.errors)
+
+        if register_form:
+            if register_form.is_valid():
+                ev.user.full_name = register_form.cleaned_data['full_name']
+                ev.user.nick_name = ev.user.full_name
+                ev.user.phone_number = register_form.cleaned_data['phone_number']
+
+                try:
+                    ev.user.save()
+                    messages.success(request, 'You\'re successfully registered.')
+                    return redirect("authentication:login")
+                except IntegrityError as e:
+                    messages.error(request, str(e).split(':')[-1])
+            else:
+                messages.error(request, register_form.errors)
+
+        return self.render_to_response({
+            'is_failed_set_password' : True,
+            'is_failed_register' : True,
+            'set_password_form' : set_password_form,
+            'register_form' : register_form,
+        })

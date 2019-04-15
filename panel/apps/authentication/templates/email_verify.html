@@ -23,7 +23,7 @@
                     <div class="wrapper-panel-box text-center">
                         <div class="panel-body">
                             <div class="panel-title text-center p-0 mt-3 mb-4">
-                                <h3>Email Verification and Set Password</h3>
+                                <h3>Account Activation</h3>
                             </div>
                             {% if not is_failed_set_password %}
                             <p class="logged hint-text no-margin">
@@ -32,22 +32,47 @@
                             <h5 class="logged hint-text no-margin">
                                 Please <a href="../../login">click here</a> to login
                             </h5>
-
-                            <br><p>Or</p>
                             {% endif %}
+
+                            {% if set_password_form %}
+                                {% if not is_failed_set_password %}
+                                <br><p>Or</p>
+                                {% endif %}
 
                             <h5 class="logged hint-text no-margin">
                                 Fill the form bellow to set your password
                             </h5>
 
-                            <form enctype="multipart/form-data" method="POST" id="form"  class="uniForm">
+                            <form enctype="multipart/form-data" method="POST" id="set_password_form"  class="uniForm">
                             {% csrf_token %}
                                 <div class="form">
-                                    {% crispy form %}
+                                    {% crispy set_password_form %}
 
                                     <button class="btn btn-primary btn-block" type="submit">SEND</button>
                                 </div>
                             </form>
+
+                            {% endif %}
+
+                            {% if register_form %}
+                                {% if not is_failed_register %}
+                                <br><p>Or</p>
+                                {% endif %}
+
+                            <h5 class="logged hint-text no-margin">
+                                Fill the form bellow to register your phone number
+                            </h5>
+
+                            <form enctype="multipart/form-data" method="POST" id="register_form"  class="uniForm">
+                            {% csrf_token %}
+                                <div class="form">
+                                    {% crispy register_form %}
+
+                                    <button class="btn btn-primary btn-block" type="submit">SEND</button>
+                                </div>
+                            </form>
+
+                            {% endif %}
                         </div>
                     </div>
                 </div>
