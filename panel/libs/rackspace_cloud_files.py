@@ -28,6 +28,8 @@ from django.utils.deconstruct import deconstructible
 from django.utils.encoding import force_text as force_unicode, smart_str
 from django.utils.functional import cached_property
 
+from ..structures.authentication.models import User
+
 """
 https://developer.openstack.org/sdks/python/openstacksdk/users/resource.html#openstack.resource.Resource
 https://developer.openstack.org/sdks/python/openstacksdk/users/resources/object_store/v1/obj.html#openstack.object_store.v1.obj.Object
@@ -100,7 +102,7 @@ class RackspaceStorage(FileSystemStorage):
         if self.purpose and hasattr(uploaded, "name"):
             from panel.structures.integration.models import ResizeImageTemp
             rit = ResizeImageTemp(image=self.url(uploaded.name), purpose=self.purpose)
-            rit.created_by_id = 1
+            rit.created_by = User.objects.first()
             rit.save()
 
         return name
