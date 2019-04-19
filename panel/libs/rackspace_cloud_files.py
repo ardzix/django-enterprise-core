@@ -98,7 +98,7 @@ class RackspaceStorage(FileSystemStorage):
 
         # resize here, send to celery
         if self.purpose and hasattr(uploaded, "name"):
-            from core.structures.integration.models import ResizeImageTemp
+            from panel.structures.integration.models import ResizeImageTemp
             rit = ResizeImageTemp(image=self.url(uploaded.name), purpose=self.purpose)
             rit.created_by_id = 1
             rit.save()
