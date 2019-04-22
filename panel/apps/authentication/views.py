@@ -121,8 +121,8 @@ class EmailVerifyView(TemplateView):
     
     def get(self, request):
         code = request.GET.get('c')
-        ev = get_object_or_404(EmailVerification, code=code, is_verified=False)
-        # ev = get_object_or_404(EmailVerification, code=code)
+        # ev = get_object_or_404(EmailVerification, code=code, is_verified=False)
+        ev = get_object_or_404(EmailVerification, code=code)
         ev.is_verified = True
         ev.save()
         ev.user.is_active = True
