@@ -120,6 +120,9 @@ class User(AbstractUser):
         from core.structures.account.models import Profile
         return Profile.objects.filter(created_by=self).first()
 
+    def get_groups(self):
+        return ', '.join(list(self.groups.values_list('name', flat=True)))
+
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
         unique_together = ('phone_number', 'full_name')
