@@ -202,12 +202,7 @@ def verify_email(sender, instance, **kwargs):
             )
         else:
             if email != existed_user.email:
-<<<<<<< HEAD
                 send_verification_email(email, instance)
-=======
-                send_verification_email(email, instance,
-                    is_reset_password=True)
->>>>>>> 85705516d75d33c8b930e057f33c4a487798de43
 
 @receiver(post_save, sender=User)
 def save_ev(sender, instance, **kwargs):
