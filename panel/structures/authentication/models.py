@@ -120,6 +120,9 @@ class User(AbstractUser):
         from core.structures.account.models import Profile
         return Profile.objects.filter(created_by=self).first()
 
+    def get_groups(self):
+        return ', '.join(list(self.groups.values_list('name', flat=True)))
+
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
         unique_together = ('phone_number', 'full_name')
@@ -199,7 +202,12 @@ def verify_email(sender, instance, **kwargs):
             )
         else:
             if email != existed_user.email:
+<<<<<<< HEAD
                 send_verification_email(email, instance)
+=======
+                send_verification_email(email, instance,
+                    is_reset_password=True)
+>>>>>>> 85705516d75d33c8b930e057f33c4a487798de43
 
 @receiver(post_save, sender=User)
 def save_ev(sender, instance, **kwargs):
