@@ -192,16 +192,18 @@ def verify_email(sender, instance, **kwargs):
         email = instance.email
         existed_user = User.objects.filter(id=instance.id).first()
         if not existed_user:
-            send_verification_email(email, instance,
-                is_reset_password=True)
+            send_verification_email(
+                email, 
+                instance,
+                is_reset_password=True
+            )
         else:
             if email != existed_user.email:
-                send_verification_email(email, instance
-                    is_reset_password=True)
+                send_verification_email(email, instance)
 
 @receiver(post_save, sender=User)
 def save_ev(sender, instance, **kwargs):
-    ev = EmailVerification.objects.filter(email = instance.email).first()
+    ev = EmailVerification.objects.filter(email = instance.email).last()
     if ev:
         ev.user = instance
         ev.save()

@@ -123,12 +123,14 @@ class EmailVerifyView(TemplateView):
         code = request.GET.get('c')
         # ev = get_object_or_404(EmailVerification, code=code, is_verified=False)
         ev = get_object_or_404(EmailVerification, code=code)
+        user = get_object_or_404(User, id=ev.user_id)
+
         ev.is_verified = True
         ev.save()
-        ev.user.is_active = True
-        ev.user.save()
+        user.is_active = True
+        user.save()
 
-        set_password_form = SetPasswordForm(ev.user) \
+        set_password_form = SetPasswordForm(user) \
             if request.GET.get('is_reset_password') \
             else None
 
@@ -137,7 +139,7 @@ class EmailVerifyView(TemplateView):
             else None
 
         return self.render_to_response({
-            'word' : 'Dear %s, your email <%s> has been verified' % (ev.user.full_name, ev.email),
+            'word' : 'Dear %s, your email <%s> has been verified' % (user.full_name, ev.email),
             'set_password_form' : set_password_form,
             'register_form' : register_form,
         })
@@ -146,7 +148,7 @@ class EmailVerifyView(TemplateView):
         code = request.GET.get('c')
         ev = get_object_or_404(EmailVerification, code=code)
 
-        set_password_form = SetPasswordForm(ev.user, request.POST) \
+        set_password_form = SetPasswordForm(user, request.POST) \
             if request.GET.get('is_reset_password') \
             else None
 
