@@ -148,7 +148,7 @@ class EmailVerifyView(TemplateView):
         code = request.GET.get('c')
         ev = get_object_or_404(EmailVerification, code=code)
 
-        set_password_form = SetPasswordForm(user, request.POST) \
+        set_password_form = SetPasswordForm(ev.user, request.POST) \
             if request.GET.get('is_reset_password') \
             else None
 
