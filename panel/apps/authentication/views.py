@@ -32,47 +32,6 @@ from panel.structures.authentication.models import EmailVerification
 
 
 
-class LoginForm(forms.Form):
-    phone_number = forms.CharField(
-        label=False, 
-        widget=forms.TextInput(attrs={'placeholder': 'email/phone number'})
-    )
-    password = forms.CharField(
-        label=False, 
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
-    )
-
-    def clean(self):
-        cleaned_data = super().clean()
-        phone_number = cleaned_data['phone_number']
-        password = cleaned_data['password']
-        user = authenticate(phone_number=phone_number, password=password)
-        if not user:
-            user_temp = User.objects.filter(email=phone_number).first()
-            if user_temp and user_temp.is_active:
-                ev = EmailVerification.objects.filter(email=phone_number).first()
-                if ev:
-                    if ev.is_verified:
-                        user = authenticate(phone_number=user_temp.phone_number, password=password)
-                    else:
-                        self.add_error('phone_number', 'Your email has not been verified, please check your email to verify it')
-                        self.verify_email(phone_number, user_temp)
-
-        if user:
-            if user.is_active:
-                cleaned_data['user'] = user
-            else:
-                self.add_error('phone_number', 'Your account is not active')
-        else:
-            self.add_error('phone_number', 'Email/Phone and Password missmatch')
-
-        return cleaned_data
-
-    def verify_email(self, email, user):
-        ev = send_verification_email(email, user, is_reset_password=True)
-        ev.user = user
-        ev.save()
-
 
 # Create your views here.
 class LoginView(TemplateView):
@@ -83,12 +42,12 @@ class LoginView(TemplateView):
             return redirect("authentication:login-success")
 
         return self.render_to_response({
-            "form" : LoginForm(request)
+            "form" : AuthForm()
         })
 
     def post(self, request):
         next = request.GET.get("next")
-        form = LoginForm(request, request.POST)
+        form = AuthForm(request.POST)
 
         if form.is_valid():
             login(request, login_form.cleaned_data['user'])
