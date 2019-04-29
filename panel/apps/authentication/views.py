@@ -50,12 +50,13 @@ class LoginView(TemplateView):
         form = AuthForm(request.POST)
 
         if form.is_valid():
-            login(request, login_form.cleaned_data['user'])
+            login(request, form.cleaned_data['user'])
             if next:
                 return redirect(next)
             else:
                 return redirect("authentication:login-success")
         else:
+            print(form.errors)
             return self.render_to_response({"form":form})
 
 class LoginSuccessView(TemplateView):
