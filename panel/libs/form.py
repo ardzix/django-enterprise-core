@@ -20,6 +20,7 @@
 from django.forms.utils import ErrorList
 from django.contrib.auth.forms import *
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from crispy_forms import helper, layout, bootstrap
 
 from panel.structures.authentication.models import User, EmailVerification, send_verification_email
@@ -41,11 +42,11 @@ class ErrorDiv(ErrorList):
 class AuthForm(forms.Form):
     phone_number = forms.CharField(
         label=False, 
-        widget=forms.TextInput(attrs={'placeholder': 'email/phone number'})
+        widget=forms.TextInput(attrs={'placeholder': _('Email/Phone number')})
     )
     password = forms.CharField(
         label=False, 
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
+        widget=forms.PasswordInput(attrs={'placeholder': _('Password')})
     )
 
     def clean(self):
@@ -61,16 +62,16 @@ class AuthForm(forms.Form):
                     if ev.is_verified:
                         user = authenticate(phone_number=user_temp.phone_number, password=password)
                     else:
-                        self.add_error('phone_number', 'Your email has not been verified, please check your email to verify it')
+                        self.add_error('phone_number', _('Your email has not been verified, please check your email to verify it'))
                         self.verify_email(phone_number, user_temp)
 
         if user:
             if user.is_active:
                 cleaned_data['user'] = user
             else:
-                self.add_error('phone_number', 'Your account is not active')
+                self.add_error('phone_number', _('Your account is not active'))
         else:
-            self.add_error('phone_number', 'Email/Phone and Password missmatch')
+            self.add_error('phone_number', _('Email/Phone and Password missmatch'))
 
         return cleaned_data
 
