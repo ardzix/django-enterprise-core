@@ -19,6 +19,7 @@
 
 from django.views.generic import TemplateView 
 from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from panel.libs.view import ProtectedMixin
@@ -92,7 +93,7 @@ class UserFormView(ProtectedMixin, TemplateView):
             if hasattr(user, 'permissions'):
                 user.permissions.set(form.cleaned_data.get('permissions'))
                 user.save()
-            messages.success(request, 'User (%s) has been saved.' % user.full_name)
+            messages.success(request, _('User (%s) has been saved.' % user.full_name))
             return redirect("superuser:user")
         else:
             return self.render_to_response({"form":form})

@@ -75,7 +75,7 @@ class PermissionFormView(ProtectedMixin, TemplateView):
         if form.is_valid():
             permission = form.save(commit=False)
             permission.save()
-            messages.success(request, 'Permission (%s) has been saved.' % permission.name)
+            messages.success(request, _('Permission (%s) has been saved.' % permission.name))
             return redirect("superuser:permission")
         else:
             return self.render_to_response({"form":form})

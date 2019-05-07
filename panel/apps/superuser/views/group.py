@@ -82,7 +82,7 @@ class GroupFormView(ProtectedMixin, TemplateView):
             group.save()            
             group.permissions.set(form.cleaned_data.get('permissions'))
             group.save()
-            messages.success(request, 'Group (%s) has been saved.' % group.name)
+            messages.success(request, _('Group (%s) has been saved.' % group.name))
             return redirect("superuser:group")
         else:
             return self.render_to_response({"form":form})

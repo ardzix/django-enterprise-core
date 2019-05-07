@@ -20,6 +20,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import TemplateView 
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
@@ -35,11 +36,11 @@ from panel.structures.authentication.models import EmailVerification
 class LoginForm(forms.Form):
     phone_number = forms.CharField(
         label=False, 
-        widget=forms.TextInput(attrs={'placeholder': 'email/phone number'})
+        widget=forms.TextInput(attrs={'placeholder': _('Email/Phone number')})
     )
     password = forms.CharField(
         label=False, 
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
+        widget=forms.PasswordInput(attrs={'placeholder': _('Password')})
     )
 
     def clean(self):
@@ -55,16 +56,16 @@ class LoginForm(forms.Form):
                     if ev.is_verified:
                         user = authenticate(phone_number=user_temp.phone_number, password=password)
                     else:
-                        self.add_error('phone_number', 'Your email has not been verified, please check your email to verify it')
+                        self.add_error('phone_number', _('Your email has not been verified, please check your email to verify it'))
                         self.verify_email(phone_number, user_temp)
 
         if user:
             if user.is_active:
                 cleaned_data['user'] = user
             else:
-                self.add_error('phone_number', 'Your account is not active')
+                self.add_error('phone_number', _('Your account is not active'))
         else:
-            self.add_error('phone_number', 'Email/Phone and Password missmatch')
+            self.add_error('phone_number', _('Email/Phone and Password missmatch'))
 
         return cleaned_data
 
@@ -125,7 +126,7 @@ class ChangePasswordView(ProtectedMixin, TemplateView):
 
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your password has been changed.')
+            messages.success(request, _('Your password has been changed.'))
             return redirect("authentication:change-password-success")
         else:
             return self.render_to_response({"form":form})
@@ -151,7 +152,7 @@ class ResetPasswordView(TemplateView):
     def post(self, request):
         reset_form = SetPasswordForm(request.POST)
         if reset_form.is_valid():
-            messages.success(request, 'Permintaan reset password kamu sedang diproses, silahkan cek email kamu.')
+            messages.success(request, _('Your reset password request has been processed, please check your email'))
         else:
             messages.error(request, form.errors)
 
@@ -183,7 +184,7 @@ class EmailVerifyView(TemplateView):
             else None
 
         return self.render_to_response({
-            'word' : 'Dear %s, your email <%s> has been verified' % (user.full_name, ev.email),
+            'word' : _('Dear %s, your email <%s> has been verified' % (user.full_name, ev.email)),
             'set_password_form' : set_password_form,
             'register_form' : register_form,
         })
@@ -203,7 +204,7 @@ class EmailVerifyView(TemplateView):
         if set_password_form:
             if set_password_form.is_valid():
                 set_password_form.save()
-                messages.success(request, 'Your password has been set.')
+                messages.success(request, _('Your password has been set.'))
                 return redirect("authentication:login")
             else:
                 messages.error(request, set_password_form.errors)
@@ -216,7 +217,7 @@ class EmailVerifyView(TemplateView):
 
                 try:
                     ev.user.save()
-                    messages.success(request, 'You\'re successfully registered.')
+                    messages.success(request, _('You\'re successfully registered.'))
                     return redirect("authentication:login")
                 except IntegrityError as e:
                     messages.error(request, str(e).split(':')[-1])
