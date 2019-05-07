@@ -18,6 +18,8 @@
 
 
 {% load static %}
+{% load crispy_forms_tags %}
+
 
 <!doctype html>
 <html lang="en">
@@ -28,7 +30,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{% static 'form/css/main.css' %}"/>
+    {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'form/css/main.css' %}"/> {% endcomment %}
     <link href="https://fonts.googleapis.com/css?family=Barlow:300,400,700,700i|Montserrat" rel="stylesheet">
 
     <title>Sign In</title>
@@ -49,10 +51,11 @@
 <!-- START Login Form -->
     <form method="POST">
     {% csrf_token %}
+          <div class="row justify-content-center">
 
-    {{ form.as_p }}
+    {% crispy form %}
 
-
+        </div>
     <p>
         <input class="btn btn-primary w-100" type="submit" value="Sign In"/>
     </p>

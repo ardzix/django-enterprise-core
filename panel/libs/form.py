@@ -20,6 +20,7 @@
 from django.forms.utils import ErrorList
 from django.contrib.auth.forms import *
 from django import forms
+from crispy_forms import helper, layout, bootstrap
 
 from panel.structures.authentication.models import User, EmailVerification, send_verification_email
 
@@ -37,66 +38,65 @@ class ErrorDiv(ErrorList):
             errors = ''.join(['<div class="error">%s</div>' % e for e in self])
             return '<div class="errors">%s</div>' % errors
 
-class AuthForm(AuthenticationForm):
-    def __init__(self, *args, **kwargs):
-        super(AuthForm, self).__init__(*args, **kwargs)
-
-        self.error_class = ErrorDiv
-
-        self.fields['username'].widget.attrs = {
-            'class': 'form-control'
-        }
-
-        self.fields['username'].label = 'Email/Phone Number'
-
-        self.fields['password'].widget.attrs = {
-            'class': 'form-control'
-        }
+class AuthForm(forms.Form):
+    phone_number = forms.CharField(
+        label=False, 
+        widget=forms.TextInput(attrs={'placeholder': 'email/phone number'})
+    )
+    password = forms.CharField(
+        label=False, 
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
+    )
 
     def clean(self):
-        username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
-
-        if username is not None and password:
-            self.user_cache = authenticate(
-                self.request, 
-                username=username, 
-                password=password
-            )
-            if self.user_cache is None:
-                user_temp = User.objects.filter(email=username).first()
-                if user_temp and user_temp.is_active:
-                    ev = EmailVerification.objects.filter(email=username).first()
-                    if ev and ev.is_verified:
-                        self.user_cache = authenticate(
-                            self.request, 
-                            username=user_temp.phone_number, 
-                            password=password
-                        )
-                        if self.user_cache is None:
-                            raise self.get_invalid_login_error()
-                        else:
-                            self.confirm_login_allowed(self.user_cache)
-                            return self.cleaned_data
-
+        cleaned_data = super().clean()
+        phone_number = cleaned_data['phone_number']
+        password = cleaned_data['password']
+        user = authenticate(phone_number=phone_number, password=password)
+        if not user:
+            user_temp = User.objects.filter(email=phone_number).first()
+            if user_temp and user_temp.is_active:
+                ev = EmailVerification.objects.filter(email=phone_number).first()
+                if ev:
+                    if ev.is_verified:
+                        user = authenticate(phone_number=user_temp.phone_number, password=password)
                     else:
-                        self.verify_email(username, user_temp)
+                        self.add_error('phone_number', 'Your email has not been verified, please check your email to verify it')
+                        self.verify_email(phone_number, user_temp)
 
-                raise self.get_invalid_login_error()
+        if user:
+            if user.is_active:
+                cleaned_data['user'] = user
             else:
-                self.confirm_login_allowed(self.user_cache)
+                self.add_error('phone_number', 'Your account is not active')
+        else:
+            self.add_error('phone_number', 'Email/Phone and Password missmatch')
 
-        return self.cleaned_data
-
+        return cleaned_data
 
     def verify_email(self, email, user):
-        try:
-            ev = send_verification_email(email, user)
-            ev.user = user
-            ev.save()
-        except Exception as e:
-            raise forms.ValidationError(e)
-        raise forms.ValidationError('Your email has not been verified, we sent you an email to verify it')
+        ev = send_verification_email(email, user, is_reset_password=True)
+        ev.user = user
+        ev.save()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = helper.FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = layout.Layout(
+            bootstrap.PrependedText(
+                'phone_number', 
+                '<i class="fas fa-user"></i>',
+                wrapper_class = 'col-md-12 m-b-10'
+            ),
+            bootstrap.PrependedText(
+                'password', 
+                '<i class="fas fa-lock"></i>',
+                wrapper_class = 'col-md-12'
+            ),
+        )
+        self.helper.render_unmentioned_fields = True
+        self.helper.disable_csrf = True
 
 class ChangePasswordForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
