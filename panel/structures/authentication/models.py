@@ -65,6 +65,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
             'Unselect this instead of deleting accounts.'
         ),
     )
+    is_sent_email = models.BooleanField(default=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     objects = UserManager()
@@ -193,16 +194,17 @@ def verify_email(sender, instance, **kwargs):
 
     if getattr(settings, 'AUTO_VERIFY_EMAIL', False):
         email = instance.email
-        existed_user = User.objects.filter(id=instance.id).first()
-        if not existed_user:
-            send_verification_email(
-                email, 
-                instance,
-                is_reset_password=True
-            )
-        else:
-            if email != existed_user.email:
-                send_verification_email(email, instance)
+        if instance.is_sent_email:
+            existed_user = User.objects.filter(id=instance.id).first()
+            if not existed_user:
+                send_verification_email(
+                    email, 
+                    instance,
+                    is_reset_password=True
+                )
+            else:
+                if email != existed_user.email:
+                    send_verification_email(email, instance)
 
 @receiver(post_save, sender=User)
 def save_ev(sender, instance, **kwargs):
