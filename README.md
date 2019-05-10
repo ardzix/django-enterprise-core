@@ -45,8 +45,8 @@ Structure holds models and admins of django
 ```python
     INSTALLED_APPS = [
         # ........
-        'panel.apps.account',
-        'panel.apps.superuser',
+        'enterprise.apps.account',
+        'enterprise.apps.superuser',
         # ........
     ]
 ```
@@ -57,8 +57,8 @@ Structure holds models and admins of django
 from django.contrib import admin
 from django.conf.urls import url, include
 
-from panel.apps.account import urls as account
-from panel.apps.superuser import urls as superuser
+from enterprise.apps.account import urls as account
+from enterprise.apps.superuser import urls as superuser
 
 urlpatterns = [
     # ...
@@ -78,7 +78,7 @@ Insert path bellow to your settings.py
 ```python
     INSTALLED_APPS = [
         # ........
-        'panel.structures.common',
+        'enterprise.structures.common',
         # ........
     ]
 ```
@@ -87,7 +87,7 @@ You can follow this example to create a model
 
 ```python
 from django.db import models
-from panel.libs.model import BaseModelGeneric
+from enterprise.libs.model import BaseModelGeneric
 
 # Create your models here.
 class TestField(BaseModelGeneric):
@@ -102,7 +102,7 @@ Just specify the namespace and model of the view
 
 Example:
 ```python
-from panel.libs.view import ProtectedMixin
+from enterprise.libs.view import ProtectedMixin
 from django.views.generic import TemplateView 
 
 class UserView(ProtectedMixin, TemplateView):
