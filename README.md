@@ -2,7 +2,7 @@
 A base core libraries and apps to build enterprise system using django
 
 # Installation
-just `pip install -e git+https://github.com/ardzix/django-panel-core.git#egg=panel` in your python environment
+just `pip install -e git+https://github.com/ardzix/django-enterprise-core.git#egg=enterprise` in your python environment
 
 # Features
 
