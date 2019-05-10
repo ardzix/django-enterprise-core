@@ -49,7 +49,7 @@ class UserView(ProtectedMixin, TemplateView):
     def datatable(self, request):
         User = get_user_model()
         qs = User.objects.all()
-        defer = ['id', 'full_name', 'is_active', 'is_staff', 'is_superuser']
+        defer = ['id', 'full_name', 'email', 'phone_number', 'is_active', 'is_staff', 'is_superuser']
 
         d = Datatable(request, qs, defer, key="id")
         return d.get_data()
