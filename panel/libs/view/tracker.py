@@ -18,7 +18,7 @@
 
 
 from django.conf import settings
-from core.libs.ip_address import get_client_ip
+from panel.libs.ip_address import get_client_ip
 
 class TrackerMixin(object):
     def dispatch(self, request, *args, **kwargs):

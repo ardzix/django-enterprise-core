@@ -4,8 +4,8 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.db import models as geo
 from django.db.models import Manager as GeoManager
 
-from core.libs.moment import to_timestamp
-from core.libs.ip_address import get_client_ip
+from panel.libs.moment import to_timestamp
+from panel.libs.ip_address import get_client_ip
 
 from ...structures.authentication.models import User
 
