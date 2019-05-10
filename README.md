@@ -4,11 +4,39 @@ A bunch of libraries for building backend panel on django
 # Installation
 just `pip install -e git+https://github.com/ardzix/django-panel-core.git#egg=panel` in your python environment
 
-# Apps
-Some apps included to handle basic functions on a django application, such as:
+# Features
 
-* **_Account_** app to handle authentication _(login, logout and change password)_
-* **_Super User_** app to manage superuser administration _(users, groups and permissions)_
+This repo contains work to build base structures of an enterprise system that includes:
+
+### Notable libraries like:
+
+- ProtectedMixin
+  A library that handle your view permission based on django group of permission
+
+- TrackerMixin
+  A library that handle your visitor tracking in each view
+
+- Rest Module base library
+bunch of libraries that will useful if you want to build a rest api
+
+### Base Apps that u will use in every development:
+
+- Authentication
+Don't worry about register, login, email verification etc. We handle it
+
+- Tracker
+App to track your visitor, a TrackerMixin viewer
+
+- SuperUser
+You want to manage another user inside your system? groups, permission, you name it. the super user app can handle it
+
+### The Structures
+Structure holds models and admins of django
+
+- Authentication
+- Common
+- Integration
+- Tracker
 
 ## Usage
 
