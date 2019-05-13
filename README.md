@@ -1,14 +1,43 @@
-# django-panel-core
-A bunch of libraries for building backend panel on django
+
+# django-enterprise-core
+A base core libraries and apps to build enterprise system using django
 
 # Installation
-just `pip install -e git+https://github.com/ardzix/django-enterprise-core.git#egg=panel` in your python environment
+just `pip install -e git+https://github.com/ardzix/django-enterprise-core.git#egg=enterprise` in your python environment
 
-# Apps
-Some apps included to handle basic functions on a django application, such as:
+# Features
 
-* **_Account_** app to handle authentication _(login, logout and change password)_
-* **_Super User_** app to manage superuser administration _(users, groups and permissions)_
+This repo contains work to build base structures of an enterprise system that includes:
+
+### Notable libraries like:
+
+- ProtectedMixin
+  A library that handle your view permission based on django group of permission
+
+- TrackerMixin
+  A library that handle your visitor tracking in each view
+
+- Rest Module base library
+bunch of libraries that will useful if you want to build a rest api
+
+### Base Apps that u will use in every development:
+
+- Authentication
+Don't worry about register, login, email verification etc. We handle it
+
+- Tracker
+App to track your visitor, a TrackerMixin viewer
+
+- SuperUser
+You want to manage another user inside your system? groups, permission, you name it. the super user app can handle it
+
+### The Structures
+Structure holds models and admins of django
+
+- Authentication
+- Common
+- Integration
+- Tracker
 
 ## Usage
 
@@ -17,8 +46,8 @@ Some apps included to handle basic functions on a django application, such as:
 ```python
     INSTALLED_APPS = [
         # ........
-        'panel.apps.account',
-        'panel.apps.superuser',
+        'enterprise.apps.account',
+        'enterprise.apps.superuser',
         # ........
     ]
 ```
@@ -29,8 +58,8 @@ Some apps included to handle basic functions on a django application, such as:
 from django.contrib import admin
 from django.conf.urls import url, include
 
-from panel.apps.account import urls as account
-from panel.apps.superuser import urls as superuser
+from enterprise.apps.account import urls as account
+from enterprise.apps.superuser import urls as superuser
 
 urlpatterns = [
     # ...
@@ -50,7 +79,7 @@ Insert path bellow to your settings.py
 ```python
     INSTALLED_APPS = [
         # ........
-        'panel.structures.common',
+        'enterprise.structures.common',
         # ........
     ]
 ```
@@ -59,7 +88,7 @@ You can follow this example to create a model
 
 ```python
 from django.db import models
-from panel.libs.model import BaseModelGeneric
+from enterprise.libs.model import BaseModelGeneric
 
 # Create your models here.
 class TestField(BaseModelGeneric):
@@ -74,7 +103,7 @@ Just specify the namespace and model of the view
 
 Example:
 ```python
-from panel.libs.view import ProtectedMixin
+from enterprise.libs.view import ProtectedMixin
 from django.views.generic import TemplateView 
 
 class UserView(ProtectedMixin, TemplateView):
