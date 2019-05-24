@@ -18,10 +18,10 @@
 
 
 from django.conf.urls import url, include
-from .views import *
-from .views.user import *
-from .views.group import *
-from .views.permission import *
+from .views import IndexView
+from .views.user import UserView, UserFormView
+from .views.group import GroupView, GroupFormView
+from .views.permission import PermissionView, PermissionFormView
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),

@@ -1,4 +1,4 @@
-from core.structures.common.views import apilogger
+from ...structures.common.views import apilogger
 
 
 class APILogMiddleware(object):
