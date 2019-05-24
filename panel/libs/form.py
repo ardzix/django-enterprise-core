@@ -3,14 +3,14 @@
 # File: form.py
 # Project: django-panel-core
 # File Created: Tuesday, 21st August 2018 11:56:49 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Tuesday, 21st August 2018 11:56:49 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Hand-crafted & Made with Love
 # Copyright - 2018 Ardz Co, https://github.com/ardzix/django-panel-core
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -24,6 +24,7 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms import helper, layout, bootstrap
 
 from panel.structures.authentication.models import User, EmailVerification, send_verification_email
+
 
 class ErrorDiv(ErrorList):
     def __str__(self):
@@ -39,13 +40,14 @@ class ErrorDiv(ErrorList):
             errors = ''.join(['<div class="error">%s</div>' % e for e in self])
             return '<div class="errors">%s</div>' % errors
 
+
 class AuthForm(forms.Form):
     phone_number = forms.CharField(
-        label=False, 
+        label=False,
         widget=forms.TextInput(attrs={'placeholder': _('Email/Phone number')})
     )
     password = forms.CharField(
-        label=False, 
+        label=False,
         widget=forms.PasswordInput(attrs={'placeholder': _('Password')})
     )
 
@@ -57,12 +59,16 @@ class AuthForm(forms.Form):
         if not user:
             user_temp = User.objects.filter(email=phone_number).first()
             if user_temp and user_temp.is_active:
-                ev = EmailVerification.objects.filter(email=phone_number).first()
+                ev = EmailVerification.objects.filter(
+                    email=phone_number).first()
                 if ev:
                     if ev.is_verified:
-                        user = authenticate(phone_number=user_temp.phone_number, password=password)
+                        user = authenticate(
+                            phone_number=user_temp.phone_number, password=password)
                     else:
-                        self.add_error('phone_number', _('Your email has not been verified, please check your email to verify it'))
+                        self.add_error(
+                            'phone_number',
+                            _('Your email has not been verified, please check your email to verify it'))
                         self.verify_email(phone_number, user_temp)
 
         if user:
@@ -71,7 +77,9 @@ class AuthForm(forms.Form):
             else:
                 self.add_error('phone_number', _('Your account is not active'))
         else:
-            self.add_error('phone_number', _('Email/Phone and Password missmatch'))
+            self.add_error(
+                'phone_number',
+                _('Email/Phone and Password missmatch'))
 
         return cleaned_data
 
@@ -86,18 +94,19 @@ class AuthForm(forms.Form):
         self.helper.form_tag = False
         self.helper.layout = layout.Layout(
             bootstrap.PrependedText(
-                'phone_number', 
+                'phone_number',
                 '<i class="fas fa-user"></i>',
-                wrapper_class = 'col-md-12 m-b-10'
+                wrapper_class='col-md-12 m-b-10'
             ),
             bootstrap.PrependedText(
-                'password', 
+                'password',
                 '<i class="fas fa-lock"></i>',
-                wrapper_class = 'col-md-12'
+                wrapper_class='col-md-12'
             ),
         )
         self.helper.render_unmentioned_fields = True
         self.helper.disable_csrf = True
+
 
 class ChangePasswordForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
@@ -114,6 +123,7 @@ class ChangePasswordForm(PasswordChangeForm):
         self.fields['new_password2'].widget.attrs = {
             'class': 'form-control'
         }
+
 
 class SetPasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):

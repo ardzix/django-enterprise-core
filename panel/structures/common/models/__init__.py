@@ -17,22 +17,25 @@ from core.libs import constant
 User = settings.AUTH_USER_MODEL
 
 # Create your models here.
+
+
 class Log(models.Model):
-    content_type = models.ForeignKey(ContentType, 
-                    related_name="%(app_label)s_%(class)s_content_type", 
-                    blank=True, null=True, on_delete=models.CASCADE,)
+    content_type = models.ForeignKey(ContentType,
+                                     related_name="%(app_label)s_%(class)s_content_type",
+                                     blank=True, null=True, on_delete=models.CASCADE,)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     logged_at = models.DateTimeField(blank=True, null=True)
     logged_at_timestamp = models.PositiveIntegerField(blank=True, null=True)
-    logged_by = models.ForeignKey(User, db_index=True,  on_delete=models.CASCADE,)
-    
+    logged_by = models.ForeignKey(
+        User, db_index=True, on_delete=models.CASCADE,)
+
     def __str__(self):
         return self.logged_by.__str__()
 
     def get_message_dict(self):
         try:
             return json.loads(self.message)
-        except:
+        except BaseException:
             return {}
 
     def get_note(self):
@@ -65,7 +68,11 @@ class APILog(models.Model):
     """
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, blank=True, null=True,  on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
 
     app_id = models.CharField(max_length=100)
     uid = models.CharField(max_length=100, blank=True, null=True)
@@ -89,13 +96,17 @@ class File(BaseModelGeneric):
     display_name = models.CharField(max_length=150)
     short_name = models.SlugField(max_length=150)
     file = models.FileField(
-        storage = storage.FILE_STORAGE,
+        storage=storage.FILE_STORAGE,
         max_length=300,
-        blank = True,
-        null = True
+        blank=True,
+        null=True
     )
     description = models.TextField(blank=True, null=True)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, blank=True, null=True)
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 

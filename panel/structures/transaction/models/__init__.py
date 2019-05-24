@@ -3,14 +3,14 @@
 # File: __init__.py
 # Project: core.ayopeduli.id
 # File Created: Thursday, 1st November 2018 1:16:00 am
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Thursday, 1st November 2018 1:16:05 am
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Peduli sesama, sejahtera bersama
 # Copyright - 2018 Ayopeduli.Id, ayopeduli.id
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -33,13 +33,17 @@ from panel.structures.common.models import BaseModelGeneric
 from panel.libs import base36
 from panel.libs.decimal_lib import dec_to_str
 from panel.libs.pay_constants import (CASHOUT_STATUSES, INVOICE_STATUSES, BANK_CHOICES,
-                                    PAYMENT_STATUSES, SUBSCRIPTION_CHARGE_METHOD)
+                                      PAYMENT_STATUSES, SUBSCRIPTION_CHARGE_METHOD)
 
 
 class Wallet(BaseModelGeneric):
     amount = models.DecimalField(max_digits=19, decimal_places=2)
     description = models.CharField(max_length=200, blank=True, null=True)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, blank=True, null=True)
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
@@ -93,7 +97,11 @@ class InvoiceItem(BaseModelGeneric):
     amount = models.DecimalField(max_digits=19, decimal_places=2)
     qty = models.PositiveIntegerField(default=1)
     item_name = models.CharField(max_length=50, blank=True, null=True)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, blank=True, null=True)
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
@@ -128,7 +136,7 @@ class BankAccount(BaseModelGeneric):
     bank = models.CharField(max_length=20, choices=BANK_CHOICES)
     number = models.CharField(max_length=20)
     name = models.CharField(max_length=120)
-    notes = models.TextField(blank=True, null=True) # branch name, etc.d
+    notes = models.TextField(blank=True, null=True)  # branch name, etc.d
 
     def __str__(self):
         return self.name
@@ -148,7 +156,12 @@ class CashOutSession(BaseModelGeneric):
     begin_at = models.DateTimeField()
     end_at = models.DateTimeField()
     processed_at = models.DateTimeField(blank=True, null=True)
-    processed_by = models.ForeignKey(User, related_name='cashoutbatch_processed_by', on_delete=models.CASCADE, blank=True, null=True)
+    processed_by = models.ForeignKey(
+        User,
+        related_name='cashoutbatch_processed_by',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
 
     def __str__(self):
         return self.number
@@ -161,12 +174,16 @@ class CashOutSession(BaseModelGeneric):
 
 
 class CashOutRequest(BaseModelGeneric):
-    # use : created_by, approved_by; created_by = requester, approved_by = managed_by
+    # use : created_by, approved_by; created_by = requester, approved_by =
+    # managed_by
     session = models.ForeignKey(CashOutSession, on_delete=models.CASCADE)
     last_pk = models.BigIntegerField()
     total_balance = models.DecimalField(max_digits=19, decimal_places=2)
     total_requested = models.DecimalField(max_digits=19, decimal_places=2)
-    status = models.CharField(max_length=20, choices=CASHOUT_STATUSES, default="pending")
+    status = models.CharField(
+        max_length=20,
+        choices=CASHOUT_STATUSES,
+        default="pending")
 
     def __str__(self):
         return "%s:%s" % (self.session.number, self.created_by)
@@ -176,19 +193,21 @@ class CashOutRequest(BaseModelGeneric):
         return self.session.number
 
     def get_buttons(self):
-        buttons = [  
+        buttons = [
             {
-                "style":"margin:2px", 
-                "class":"btn btn-sm btn-danger btn-cons btn-animated from-left pg pg-arrow_right", 
-                "on_click" : "delete_data", 
-                "icon":"fa-trash", 
+                "style": "margin:2px",
+                "class": "btn btn-sm btn-danger btn-cons btn-animated from-left pg pg-arrow_right",
+                "on_click": "delete_data",
+                "icon": "fa-trash",
                 "text": "Delete"
-            } 
+            }
         ]
 
         button_str = ""
         for b in buttons:
-            button_str += '<button type="button" style="'+b['style']+'" class="'+b['class']+'" onclick="'+b['on_click']+'(\''+self.id62+'\')"><span><i class="fa '+b['icon']+'"></i>&nbsp;'+b['text']+'</span></button>'
+            button_str += '<button type="button" style="' + b['style'] + '" class="' + b['class'] + '" onclick="' + b['on_click'] + \
+                '(\'' + self.id62 + '\')"><span><i class="fa ' + \
+                b['icon'] + '"></i>&nbsp;' + b['text'] + '</span></button>'
 
         return button_str
 
@@ -196,18 +215,22 @@ class CashOutRequest(BaseModelGeneric):
         app_label = "cashout"
 
 # Subscription
+
+
 def get_default_data():
     return [1]
+
 
 class Subscription(BaseModelGeneric):
     token = models.CharField(max_length=128, blank=True, null=True)
     charge_date = ArrayField(
         models.PositiveIntegerField(),
-        default = get_default_data
+        default=get_default_data
     )
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(blank=True, null=True)
-    charge_method = models.PositiveIntegerField(choices=SUBSCRIPTION_CHARGE_METHOD, default=1)
+    charge_method = models.PositiveIntegerField(
+        choices=SUBSCRIPTION_CHARGE_METHOD, default=1)
     is_active = models.BooleanField(default=True)
     inactivity_reason = models.TextField(blank=True, null=True)
     amount = models.PositiveIntegerField()
@@ -220,7 +243,11 @@ class Subscription(BaseModelGeneric):
 class SubscriptionPayment(models.Model):
     charged_at = models.DateTimeField(auto_now_add=True)
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE)
-    topup = models.ForeignKey(TopUp, on_delete=models.CASCADE, blank=True, null=True)
+    topup = models.ForeignKey(
+        TopUp,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
     status = models.CharField(max_length=20, choices=PAYMENT_STATUSES)
 
     class Meta:
@@ -232,11 +259,11 @@ class SubscriptionPayment(models.Model):
 def do_topup(sender, instance, created, **kwargs):
     from panel.libs.wallet import topup_wallet, transfer_wallet
 
-    if created :
+    if created:
         if instance.invoice.status == "settlement":
             topup_wallet(
-                topup = instance,
-                description = "TopUp wallet <invoice: %s>" % instance.invoice.number
+                topup=instance,
+                description="TopUp wallet <invoice: %s>" % instance.invoice.number
             )
 
             for k, item in enumerate(instance.invoice.get_items()):
@@ -247,11 +274,11 @@ def do_topup(sender, instance, created, **kwargs):
                     if item.content_type.model == 'donation':
                         receiver = item.content_object.destination_content_object.owned_by
                     transfer_wallet(
-                        instance.owned_by, 
-                        receiver, 
+                        instance.owned_by,
+                        receiver,
                         int(item.amount),
-                        obj = item,
-                        description = '%s: %s' % (
+                        obj=item,
+                        description='%s: %s' % (
                             item.content_type.__str__(),
                             item.item_name
                         )

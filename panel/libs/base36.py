@@ -3,14 +3,14 @@
 # File: base36.py
 # Project: core.ayopeduli.id
 # File Created: Thursday, 1st November 2018 1:30:29 am
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Thursday, 1st November 2018 1:30:29 am
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Peduli sesama, sejahtera bersama
 # Copyright - 2018 Ayopeduli.Id, ayopeduli.id
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -37,6 +37,7 @@ def encode(num, alphabet=BASE36l):
         arr.append(alphabet[rem])
     arr.reverse()
     return ''.join(arr)
+
 
 def decode(string, alphabet=BASE36l):
     """Decode a Base X encoded string into the number

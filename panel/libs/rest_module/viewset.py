@@ -3,14 +3,14 @@
 # File: viewset.py
 # Project: core.lakon.app
 # File Created: Wednesday, 5th September 2018 1:23:29 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Wednesday, 5th September 2018 1:23:29 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Hand-crafted & Made with Love
 # Copyright - 2018 Lakon, lakon.app
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -26,7 +26,13 @@ class UGCGenericViewSet(GenericViewSet):
     lookup_field = 'id62'
 
     def initialize_request(self, request, *args, **kwargs):
-        su = super(UGCGenericViewSet, self).initialize_request(request, *args, **kwargs)
+        su = super(
+            UGCGenericViewSet,
+            self).initialize_request(
+            request,
+            *
+            args,
+            **kwargs)
         self.set_permissions()
         return su
 
@@ -34,7 +40,7 @@ class UGCGenericViewSet(GenericViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        if self.action in ['update', 'delete'] :
+        if self.action in ['update', 'delete']:
             permission_classes = [IsOwnerAuthenticated]
         else:
             permission_classes = [IsAuthenticated]
@@ -43,21 +49,21 @@ class UGCGenericViewSet(GenericViewSet):
 
 
 class UGCViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   UGCGenericViewSet):
+                 mixins.RetrieveModelMixin,
+                 mixins.UpdateModelMixin,
+                 mixins.DestroyModelMixin,
+                 mixins.ListModelMixin,
+                 UGCGenericViewSet):
     pass
 
 
 class RetrieveViewSet(mixins.RetrieveModelMixin,
-                   mixins.ListModelMixin,
-                   UGCGenericViewSet):
+                      mixins.ListModelMixin,
+                      UGCGenericViewSet):
     pass
 
 
 class SingleObjectOwnedViewSet(mixins.RetrieveModelMixin,
-                    mixins.UpdateModelMixin,
-                    UGCGenericViewSet):
+                               mixins.UpdateModelMixin,
+                               UGCGenericViewSet):
     pass

@@ -3,14 +3,14 @@
 # File: views.py
 # Project: django-panel-core
 # File Created: Tuesday, 21st August 2018 11:35:18 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Tuesday, 21st August 2018 11:35:58 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Hand-crafted & Made with Love
 # Copyright - 2018 Ardz Co, https://github.com/ardzix/django-panel-core
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -19,7 +19,7 @@
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.generic import TemplateView 
+from django.views.generic import TemplateView
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect, get_object_or_404
@@ -35,13 +35,13 @@ from panel.structures.authentication.models import EmailVerification
 # Create your views here.
 class LoginView(TemplateView):
     template_name = "login.html"
-    
+
     def get(self, request):
         if request.user.is_authenticated:
             return redirect("authentication:login-success")
 
         return self.render_to_response({
-            "form" : AuthForm()
+            "form": AuthForm()
         })
 
     def post(self, request):
@@ -56,24 +56,27 @@ class LoginView(TemplateView):
                 return redirect("authentication:login-success")
         else:
             print(form.errors)
-            return self.render_to_response({"form":form})
+            return self.render_to_response({"form": form})
+
 
 class LoginSuccessView(TemplateView):
     template_name = "login-success.html"
-    
+
     def get(self, request):
         return self.render_to_response({})
 
+
 class LogoutView(TemplateView):
     template_name = "logout.html"
-    
+
     def get(self, request):
         logout(request)
         return self.render_to_response({})
 
+
 class ChangePasswordView(ProtectedMixin, TemplateView):
     template_name = "change-password.html"
-    
+
     def get(self, request):
         return self.render_to_response({
             "form": ChangePasswordForm(request.user)
@@ -87,11 +90,12 @@ class ChangePasswordView(ProtectedMixin, TemplateView):
             messages.success(request, _('Your password has been changed.'))
             return redirect("authentication:change-password-success")
         else:
-            return self.render_to_response({"form":form})
+            return self.render_to_response({"form": form})
+
 
 class ChangePasswordSuccessView(TemplateView):
     template_name = "change-password-success.html"
-    
+
     def get(self, request):
         return self.render_to_response({})
 
@@ -103,25 +107,28 @@ class ResetPasswordView(TemplateView):
     def get(self, request):
         reset_form = SetPasswordForm()
         return self.render_to_response({
-            'reset_form' : reset_form,
-            'base_url' : settings.BASE_URL,
+            'reset_form': reset_form,
+            'base_url': settings.BASE_URL,
         })
 
     def post(self, request):
         reset_form = SetPasswordForm(request.POST)
         if reset_form.is_valid():
-            messages.success(request, _('Your reset password request has been processed, please check your email'))
+            messages.success(
+                request,
+                _('Your reset password request has been processed, please check your email'))
         else:
             messages.error(request, form.errors)
 
         return self.render_to_response({
-            'reset_form' : reset_form,
-            'base_url' : settings.BASE_URL,
+            'reset_form': reset_form,
+            'base_url': settings.BASE_URL,
         })
+
 
 class EmailVerifyView(TemplateView):
     template_name = "email_verify.html"
-    
+
     def get(self, request):
         code = request.GET.get('c')
         # ev = get_object_or_404(EmailVerification, code=code, is_verified=False)
@@ -142,9 +149,9 @@ class EmailVerifyView(TemplateView):
             else None
 
         return self.render_to_response({
-            'word' : _('Dear %s, your email <%s> has been verified' % (user.full_name, ev.email)),
-            'set_password_form' : set_password_form,
-            'register_form' : register_form,
+            'word': _('Dear %s, your email <%s> has been verified' % (user.full_name, ev.email)),
+            'set_password_form': set_password_form,
+            'register_form': register_form,
         })
 
     def post(self, request):
@@ -175,7 +182,8 @@ class EmailVerifyView(TemplateView):
 
                 try:
                     ev.user.save()
-                    messages.success(request, _('You\'re successfully registered.'))
+                    messages.success(
+                        request, _('You\'re successfully registered.'))
                     return redirect("authentication:login")
                 except IntegrityError as e:
                     messages.error(request, str(e).split(':')[-1])
@@ -183,8 +191,8 @@ class EmailVerifyView(TemplateView):
                 messages.error(request, register_form.errors)
 
         return self.render_to_response({
-            'is_failed_set_password' : True,
-            'is_failed_register' : True,
-            'set_password_form' : set_password_form,
-            'register_form' : register_form,
+            'is_failed_set_password': True,
+            'is_failed_register': True,
+            'set_password_form': set_password_form,
+            'register_form': register_form,
         })

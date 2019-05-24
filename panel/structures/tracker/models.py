@@ -14,7 +14,7 @@ class Tracker(models.Model):
     created_at = models.DateTimeField(db_index=True, auto_now_add=True)
     created_at_timestamp = models.PositiveIntegerField(db_index=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True,
-                                related_name="%(app_label)s_%(class)s_created_by")
+                                   related_name="%(app_label)s_%(class)s_created_by")
     modified_at = models.DateTimeField(auto_now=True)
     point = geo.PointField(null=True,)
     useragent = models.TextField(blank=True, null=True)
@@ -30,12 +30,13 @@ class Tracker(models.Model):
     def save(self, *args, **kwargs):
         self.created_at = timezone.now()
         self.created_at_timestamp = to_timestamp(self.created_at)
-        return super(Tracker,self).save(*args, **kwargs)
+        return super(Tracker, self).save(*args, **kwargs)
 
     def set_lat_lng(self, field_name, value):
         point = None
 
-        if hasattr(self, field_name) and "longitude" in value and "latitude" in value:
+        if hasattr(
+                self, field_name) and "longitude" in value and "latitude" in value:
             point = Point(value["longitude"], value["latitude"])
             setattr(self, field_name, point)
         return point
@@ -56,16 +57,16 @@ def create_tracker(request, trigger_action, is_get_or_create=False):
     tracker = None
     if is_get_or_create:
         tracker = Tracker.objects.filter(
-                                created_by=user, 
-                                trigger_action=trigger_action,
-                                useragent=useragent)
+            created_by=user,
+            trigger_action=trigger_action,
+            useragent=useragent)
         if not tracker.exists():
             tracker = Tracker()
         else:
             tracker = tracker.last()
     else:
         tracker = Tracker()
-    
+
     tracker.created_by = user
     tracker.ip = ip_address
     tracker.useragent = useragent

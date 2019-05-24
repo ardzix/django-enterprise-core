@@ -18,55 +18,66 @@ from panel.libs.base62 import base62_encode
 
 User = settings.AUTH_USER_MODEL
 
+
 class _BaseAbstract(models.Model):
-    site = models.ForeignKey(Site, related_name="%(app_label)s_%(class)s_site", 
-                                blank=True, null=True, on_delete=models.CASCADE,)
+    site = models.ForeignKey(Site, related_name="%(app_label)s_%(class)s_site",
+                             blank=True, null=True, on_delete=models.CASCADE,)
     nonce = models.CharField(max_length=128, blank=True, null=True)
-    id62 = models.CharField(max_length=100, db_index=True, blank=True, null=True)
-    
+    id62 = models.CharField(
+        max_length=100,
+        db_index=True,
+        blank=True,
+        null=True)
+
     created_at = models.DateTimeField(db_index=True)
     created_at_timestamp = models.PositiveIntegerField(db_index=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, 
-                                related_name="%(app_label)s_%(class)s_created_by")
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE,
+                                   related_name="%(app_label)s_%(class)s_created_by")
 
     owned_at = models.DateTimeField(db_index=True)
     owned_at_timestamp = models.PositiveIntegerField(db_index=True)
     owned_by = models.ForeignKey(User, on_delete=models.CASCADE,
-                                related_name="%(app_label)s_%(class)s_owner")
+                                 related_name="%(app_label)s_%(class)s_owner")
 
     updated_at = models.DateTimeField(db_index=True, blank=True, null=True)
-    updated_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
+    updated_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
     updated_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
-                                related_name="%(app_label)s_%(class)s_updated_by")
-    
+                                   related_name="%(app_label)s_%(class)s_updated_by")
+
     published_at = models.DateTimeField(blank=True, null=True)
-    published_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
+    published_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
     published_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
-                                related_name="%(app_label)s_%(class)s_published_by")
-    
+                                     related_name="%(app_label)s_%(class)s_published_by")
+
     unpublished_at = models.DateTimeField(blank=True, null=True)
-    unpublished_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
+    unpublished_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
     unpublished_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
-                                related_name="%(app_label)s_%(class)s_unpublished_by")
-    
+                                       related_name="%(app_label)s_%(class)s_unpublished_by")
+
     approved_at = models.DateTimeField(blank=True, null=True)
-    approved_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
+    approved_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
     approved_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
-                                related_name="%(app_label)s_%(class)s_approved_by")
+                                    related_name="%(app_label)s_%(class)s_approved_by")
 
     unapproved_at = models.DateTimeField(blank=True, null=True)
-    unapproved_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
+    unapproved_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
     unapproved_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
-                                related_name="%(app_label)s_%(class)s_unapproved_by")
+                                      related_name="%(app_label)s_%(class)s_unapproved_by")
 
     deleted_at = models.DateTimeField(blank=True, null=True)
-    deleted_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    deleted_by = models.ForeignKey(User, db_index=True, blank=True, 
-                                null=True, on_delete=models.CASCADE,
-                                related_name="%(app_label)s_%(class)s_deleted_by")
-    
-    objects = GeoManager() 
-    
+    deleted_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
+    deleted_by = models.ForeignKey(User, db_index=True, blank=True,
+                                   null=True, on_delete=models.CASCADE,
+                                   related_name="%(app_label)s_%(class)s_deleted_by")
+
+    objects = GeoManager()
+
     def save(self, *args, **kwargs):
         now = timezone.now()
 
@@ -82,7 +93,7 @@ class _BaseAbstract(models.Model):
             self.site = Site.objects.get_current()
             self.created_at = now
             self.created_at_timestamp = to_timestamp(self.created_at)
-            if self.created_by: 
+            if self.created_by:
                 self.owned_by = self.created_by
                 self.owned_at = self.created_at
                 self.owned_at_timestamp = self.created_at_timestamp
@@ -97,9 +108,9 @@ class _BaseAbstract(models.Model):
         # generate id62
         if self.id and not self.id62:
             self.id62 = base62_encode(self.id)
-            kwargs['force_insert'] =  False
+            kwargs['force_insert'] = False
             instance = super(_BaseAbstract, self).save(*args, **kwargs)
-        
+
         return instance
 
     def approve(self, user=None, *args, **kwargs):
@@ -156,7 +167,7 @@ class _BaseAbstract(models.Model):
 
             # save it
             return super(_BaseAbstract, self).save(*args, **kwargs)
-    
+
     def delete(self, user=None, *args, **kwargs):
         if user:
             # mark when the record deleted
@@ -192,7 +203,7 @@ class _BaseAbstract(models.Model):
         if kwargs.get("mention"):
             log.mentions.add(kwargs.get("mention"))
         log.save()
-        
+
         return log
 
     # Getter
@@ -257,25 +268,27 @@ class _BaseAbstract(models.Model):
     def get_status(self):
         if not self.approved_by and self.unapproved_by:
             approve_message = "REJECTED"
-        elif self.approved_by and not self.unapproved_by :
+        elif self.approved_by and not self.unapproved_by:
             approve_message = "APPROVED"
         else:
             approve_message = "waiting to be approved"
-            
+
         if not self.published_by and self.unpublished_by:
             publish_message = "UNPUBLISHED"
-        elif self.published_by and not self.unpublished_by :
+        elif self.published_by and not self.unpublished_by:
             publish_message = "PUBLISHED"
         else:
             publish_message = "waiting to be published"
-        
-        return "Approval status: (%s), Publish status: (%s)" % (approve_message, publish_message)
+
+        return "Approval status: (%s), Publish status: (%s)" % (
+            approve_message, publish_message)
 
     # Setter
     def set_lat_lng(self, field_name, value):
         point = None
 
-        if hasattr(self, field_name) and value and "longitude" in value and "latitude" in value:
+        if hasattr(
+                self, field_name) and value and "longitude" in value and "latitude" in value:
             point = Point(value["longitude"], value["latitude"])
             setattr(self, field_name, point)
 
@@ -286,7 +299,8 @@ class _BaseAbstract(models.Model):
         return list(
             set(
                 chain.from_iterable(
-                    (field.name, field.attname) if hasattr(field, 'attname') else (field.name,)
+                    (field.name, field.attname) if hasattr(
+                        field, 'attname') else (field.name,)
                     for field in self._meta.get_fields()
                     # For complete backwards compatibility, you may want to exclude
                     # GenericForeignKey from the results.
@@ -298,16 +312,18 @@ class _BaseAbstract(models.Model):
     class Meta:
         abstract = True
 
+
 class BaseModelGeneric(_BaseAbstract):
     created_by = models.ForeignKey(User, db_index=True, on_delete=models.CASCADE,
-                                related_name="%(app_label)s_%(class)s_created_by")
+                                   related_name="%(app_label)s_%(class)s_created_by")
 
     class Meta:
         abstract = True
 
+
 class BaseModelUnique(_BaseAbstract):
     created_by = models.OneToOneField(User, db_index=True, on_delete=models.CASCADE,
-                                related_name="%(app_label)s_%(class)s_created_by")
+                                      related_name="%(app_label)s_%(class)s_created_by")
 
     class Meta:
         abstract = True

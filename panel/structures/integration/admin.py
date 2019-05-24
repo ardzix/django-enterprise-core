@@ -3,6 +3,7 @@ from .models import ResizeImageTemp
 
 
 class ResizeAdmin(admin.ModelAdmin):
-	model = ResizeImageTemp
+    model = ResizeImageTemp
+
 
 admin.site.register(ResizeImageTemp, ResizeAdmin)

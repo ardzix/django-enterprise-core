@@ -5,8 +5,6 @@ from django.db import models
 from ...common.models import BaseModelGeneric
 
 
-
-
 class ResizeImageTemp(BaseModelGeneric):
     image = models.URLField(max_length=300)
     is_done = models.BooleanField(default=False)
@@ -19,5 +17,3 @@ class ResizeImageTemp(BaseModelGeneric):
     class Meta:
         verbose_name = "Resize Image Temp"
         verbose_name_plural = "Resize Image Temps"
-
-

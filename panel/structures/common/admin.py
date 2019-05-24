@@ -5,8 +5,10 @@ from django.contrib import admin
 from .models import Log, APILog, File
 # Register your models here.
 
+
 class LogAdmin(admin.ModelAdmin):
     pass
+
 
 class APILogAdmin(admin.ModelAdmin):
     pass
@@ -14,7 +16,6 @@ class APILogAdmin(admin.ModelAdmin):
 
 class FileAdmin(admin.ModelAdmin):
     pass
-
 
 
 admin.site.register(Log, LogAdmin)

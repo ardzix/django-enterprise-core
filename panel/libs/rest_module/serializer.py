@@ -3,14 +3,14 @@
 # File: serializer.py
 # Project: core.lakon.app
 # File Created: Friday, 14th September 2018 6:13:56 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Friday, 14th September 2018 6:14:13 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Hand-crafted & Made with Love
 # Copyright - 2018 Lakon, lakon.app
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -62,7 +62,7 @@ class CommonSerializer(object):
                 'latitude': point.y,
                 'longitude': point.x
             }
-        except:
+        except BaseException:
             pass
 
         return result
@@ -71,7 +71,7 @@ class CommonSerializer(object):
 class LakonModelSerializer(ModelSerializer):
     def create(self, validated_data):
         if 'nonce' not in validated_data:
-            raise ValidationError({'detail':'Please provide nonce'})
+            raise ValidationError({'detail': 'Please provide nonce'})
 
         nonce = validated_data['nonce']
         model = self.Meta.model
@@ -80,20 +80,21 @@ class LakonModelSerializer(ModelSerializer):
         validated_data['created_by'] = self.context.get('request').user
 
         if no.is_exist():
-            return super(LakonModelSerializer, self).update(no.get_instance(), validated_data)
+            return super(LakonModelSerializer, self).update(
+                no.get_instance(), validated_data)
         else:
             return super(LakonModelSerializer, self).create(validated_data)
 
     def update(self, instance, validated_data):
         if 'nonce' not in validated_data:
-            raise ValidationError({'detail':'Please provide nonce'})
+            raise ValidationError({'detail': 'Please provide nonce'})
 
         nonce = validated_data['nonce']
         model = self.Meta.model
         no = NonceObject(model=model, nonce=nonce)
 
         if not no.get_instance() == self.instance:
-            raise ValidationError({'detail':'Nonce is not matched'})
-            
-        return super(LakonModelSerializer, self).update(self.instance, validated_data)
+            raise ValidationError({'detail': 'Nonce is not matched'})
 
+        return super(LakonModelSerializer, self).update(
+            self.instance, validated_data)

@@ -3,14 +3,14 @@
 # File: pay_constants.py
 # Project: core.wecare.id
 # File Created: Wednesday, 5th December 2018 12:07:34 am
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Wednesday, 5th December 2018 12:07:34 am
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Handcrafted and Made with Love
 # Copyright - 2018 Wecare.Id, wecare.id
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -20,13 +20,13 @@
 from decimal import Decimal
 
 AVAILABLE_PAYMENT_TYPE = [
-    "wallet", 
-    "credit-card", 
-    "debit-card", 
+    "wallet",
+    "credit-card",
+    "debit-card",
     "credit-card-direct"
 ]
 
-# fees 
+# fees
 YUNA_SHARE = Decimal(0.1)
 FASPAY_CREDIT_CARD_FEES = Decimal(0.0285)
 
@@ -50,7 +50,7 @@ QUANTITY_UNIT = (
     (1, 'Pieces'),
     (2, 'Roll'),
 )
-STORE_TYPE_CHOICES = ( 
+STORE_TYPE_CHOICES = (
     (1, 'Virtual'),
     (2, 'Physical'),
 )
@@ -70,23 +70,25 @@ CLEARENCE_STATUSES = (
 PREORDER_STATUSES = (
     ("requested", "Requested"),
     ("order-ready", "Order Ready"),
-    ("not-available", "Product Not Available"), 
+    ("not-available", "Product Not Available"),
 )
 TRANSACTION_STATE_CHOICES = (
-    ('transaction-start', 'Start Transaction'), ## ORDER BEGIN
+    ('transaction-start', 'Start Transaction'),  # ORDER BEGIN
     ('payment-waiting', 'Waiting for Payment'),
     ('payment-paid', 'Paid by Buyer'),
     ('payment-expired', 'Payment Expired'),
-    ('ordered-pre', 'Pre Ordered'), ## BUYER PRE ORDER
-    ('order-on-process', 'Order On Process'), ## BUYER ORDER ON PROCESS
-    ('ready-to-pickup', 'Ready to Pick Up'), 
+    ('ordered-pre', 'Pre Ordered'),  # BUYER PRE ORDER
+    ('order-on-process', 'Order On Process'),  # BUYER ORDER ON PROCESS
+    ('ready-to-pickup', 'Ready to Pick Up'),
     ('picked-up', 'Picked Up'),
-    ('on-delivery', 'On Delivery'), ## SELLER ON DELIVERY : COD OR SHIPPING
-    ('received', 'Received'), ## SELLER ON DELIVERY : COD OR SHIPPING
-    ('transaction-end', 'End Transaction'), ## ORDER DONE. PRODUCT ALREADY RECEIVED BY BUYER
-    ('order-cancelled', 'Cancel Order'), ## PURGE / CANCEL EVERYTHING; NOT YET USED
-    ('not-available', 'Order Not Available'), ## ITEM OR ORDER NOT AVAILABLE
-    ('not-received', 'Not Received'), ## BUYER NOT RECEIVED
+    ('on-delivery', 'On Delivery'),  # SELLER ON DELIVERY : COD OR SHIPPING
+    ('received', 'Received'),  # SELLER ON DELIVERY : COD OR SHIPPING
+    # ORDER DONE. PRODUCT ALREADY RECEIVED BY BUYER
+    ('transaction-end', 'End Transaction'),
+    # PURGE / CANCEL EVERYTHING; NOT YET USED
+    ('order-cancelled', 'Cancel Order'),
+    ('not-available', 'Order Not Available'),  # ITEM OR ORDER NOT AVAILABLE
+    ('not-received', 'Not Received'),  # BUYER NOT RECEIVED
 )
 PAYMENT_TYPE_CHOICES = (
     ('order', 'Order'),

@@ -3,21 +3,21 @@
 # File: raw.py
 # Project: <<projectname>>
 # File Created: Wednesday, 20th February 2019 3:07:06 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         http://ardz.xyz>
-# 
+#
 # Last Modified: Wednesday, 20th February 2019 3:07:07 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Crafted by Pro
 # Copyright - <<year>> Ardz & Co, -
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '''
 
 
-from django.views.generic import TemplateView 
+from django.views.generic import TemplateView
 
 from datatable import Datatable
 
@@ -28,13 +28,13 @@ from ....structures.tracker.models import Tracker
 class RawView(ProtectedMixin, TemplateView):
     template_name = "log/raw.html"
     model_class = Tracker
-    
+
     def get(self, request):
-        if request.GET.get('draw', None) != None:
+        if request.GET.get('draw', None) is not None:
             return self.datatable(request)
 
         return self.render_to_response({
-            'title' : "Tracker Panel - %s" % self.model_class.__name__,
+            'title': "Tracker Panel - %s" % self.model_class.__name__,
         })
 
     def datatable(self, request):

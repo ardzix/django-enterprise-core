@@ -7,6 +7,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from django.contrib.auth.forms import UsernameField, ReadOnlyPasswordHashField
 from .models import User
 
+
 class CustomUserCreationForm(forms.ModelForm):
     """
     A form that creates a user, with no privileges, from the given username and
@@ -36,7 +37,8 @@ class CustomUserCreationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self._meta.model.USERNAME_FIELD in self.fields:
-            self.fields[self._meta.model.USERNAME_FIELD].widget.attrs.update({'autofocus': True})
+            self.fields[self._meta.model.USERNAME_FIELD].widget.attrs.update({
+                                                                             'autofocus': True})
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -89,7 +91,8 @@ class CustomUserChangeForm(forms.ModelForm):
             password.help_text = password.help_text.format('../password/')
         user_permissions = self.fields.get('user_permissions')
         if user_permissions:
-            user_permissions.queryset = user_permissions.queryset.select_related('content_type')
+            user_permissions.queryset = user_permissions.queryset.select_related(
+                'content_type')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.

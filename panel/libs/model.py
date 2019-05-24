@@ -3,14 +3,14 @@
 # File: model.py
 # Project: django-panel-core
 # File Created: Tuesday, 21st August 2018 4:43:40 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Tuesday, 21st August 2018 4:43:41 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Hand-crafted & Made with Love
 # Copyright - 2018 Ardz Co, https://github.com/ardzix/django-panel-core
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -32,41 +32,92 @@ from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
+
 class _BaseAbstract(models.Model):
-    site = models.ForeignKey(Site, related_name="%(app_label)s_%(class)s_site", blank=True, null=True, on_delete="cascade")
+    site = models.ForeignKey(
+        Site,
+        related_name="%(app_label)s_%(class)s_site",
+        blank=True,
+        null=True,
+        on_delete="cascade")
     nonce = models.CharField(max_length=128, blank=True, null=True)
-    id62 = models.CharField(max_length=100, db_index=True, blank=True, null=True)
-    
+    id62 = models.CharField(
+        max_length=100,
+        db_index=True,
+        blank=True,
+        null=True)
+
     created_at = models.DateTimeField(db_index=True)
     created_at_timestamp = models.PositiveIntegerField(db_index=True)
-    created_by = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_created_by", on_delete="cascade")
+    created_by = models.ForeignKey(
+        User,
+        related_name="%(app_label)s_%(class)s_created_by",
+        on_delete="cascade")
 
     updated_at = models.DateTimeField(db_index=True, blank=True, null=True)
-    updated_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    updated_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_updated_by", on_delete="cascade")
-    
+    updated_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
+    updated_by = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        related_name="%(app_label)s_%(class)s_updated_by",
+        on_delete="cascade")
+
     published_at = models.DateTimeField(blank=True, null=True)
-    published_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    published_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_published_by", on_delete="cascade")
-    
+    published_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
+    published_by = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        related_name="%(app_label)s_%(class)s_published_by",
+        on_delete="cascade")
+
     unpublished_at = models.DateTimeField(blank=True, null=True)
-    unpublished_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    unpublished_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_unpublished_by", on_delete="cascade")
-    
+    unpublished_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
+    unpublished_by = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        related_name="%(app_label)s_%(class)s_unpublished_by",
+        on_delete="cascade")
+
     approved_at = models.DateTimeField(blank=True, null=True)
-    approved_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    approved_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_approved_by", on_delete="cascade")
+    approved_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
+    approved_by = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        related_name="%(app_label)s_%(class)s_approved_by",
+        on_delete="cascade")
 
     unapproved_at = models.DateTimeField(blank=True, null=True)
-    unapproved_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    unapproved_by = models.ForeignKey(User, blank=True, null=True, related_name="%(app_label)s_%(class)s_unapproved_by", on_delete="cascade")
+    unapproved_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
+    unapproved_by = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        related_name="%(app_label)s_%(class)s_unapproved_by",
+        on_delete="cascade")
 
     deleted_at = models.DateTimeField(blank=True, null=True)
-    deleted_at_timestamp = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    deleted_by = models.ForeignKey(User, db_index=True, blank=True, null=True, related_name="%(app_label)s_%(class)s_deleted_by", on_delete="cascade")
-    
-    objects = GeoManager() # http://stackoverflow.com/questions/7880691/using-geodjango-model-as-an-abstract-class
-    
+    deleted_at_timestamp = models.PositiveIntegerField(
+        db_index=True, blank=True, null=True)
+    deleted_by = models.ForeignKey(
+        User,
+        db_index=True,
+        blank=True,
+        null=True,
+        related_name="%(app_label)s_%(class)s_deleted_by",
+        on_delete="cascade")
+
+    # http://stackoverflow.com/questions/7880691/using-geodjango-model-as-an-abstract-class
+    objects = GeoManager()
+
     def is_owner(self, user):
         return self.created_by.pk == user.pk
 
@@ -97,7 +148,7 @@ class _BaseAbstract(models.Model):
         if self.id and not self.id62:
             self.id62 = base62_encode(self.id)
             instance = super(_BaseAbstract, self).save(*args, **kwargs)
-        
+
         return instance
 
     def approve(self, user=None, *args, **kwargs):
@@ -151,7 +202,7 @@ class _BaseAbstract(models.Model):
 
             # save it
             return super(_BaseAbstract, self).save(*args, **kwargs)
-    
+
     def delete(self, user=None, *args, **kwargs):
         if user:
             # mark when the record deleted
@@ -186,7 +237,7 @@ class _BaseAbstract(models.Model):
         if kwargs.get("mention"):
             log.mentions.add(kwargs.get("mention"))
         log.save()
-        
+
         return log
 
     # Getter
@@ -245,25 +296,27 @@ class _BaseAbstract(models.Model):
     def get_status(self):
         if not self.approved_by and self.unapproved_by:
             approve_message = "REJECTED"
-        elif self.approved_by and not self.unapproved_by :
+        elif self.approved_by and not self.unapproved_by:
             approve_message = "APPROVED"
         else:
             approve_message = "waiting to be approved"
-            
+
         if not self.published_by and self.unpublished_by:
             publish_message = "UNPUBLISHED"
-        elif self.published_by and not self.unpublished_by :
+        elif self.published_by and not self.unpublished_by:
             publish_message = "PUBLISHED"
         else:
             publish_message = "waiting to be published"
-        
-        return "Approval status: (%s), Publish status: (%s)" % (approve_message, publish_message)
+
+        return "Approval status: (%s), Publish status: (%s)" % (
+            approve_message, publish_message)
 
     # Setter
     def set_lat_lng(self, field_name, value):
         point = None
 
-        if hasattr(self, field_name) and "longitude" in value and "latitude" in value:
+        if hasattr(
+                self, field_name) and "longitude" in value and "latitude" in value:
             point = Point(value["longitude"], value["latitude"])
             setattr(self, field_name, point)
 
@@ -274,7 +327,8 @@ class _BaseAbstract(models.Model):
         return list(
             set(
                 chain.from_iterable(
-                    (field.name, field.attname) if hasattr(field, 'attname') else (field.name,)
+                    (field.name, field.attname) if hasattr(
+                        field, 'attname') else (field.name,)
                     for field in self._meta.get_fields()
                     # For complete backwards compatibility, you may want to exclude
                     # GenericForeignKey from the results.
@@ -286,17 +340,28 @@ class _BaseAbstract(models.Model):
     class Meta:
         abstract = True
 
+
 class BaseModelGeneric(_BaseAbstract):
-    created_by = models.ForeignKey(User, db_index=True, related_name="%(app_label)s_%(class)s_created_by", on_delete="cascade")
+    created_by = models.ForeignKey(
+        User,
+        db_index=True,
+        related_name="%(app_label)s_%(class)s_created_by",
+        on_delete="cascade")
 
     class Meta:
         abstract = True
+
 
 class BaseModelUnique(_BaseAbstract):
-    created_by = models.OneToOneField(User, db_index=True, related_name="%(app_label)s_%(class)s_created_by", on_delete="cascade")
+    created_by = models.OneToOneField(
+        User,
+        db_index=True,
+        related_name="%(app_label)s_%(class)s_created_by",
+        on_delete="cascade")
 
     class Meta:
         abstract = True
+
 
 class NonceObject(object):
     MODEL = None

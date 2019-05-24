@@ -3,14 +3,14 @@
 # File: tracker.py
 # Project: <<projectname>>
 # File Created: Tuesday, 19th February 2019 3:00:02 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         http://ardz.xyz>
-# 
+#
 # Last Modified: Tuesday, 19th February 2019 3:00:02 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Crafted by Pro
 # Copyright - <<year>> Ardz & Co, -
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -19,6 +19,7 @@
 
 from django.conf import settings
 from panel.libs.ip_address import get_client_ip
+
 
 class TrackerMixin(object):
     def dispatch(self, request, *args, **kwargs):
@@ -46,7 +47,7 @@ class TrackerMixin(object):
         tracker.trigger_action = request.method
         tracker.tracking_id = tracking_id
         tracker.visited_page = "%s%s" % (
-            request.META['HTTP_HOST'], 
+            request.META['HTTP_HOST'],
             request.get_full_path()
         )
         tracker.save()

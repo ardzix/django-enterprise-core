@@ -3,14 +3,14 @@
 # File: rackspace_cloud_files.py
 # Project: panel.ayopeduli.id
 # File Created: Wednesday, 31st October 2018 11:12:48 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Wednesday, 31st October 2018 11:12:49 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Peduli sesama, sejahtera bersama
 # Copyright - 2018 Ayopeduli.Id, ayopeduli.id
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -67,41 +67,50 @@ obj
 'base_path', 'bytes', 'clear', 'container', 'content_disposition', 'content_encoding', 'content_length', 'content_type', 'convert_ids', 'copy_from', 'create', 'create_by_id', 'data', 'delete', 'delete_after', 'delete_at', 'delete_by_id', 'delete_metadata', 'etag', 'existing', 'expires_at', 'find', 'from_id', 'from_name', 'get', 'get_by_id', 'get_data_by_id', 'get_headers', 'get_id', 'get_resource_name', 'hash', 'head', 'head_by_id', 'head_data_by_id', 'id', 'id_attribute', 'if_match', 'if_modified_since', 'if_none_match', 'if_unmodified_since', 'is_content_type_detected', 'is_dirty', 'is_newest', 'is_static_large_object', 'items', 'iteritems', 'iterkeys', 'itervalues', 'keys', 'last_modified_at', 'list', 'location', 'metadata', 'multipart_manifest', 'name', 'name_attribute', 'new', 'object_manifest', 'patch_update', 'pop', 'popitem', 'range', 'resource_key', 'resource_name', 'resources_key', 'service', 'set_headers', 'set_metadata', 'setdefault', 'signature', 'timestamp', 'to_dict', 'transfer_encoding', 'update', 'update_attrs', 'update_by_id', 'values']
 """
 conn = connection.Connection(
-    username = settings.RACKSPACE_CLOUD_FILES["username"],
-    api_key = settings.RACKSPACE_CLOUD_FILES["key"],
-    region = settings.RACKSPACE_CLOUD_FILES["region"]
+    username=settings.RACKSPACE_CLOUD_FILES["username"],
+    api_key=settings.RACKSPACE_CLOUD_FILES["key"],
+    region=settings.RACKSPACE_CLOUD_FILES["region"]
 )
+
 
 @deconstructible
 class RackspaceStorage(FileSystemStorage):
     def __init__(self, *args, **kwargs):
         if not settings.USE_RACKSPACE:
             return None
-            
-        default_container = kwargs.get("container", settings.RACKSPACE_CLOUD_FILES["default_container"])
+
+        default_container = kwargs.get(
+            "container", settings.RACKSPACE_CLOUD_FILES["default_container"])
         self.purpose = kwargs.pop("purpose")
-        self.container = conn.object_store.get_container_metadata(default_container)
+        self.container = conn.object_store.get_container_metadata(
+            default_container)
         super(RackspaceStorage, self).__init__(*args, **kwargs)
 
     def _open(self, name, mode='rb'):
         # This must return a File object
-        return ContentFile(conn.object_store.get_object(name, container = self.container))
+        return ContentFile(conn.object_store.get_object(
+            name, container=self.container))
 
     def _save(self, name, content, encode_name=True):
-        # Should return the actual name of name of the file saved (usually the name passed in, but if the storage needs to change the file name return the new name instead).
+        # Should return the actual name of name of the file saved (usually the
+        # name passed in, but if the storage needs to change the file name
+        # return the new name instead).
         if encode_name:
             name = self.get_valid_name(name)
 
         uploaded = conn.object_store.upload_object(
-            container = self.container,
-            name = name,
-            data = content
+            container=self.container,
+            name=name,
+            data=content
         )
 
         # resize here, send to celery
         if self.purpose and hasattr(uploaded, "name"):
             from panel.structures.integration.models import ResizeImageTemp
-            rit = ResizeImageTemp(image=self.url(uploaded.name), purpose=self.purpose)
+            rit = ResizeImageTemp(
+                image=self.url(
+                    uploaded.name),
+                purpose=self.purpose)
             rit.created_by = User.objects.first()
             rit.save()
 
@@ -134,8 +143,8 @@ class RackspaceStorage(FileSystemStorage):
         # delete object
         conn.object_store.delete_object(
             name,
-            ignore_missing = settings.DEBUG,
-            container = self.container
+            ignore_missing=settings.DEBUG,
+            container=self.container
         )
 
     def exists(self, name):
@@ -143,8 +152,9 @@ class RackspaceStorage(FileSystemStorage):
 
     def size(self, name):
         try:
-            obj = conn.object_store.get_object_metadata(name, container = self.container)
-        except:
+            obj = conn.object_store.get_object_metadata(
+                name, container=self.container)
+        except BaseException:
             return 0
         return obj.content_length
 

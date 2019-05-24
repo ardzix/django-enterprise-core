@@ -3,14 +3,14 @@
 # File: nonce.py
 # Project: core.lakon.app
 # File Created: Friday, 14th September 2018 6:22:02 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Friday, 14th September 2018 6:22:02 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Hand-crafted & Made with Love
 # Copyright - 2018 Lakon, lakon.app
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++

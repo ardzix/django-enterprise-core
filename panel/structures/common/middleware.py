@@ -1,10 +1,12 @@
 from core.structures.common.views import apilogger
 
+
 class APILogMiddleware(object):
     """
     Middleware for Log API every call
-    will be add in settings.py MIDDLEWARE   
+    will be add in settings.py MIDDLEWARE
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
         # One-time configuration and initialization.
@@ -15,8 +17,8 @@ class APILogMiddleware(object):
 
         response = self.get_response(request)
 
-        if (request.META.get("HTTP_HOST") == 'api.helloyuna.io' or 
-            request.META.get("HTTP_HOST") == '45.118.134.111:10001'):
+        if (request.META.get("HTTP_HOST") == 'api.helloyuna.io' or
+                request.META.get("HTTP_HOST") == '45.118.134.111:10001'):
 
             api_meta = {"user": None if request.user.is_anonymous else request.user,
                         "app_id": request.META.get('HTTP_X_YUNA_APP_ID'),
@@ -35,8 +37,9 @@ class APILogMiddleware(object):
 class PAYLogMiddleware(object):
     """
     Middleware for Log API every call
-    will be add in settings.py MIDDLEWARE   
+    will be add in settings.py MIDDLEWARE
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
         # One-time configuration and initialization.
@@ -47,8 +50,8 @@ class PAYLogMiddleware(object):
 
         response = self.get_response(request)
 
-        if (request.META.get("HTTP_HOST") == 'pay.helloyuna.io' or 
-            request.META.get("HTTP_HOST") == '45.118.134.111:8401'):
+        if (request.META.get("HTTP_HOST") == 'pay.helloyuna.io' or
+                request.META.get("HTTP_HOST") == '45.118.134.111:8401'):
 
             api_meta = {"user": None if request.user.is_anonymous else request.user,
                         "app_id": request.META.get('HTTP_X_YUNA_APP_ID'),

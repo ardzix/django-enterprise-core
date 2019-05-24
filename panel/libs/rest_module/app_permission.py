@@ -9,6 +9,7 @@ class AllowApps(permissions.BasePermission):
     """
     Allow Accessing API if there is ID and Secret in Header
     """
+
     def has_permission(self, request, view):
         application = devicetype = None
 
@@ -21,13 +22,14 @@ class AllowApps(permissions.BasePermission):
 
         if device_type:
             try:
-                devicetype = DeviceType.objects.get(short_name=device_type.lower())
+                devicetype = DeviceType.objects.get(
+                    short_name=device_type.lower())
             except DeviceType.DoesNotExist:
                 return False
 
         try:
             application = Application.objects.get(app_id=app_id, secret=secret,
-                                                  is_active = True, device_type=devicetype)
+                                                  is_active=True, device_type=devicetype)
         except Application.DoesNotExist:
             return False
         else:

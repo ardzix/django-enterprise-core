@@ -3,14 +3,14 @@
 # File: brand.py
 # Project: django-panel-core
 # File Created: Tuesday, 21st August 2018 11:51:25 pm
-# 
+#
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-# 
+#
 # Last Modified: Friday, 26th October 2018 3:45:31 pm
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-# 
+#
 # Hand-crafted & Made with Love
 # Copyright - 2018 Ardz Co, https://github.com/ardzix/django-panel-core
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -43,15 +43,15 @@ class BrandManager(object):
         self.change_instance()
 
     def set_by_owner(self, owner):
-        self.brands = self.brand_objects().filter(owned_by = owner).all()
+        self.brands = self.brand_objects().filter(owned_by=owner).all()
         self.change_instance()
 
     def set_by_executive(self, executive):
-        self.brands = self.brand_objects().filter(executive = executive).all()
+        self.brands = self.brand_objects().filter(executive=executive).all()
         self.change_instance()
 
     def set_by_staff(self, staff):
-        self.brands = self.brand_objects().filter(staffs = staff).all()
+        self.brands = self.brand_objects().filter(staffs=staff).all()
         self.change_instance()
 
     def set_by_user(self, user):
