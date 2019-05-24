@@ -21,7 +21,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import JSONField
 from panel.libs.payment.midtrans import PAYMENT_STATUSES, PAYMENT_TYPE_CHOICES
-from core.structures.common.models import BaseModelGeneric
+from panel.structures.common.models import BaseModelGeneric
 
 
 class Midtrans(BaseModelGeneric):
@@ -43,4 +43,4 @@ class Midtrans(BaseModelGeneric):
 
     class Meta:
         verbose_name = _("Midtrans")
-        verbose_name_plural = _("Midtrans")
+        verbose_name_plural = _("Midtranses")
