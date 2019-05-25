@@ -148,6 +148,11 @@ class TopUp(BaseModelGeneric):
         self.status = 'approve'
         self.save(*args, **kwargs)
 
+    def deny(self, *args, **kwargs):
+        self.status = 'deny'
+        self.save(*args, **kwargs)
+
+
     class Meta:
         verbose_name = _("Top Up")
         verbose_name_plural = _("Top Up")
