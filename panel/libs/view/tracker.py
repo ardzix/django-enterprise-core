@@ -34,7 +34,7 @@ class TrackerMixin(object):
             tracking_id = request.GET.get('t_id')
 
         referer = request.META.get('HTTP_REFERER')
-        useragent = request.META['HTTP_USER_AGENT']
+        useragent = request.META.get('HTTP_USER_AGENT')
         ip_address = get_client_ip(request)
 
         Tracker = self.get_model()
