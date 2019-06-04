@@ -36,20 +36,21 @@ class TrackerMixin(object):
         referer = request.META.get('HTTP_REFERER')
         useragent = request.META.get('HTTP_USER_AGENT')
         ip_address = get_client_ip(request)
+        visited_page = "%s%s" % (
+            request.META['HTTP_HOST'],
+            request.get_full_path()
+        )
 
         Tracker = self.get_model()
         tracker = Tracker()
 
         tracker.created_by = user
         tracker.ip = ip_address
-        tracker.useragent = useragent
+        tracker.useragent = useragent[0:128] if useragent else None
         tracker.referer = referer[0:128] if referer else None
         tracker.trigger_action = request.method
         tracker.tracking_id = tracking_id
-        tracker.visited_page = "%s%s" % (
-            request.META['HTTP_HOST'],
-            request.get_full_path()
-        )
+        tracker.visited_page = visited_page.split('?')[0]
         tracker.save()
 
         request.fb_app_id = getattr(settings, 'SOCIAL_AUTH_FACEBOOK_KEY')
