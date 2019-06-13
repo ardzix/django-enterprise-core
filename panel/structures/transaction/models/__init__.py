@@ -160,8 +160,9 @@ class TopUp(BaseModelGeneric):
 
 # Bank
 class Bank(BaseModelGeneric):
-    display_name = models.CharField(max_length=100, blank=True, null=True)
-    short_name = models.SlugField(max_length=100, blank=True, null=True)
+    display_name = models.CharField(max_length=100)
+    short_name = models.SlugField(max_length=100)
+    code = models.SlugField(max_length=100)
 
     def __str__(self):
         return self.display_name
