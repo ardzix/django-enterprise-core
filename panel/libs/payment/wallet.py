@@ -90,7 +90,6 @@ def deduct_wallet(user, amount, obj=None, description="Deduction"):
     if obj:
         wallet.content_type = obj.get_content_type()
         wallet.object_id = obj.id
-        wallet.description = obj.__str__()
     wallet.save()
     print("Deduction success (%s)" % amount)
     print(wallet)
