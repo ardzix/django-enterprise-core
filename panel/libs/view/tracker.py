@@ -37,7 +37,7 @@ class TrackerMixin(object):
         useragent = request.META.get('HTTP_USER_AGENT')
         ip_address = get_client_ip(request)
         visited_page = "%s%s" % (
-            request.META['HTTP_HOST'],
+            request.META.get('HTTP_HOST'),
             request.get_full_path()
         )
 
