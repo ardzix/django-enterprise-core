@@ -21,6 +21,7 @@ from django.views.generic import TemplateView
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.models import Group
+from django.utils.translation import gettext_lazy as _
 from panel.libs.view import ProtectedMixin
 from datatable import Datatable
 from ..forms import GroupForm
