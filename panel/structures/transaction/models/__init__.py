@@ -152,6 +152,9 @@ class TopUp(BaseModelGeneric):
         self.status = 'deny'
         self.save(*args, **kwargs)
 
+    def get_formatted_amount(self):
+        return 'Rp.{:,.0f},-'.format(self.amount)
+
 
     class Meta:
         verbose_name = _("Top Up")
