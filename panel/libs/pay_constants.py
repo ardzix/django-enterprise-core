@@ -37,9 +37,9 @@ BILL_STATUSES = (
 )
 PAYMENT_STATUSES = BILL_STATUSES
 INVOICE_STATUSES = BILL_STATUSES
-CASHOUT_STATUSES = (
+WITHDRAW_STATUSES = (
     ('pending', _('Pending')),
-    ('processed', _('On Process')),
+    ('process', _('On Process')),
     ('paid', _('Paid')),
     ('not-paid', _('Not Paid')),
     ("expire", _("Expired")),

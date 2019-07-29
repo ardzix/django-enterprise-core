@@ -33,7 +33,7 @@ from panel.structures.authentication.models import User
 from panel.libs import base36
 from panel.libs.moment import to_timestamp
 from panel.libs.decimal_lib import dec_to_str
-from panel.libs.pay_constants import (CASHOUT_STATUSES, INVOICE_STATUSES,
+from panel.libs.pay_constants import (WITHDRAW_STATUSES, INVOICE_STATUSES,
                                       PAYMENT_STATUSES, TOPUP_STATUSES)
 from panel.structures.common.models import BaseModelGeneric
 
@@ -156,7 +156,6 @@ class TopUp(BaseModelGeneric):
     def get_formatted_amount(self):
         return 'Rp.{:,.0f},-'.format(self.amount)
 
-
     class Meta:
         verbose_name = _("Top Up")
         verbose_name_plural = _("Top Up")
@@ -190,61 +189,27 @@ class BankAccount(BaseModelGeneric):
         verbose_name_plural = _("Bank Accounts")
 
 
-class CashOutSession(BaseModelGeneric):
-    number = models.CharField(max_length=20)
-    begin_at = models.DateTimeField()
-    end_at = models.DateTimeField()
-    processed_at = models.DateTimeField(blank=True, null=True)
-    processed_by = models.ForeignKey(
-        User, related_name='cashoutbatch_processed_by', on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return self.number
-
-    def set_number(self):
-        self.number = to_timestamp(timezone.now())
-
-    class Meta:
-        app_label = "cashout"
-
-
-class CashOutRequest(BaseModelGeneric):
+class Withdraw(BaseModelGeneric):
     # use : created_by, approved_by; created_by = requester, approved_by = managed_by
-    session = models.ForeignKey(CashOutSession, on_delete=models.CASCADE)
-    last_pk = models.BigIntegerField()
-    total_balance = models.DecimalField(max_digits=19, decimal_places=2)
-    total_requested = models.DecimalField(max_digits=19, decimal_places=2)
+    balance = models.DecimalField(max_digits=19, decimal_places=2)
+    amount = models.DecimalField(max_digits=19, decimal_places=2)
     status = models.CharField(
-        max_length=20, choices=CASHOUT_STATUSES, default="pending")
+        max_length=20, choices=WITHDRAW_STATUSES, default="pending")
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.CASCADE)
+    expired_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return "%s:%s" % (self.session, self.created_by)
+        return "%s:%s" % (self.get_formatted_amount(), self.created_by)
 
-    @property
-    def batch(self):
-        return self.session
+    def get_formatted_amount(self):
+        return 'Rp.{:,.0f},-'.format(self.amount)
 
-    def get_buttons(self):
-        buttons = [
-            {
-                "style": "margin:2px",
-                "class": "btn btn-sm btn-danger btn-cons btn-animated from-left pg pg-arrow_right",
-                "on_click": "delete_data",
-                "icon": "fa-trash",
-                "text": "Delete"
-            }
-        ]
-
-        button_str = ""
-        for b in buttons:
-            button_str += '<button type="button" style="'+b['style']+'" class="'+b['class']+'" onclick="'+b['on_click'] + \
-                '(\''+self.id62+'\')"><span><i class="fa ' + \
-                b['icon']+'"></i>&nbsp;'+b['text']+'</span></button>'
-
-        return button_str
+    def get_formatted_balance(self):
+        return 'Rp.{:,.0f},-'.format(self.balance)
 
     class Meta:
-        app_label = "cashout"
+        verbose_name = _("Withdraw")
+        verbose_name_plural = _("Withdraws")
 
 
 @receiver(post_save, sender=TopUp)
