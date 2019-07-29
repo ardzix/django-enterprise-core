@@ -138,6 +138,7 @@ class TopUp(BaseModelGeneric):
         on_delete=models.CASCADE,
         blank=True, null=True
     )
+    expired_at = models.DateTimeField(blank=True, null=True)
     status = models.CharField(
         max_length=20, choices=TOPUP_STATUSES, default='pending')
 

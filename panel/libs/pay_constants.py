@@ -41,14 +41,16 @@ CASHOUT_STATUSES = (
     ('pending', _('Pending')),
     ('processed', _('On Process')),
     ('paid', _('Paid')),
-    ('not-paid', _('Not Paid'))
+    ('not-paid', _('Not Paid')),
+    ("expire", _("Expired")),
 )
 TOPUP_STATUSES = (
     ("pending", _("Pending")),
     ("approve", _("Approved")),
     ("success", _("Transfered")),
     ("deny", _("Denied")),
-    ("fail", _("Failed"))
+    ("fail", _("Failed")),
+    ("expire", _("Expired")),
 )
 SUBSCRIPTION_CHARGE_METHOD = (
     (1, _("Credit Card")),
