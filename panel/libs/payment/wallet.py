@@ -34,7 +34,12 @@ def transfer_wallet(from_user, to_user, total, obj=None, description="Transfer b
         raise Exception("Total transfer must be greater than zero")
 
     if from_user == to_user:
-        raise Exception("Cannot transfer to same user")
+        raise Exception("Cannot transfer to same user (user:%s, obj:%s)" %
+                (
+                    str(from_user),
+                    str(obj) if obj else '-'
+                )
+            )
 
     current_balance = get_balance(from_user)
     if current_balance < total:
