@@ -55,6 +55,9 @@ class Wallet(BaseModelGeneric):
     def get_formatted_amount(self):
         return 'Rp.{:,.0f},-'.format(self.amount)
 
+    def get_absolute_formatted_amount(self):
+        return 'Rp.{:,.0f},-'.format(abs(self.amount))
+
     class Meta:
         verbose_name = _("Wallet")
         verbose_name_plural = _("Wallet")
