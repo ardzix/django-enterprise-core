@@ -19,7 +19,7 @@
 from django.views.generic import TemplateView 
 
 
-class FormView(TemplateView):
+class FormViewMixin(TemplateView):
     template_name = None
     model_class = None
     form_class = None
