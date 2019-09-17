@@ -25,6 +25,15 @@ class FormView(ProtectedMixin, TemplateView):
     model_class = None
     form_class = None
 
+    def dispatch(self, request, *args, **kwargs):
+        if not self.template_name:
+            return Exception("Template name not specified")
+        if not self.model_class:
+            return Exception("Model class not specified")
+        if not self.form_class:
+            return Exception("Form class not specified")
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request):
         edit = request.GET.get("edit")
         instance = None
