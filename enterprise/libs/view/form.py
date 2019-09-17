@@ -16,11 +16,10 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '''
 
-from ..view import ProtectedMixin
 from django.views.generic import TemplateView 
 
 
-class FormView(ProtectedMixin, TemplateView):
+class FormView(TemplateView):
     template_name = None
     model_class = None
     form_class = None
