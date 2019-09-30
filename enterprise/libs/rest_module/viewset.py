@@ -23,12 +23,14 @@ from .authentication import *
 
 
 class UGCGenericViewSet(GenericViewSet):
+    """
+    Every authenticated user have access to the contents,
+    but only owner has permission to update/delete
+    """
     lookup_field = 'id62'
 
     def initialize_request(self, request, *args, **kwargs):
-        su = super(
-            UGCGenericViewSet,
-            self).initialize_request(
+        su = super().initialize_request(
             request,
             *
             args,
@@ -48,12 +50,60 @@ class UGCGenericViewSet(GenericViewSet):
         return [permission() for permission in permission_classes]
 
 
+class PrivateContentGenericViewSet(GenericViewSet):
+    """
+    Only object owner have access to the contents
+    """
+    lookup_field = 'id62'
+
+    def initialize_request(self, request, *args, **kwargs):
+        su = super().initialize_request(
+            request,
+            *
+            args,
+            **kwargs)
+        self.set_permissions()
+        return su
+
+    def set_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action in ['retrieve', 'update', 'delete']:
+            permission_classes = [IsOwnerAuthenticated]
+        else:
+            permission_classes = [IsAuthenticated]
+        self.permission_classes = permission_classes
+        return [permission() for permission in permission_classes]
+
+    def list(self, request):
+        self.queryset = self.queryset.filter(
+            owned_by = request.user
+        ).order_by('-created_at')
+        return super().list(request)
+
+
+
 class UGCViewSet(mixins.CreateModelMixin,
                  mixins.RetrieveModelMixin,
                  mixins.UpdateModelMixin,
                  mixins.DestroyModelMixin,
                  mixins.ListModelMixin,
                  UGCGenericViewSet):
+    pass
+
+class PrivateContentViewSet(mixins.CreateModelMixin,
+                 mixins.RetrieveModelMixin,
+                 mixins.UpdateModelMixin,
+                 mixins.DestroyModelMixin,
+                 mixins.ListModelMixin,
+                 PrivateContentGenericViewSet):
+    pass
+
+
+class PrivateContentRetrieveViewSet(mixins.RetrieveModelMixin,
+                 mixins.ListModelMixin,
+                 PrivateContentGenericViewSet):
     pass
 
 
