@@ -94,8 +94,7 @@ class _BaseAbstract(models.Model):
             self.created_at = now
             self.created_at_timestamp = to_timestamp(self.created_at)
             if self.created_by:
-                if self.owned_by is None:
-                    self.owned_by = self.created_by
+                self.owned_by = self.created_by
                 self.owned_at = self.created_at
                 self.owned_at_timestamp = self.created_at_timestamp
 
