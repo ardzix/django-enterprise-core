@@ -63,6 +63,7 @@ class FormViewMixin(TemplateView):
             else:
                 obj.updated_by = request.user
             obj.save()
+            form.save_m2m()
             messages.success(
                 request,
                 '%s has been saved.' %
