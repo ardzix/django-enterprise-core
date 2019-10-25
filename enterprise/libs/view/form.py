@@ -51,10 +51,11 @@ class FormViewMixin(TemplateView):
                 self.model_class, id62=edit)
             form = self.form_class(
                 request.POST,
+                request.FILES,
                 instance=instance
             )
         else:
-            form = self.form_class(request.POST)
+            form = self.form_class(request.POST, request.FILES)
 
         if form.is_valid():
             obj = form.save(commit=False)
