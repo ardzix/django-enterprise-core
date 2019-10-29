@@ -62,7 +62,7 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'Django==2.1',
+        'Django==2.1.11',
         'djangorestframework==3.8.2',
         'timeago==1.0.8',
         'psycopg2==2.7.5',
