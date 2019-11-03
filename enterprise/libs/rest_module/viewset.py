@@ -84,36 +84,36 @@ class PrivateContentGenericViewSet(GenericViewSet):
 
 
 
-class UGCViewSet(mixins.CreateModelMixin,
+class UGCViewSet(UGCGenericViewSet,
+                 mixins.CreateModelMixin,
                  mixins.RetrieveModelMixin,
                  mixins.UpdateModelMixin,
                  mixins.DestroyModelMixin,
-                 mixins.ListModelMixin,
-                 UGCGenericViewSet):
+                 mixins.ListModelMixin):
     pass
 
-class PrivateContentViewSet(mixins.CreateModelMixin,
-                 mixins.RetrieveModelMixin,
-                 mixins.UpdateModelMixin,
-                 mixins.DestroyModelMixin,
-                 mixins.ListModelMixin,
-                 PrivateContentGenericViewSet):
-    pass
-
-
-class PrivateContentRetrieveViewSet(mixins.RetrieveModelMixin,
-                 mixins.ListModelMixin,
-                 PrivateContentGenericViewSet):
+class PrivateContentViewSet(PrivateContentGenericViewSet,
+                            mixins.CreateModelMixin,
+                            mixins.RetrieveModelMixin,
+                            mixins.UpdateModelMixin,
+                            mixins.DestroyModelMixin,
+                            mixins.ListModelMixin):
     pass
 
 
-class RetrieveViewSet(mixins.RetrieveModelMixin,
-                      mixins.ListModelMixin,
-                      UGCGenericViewSet):
+class PrivateContentRetrieveViewSet(PrivateContentGenericViewSet,
+                                    mixins.RetrieveModelMixin,
+                                    mixins.ListModelMixin):
     pass
 
 
-class SingleObjectOwnedViewSet(mixins.RetrieveModelMixin,
-                               mixins.UpdateModelMixin,
-                               UGCGenericViewSet):
+class RetrieveViewSet(UGCGenericViewSet,
+                      mixins.RetrieveModelMixin,
+                      mixins.ListModelMixin):
+    pass
+
+
+class SingleObjectOwnedViewSet(UGCGenericViewSet,
+                               mixins.RetrieveModelMixin,
+                               mixins.UpdateModelMixin):
     pass
