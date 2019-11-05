@@ -17,7 +17,7 @@
 '''
 
 from rest_framework import mixins
-from rest_framework.permissions import IsAuthenticated
+from enterprise.libs.rest_module.permission import JWTAuthenticated, IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 from .authentication import *
 
@@ -57,11 +57,7 @@ class PrivateContentGenericViewSet(GenericViewSet):
     lookup_field = 'id62'
 
     def initialize_request(self, request, *args, **kwargs):
-        su = super().initialize_request(
-            request,
-            *
-            args,
-            **kwargs)
+        su = super().initialize_request(request,*args,**kwargs)
         self.set_permissions()
         return su
 
@@ -78,10 +74,21 @@ class PrivateContentGenericViewSet(GenericViewSet):
 
     def list(self, request):
         self.queryset = self.queryset.filter(
-            owned_by = request.user
+            owned_by=request.user
         ).order_by('-created_at')
         return super().list(request)
 
+
+class JWTGenericViewSet(GenericViewSet):
+    """
+    View protected bt JWT
+    """
+    lookup_field = 'id62'
+
+    def initialize_request(self, request, *args, **kwargs):
+        su = super().initialize_request(request,*args,**kwargs)
+        self.permission_classes = [JWTAuthenticated]
+        return su
 
 
 class UGCViewSet(UGCGenericViewSet,
@@ -91,6 +98,7 @@ class UGCViewSet(UGCGenericViewSet,
                  mixins.DestroyModelMixin,
                  mixins.ListModelMixin):
     pass
+
 
 class PrivateContentViewSet(PrivateContentGenericViewSet,
                             mixins.CreateModelMixin,
