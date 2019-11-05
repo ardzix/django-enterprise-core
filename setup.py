@@ -70,7 +70,8 @@ setup(
         'arrow==0.12.1',
         'pycountry==17.5.14',
         'rackspacesdk==0.7.5',
-        'openstacksdk==0.17.2'
+        'openstacksdk==0.17.2',
+        'PyJWT==1.7.1'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).
