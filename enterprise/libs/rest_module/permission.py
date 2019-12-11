@@ -24,7 +24,7 @@ from django.conf import settings
 class JWTAuthenticated(BasePermission):
     def has_permission(self, request, view):
         if not settings.VALIDATE_JWT:
-            return False
+            return True
         if not request.data.get('encoded'):
             raise exceptions.ParseError(detail='Please wrap your data with JWT in \'encoded\' ')
         try:
