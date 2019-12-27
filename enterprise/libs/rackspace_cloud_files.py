@@ -28,7 +28,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.encoding import force_text as force_unicode, smart_str
 from django.utils.functional import cached_property
 
-from ..structures.authentication.models import User
+User = settings.AUTH_USER_MODEL
 
 """
 https://developer.openstack.org/sdks/python/openstacksdk/users/resource.html#openstack.resource.Resource

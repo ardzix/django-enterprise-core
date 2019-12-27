@@ -3,11 +3,12 @@ from django.utils import timezone
 from django.contrib.gis.geos import Point
 from django.contrib.gis.db import models as geo
 from django.db.models import Manager as GeoManager
+from django.conf import settings
 
 from enterprise.libs.moment import to_timestamp
 from enterprise.libs.ip_address import get_client_ip
 
-from ...structures.authentication.models import User
+User = settings.AUTH_USER_MODEL
 
 
 class Tracker(models.Model):

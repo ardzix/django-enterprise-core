@@ -28,8 +28,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.postgres.fields import ArrayField
+from django.conf import settings
 
-from enterprise.structures.authentication.models import User
 from enterprise.libs import base36
 from enterprise.libs.moment import to_timestamp
 from enterprise.libs.decimal_lib import dec_to_str
@@ -39,6 +39,8 @@ from enterprise.structures.common.models import BaseModelGeneric
 
 from .midtrans import Midtrans
 from .manual import Manual
+
+User = settings.AUTH_USER_MODEL
 
 
 class Wallet(BaseModelGeneric):
