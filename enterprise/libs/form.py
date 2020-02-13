@@ -20,6 +20,7 @@
 from django.forms.utils import ErrorList
 from django.contrib.auth.forms import *
 from django import forms
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from crispy_forms import helper, layout, bootstrap
 
@@ -57,19 +58,23 @@ class AuthForm(forms.Form):
         password = cleaned_data['password']
         user = authenticate(phone_number=phone_number, password=password)
         if not user:
-            user_temp = User.objects.filter(email=phone_number).first()
-            if user_temp and user_temp.is_active:
-                ev = EmailVerification.objects.filter(
-                    email=phone_number).first()
-                if ev:
-                    if ev.is_verified:
-                        user = authenticate(
-                            phone_number=user_temp.phone_number, password=password)
-                    else:
-                        self.add_error(
-                            'phone_number',
-                            _('Your email has not been verified, please check your email to verify it'))
-                        self.verify_email(phone_number, user_temp)
+            if getattr(settings, 'AUTO_VERIFY_EMAIL'):
+                user_temp = User.objects.filter(email=phone_number).first()
+                if user_temp and user_temp.is_active:
+                    ev = EmailVerification.objects.filter(
+                        email=phone_number).first()
+                    if ev:
+                        if ev.is_verified:
+                            user = authenticate(
+                                phone_number=user_temp.phone_number, password=password)
+                        else:
+                            self.add_error(
+                                'phone_number',
+                                _('Your email has not been verified, please check your email to verify it'))
+                            self.verify_email(phone_number, user_temp)
+            else:
+                user = authenticate(
+                            email=phone_number, password=password)
 
         if user:
             if user.is_active:

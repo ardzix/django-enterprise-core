@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.conf import settings
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -225,7 +226,8 @@ def verify_email(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_ev(sender, instance, **kwargs):
-    ev = EmailVerification.objects.filter(email=instance.email).last()
-    if ev:
-        ev.user = instance
-        ev.save()
+    if getattr(settings, 'AUTO_VERIFY_EMAIL', False):
+        ev = EmailVerification.objects.filter(email=instance.email).last()
+        if ev:
+            ev.user = instance
+            ev.save()
