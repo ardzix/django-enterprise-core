@@ -165,6 +165,10 @@ class EmailVerification(models.Model):
     def __str__(self):
         return self.email
 
+    class Meta:
+        verbose_name = _('Email Varification')
+        verbose_name_plural = _('Email Varifications')
+
 
 def send_verification_email(email, user, base_url=None, *args, **kwargs):
     from ...libs.email import send_mail
@@ -175,15 +179,8 @@ def send_verification_email(email, user, base_url=None, *args, **kwargs):
     email_template_name = html_email_template_name
     code = str(uuid.uuid4())
 
-    if not base_url:
-        base_url = getattr(settings, 'BASE_URL')
-    url = base_url + "authentication/email_verify?c=" + code
-    if kwargs:
-        params = ''.join(['&%s=%s' % (k, v) for k, v in kwargs.items()])
-        url += params
-
     context = {
-        "url": url,
+        "code": code,
         "name": user.full_name
     }
 
