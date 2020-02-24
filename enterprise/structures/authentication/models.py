@@ -1,3 +1,22 @@
+'''
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# File: models.py
+# Project: django-panel-core
+# File Created: Tuesday, 25th February 2020 1:26:07 am
+# 
+# Author: Arif Dzikrullah
+#         ardzix@hotmail.com>
+#         https://github.com/ardzix/>
+# 
+# Last Modified: Tuesday, 25th February 2020 1:26:09 am
+# Modified By: Arif Dzikrullah (ardzix@hotmail.com>)
+# 
+# Hand-crafted & Made with Love
+# Copyright - 2018 Ardz Co, https://github.com/ardzix/django-panel-core
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+'''
+
+
 import uuid
 from django.db import models
 from django.conf import settings
@@ -70,7 +89,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
     )
     is_active = models.BooleanField(
         _('active'),
-        default=True,
+        default=False,
         help_text=_(
             'Designates whether this user should be treated as active. '
             'Unselect this instead of deleting accounts.'
