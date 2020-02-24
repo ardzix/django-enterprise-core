@@ -172,12 +172,13 @@ class EmailVerification(models.Model):
 
 def send_verification_email(email, user, base_url=None, *args, **kwargs):
     from ...libs.email import send_mail
+    from ...libs.otp import generate_otp_code
     from django.conf import settings
 
     subject_template_name = "email/email_verify.txt"
     html_email_template_name = "email/email_verify.html"
     email_template_name = html_email_template_name
-    code = str(uuid.uuid4())
+    code = generate_otp_code(6)
 
     context = {
         "code": code,
