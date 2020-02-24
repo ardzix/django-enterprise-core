@@ -15,7 +15,7 @@
 # Copyright - 2018 Ardz Co, https://github.com/ardzix/django-panel-core
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '''
-
+import random
 
 
 
@@ -28,6 +28,6 @@ def generate_otp_code(length):
 
     otp = ""
     for i in range(length):
-        otp += str(r.randint(1, 9))
+        otp += str(random.randint(1, 9))
 
     return otp

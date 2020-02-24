@@ -17,9 +17,39 @@
 '''
 
 from rest_framework import mixins
-from enterprise.libs.rest_module.permission import JWTAuthenticated, IsAuthenticated
+from enterprise.libs.rest_module.permission import JWTAuthenticated, IsAuthenticated, AllowAny
 from rest_framework.viewsets import GenericViewSet
 from .authentication import *
+
+
+class PublicGenericViewSet(GenericViewSet):
+    """
+    Every authenticated user have access to the contents,
+    but only owner has permission to update/delete
+    """
+    lookup_field = 'id62'
+
+    def initialize_request(self, request, *args, **kwargs):
+        su = super().initialize_request(
+            request,
+            *
+            args,
+            **kwargs)
+        self.set_permissions()
+        return su
+
+    def set_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action in ['update', 'delete']:
+            permission_classes = [IsOwnerAuthenticated]
+        elif self.action in ['post']:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [AllowAny]
+        self.permission_classes = permission_classes
+        return [permission() for permission in permission_classes]
 
 
 class UGCGenericViewSet(GenericViewSet):
