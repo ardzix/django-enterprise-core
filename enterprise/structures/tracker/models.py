@@ -27,6 +27,7 @@ class Tracker(models.Model):
     referer = models.CharField(max_length=128, null=True, blank=True)
     tracking_id = models.CharField(max_length=100, null=True, blank=True)
     objects = GeoManager()
+    log = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         self.created_at = timezone.now()
@@ -46,7 +47,7 @@ class Tracker(models.Model):
         app_label = "tracker"
 
 
-def create_tracker(request, trigger_action, is_get_or_create=False):
+def create_tracker(request, trigger_action, is_get_or_create=False, log=None, os="web"):
     user = None
     if not request.user.is_anonymous:
         user = request.user
@@ -73,4 +74,6 @@ def create_tracker(request, trigger_action, is_get_or_create=False):
     tracker.useragent = useragent
     tracker.visited_page = visited_page
     tracker.trigger_action = trigger_action
+    tracker.log = log
+    tracker.OS = os
     tracker.save()
