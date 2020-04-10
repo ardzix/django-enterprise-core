@@ -28,7 +28,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.encoding import force_text as force_unicode, smart_str
 from django.utils.functional import cached_property
 
-User = settings.AUTH_USER_MODEL
+from django.contrib.auth import get_user_model
 
 """
 https://developer.openstack.org/sdks/python/openstacksdk/users/resource.html#openstack.resource.Resource
@@ -111,7 +111,7 @@ class RackspaceStorage(FileSystemStorage):
                 image=self.url(
                     uploaded.name),
                 purpose=self.purpose)
-            rit.created_by = User.objects.first()
+            rit.created_by = get_user_model().objects.first()
             rit.save()
 
         return name
