@@ -118,6 +118,13 @@ class File(BaseModelGeneric):
             return self.file.url
         return None
 
+    def get_safe_url(self):
+        ru = settings.RACKSPACE_BASE_URL
+        url = self.file.url
+        if ru+'/'+ru in url:
+            return url.replace(ru+'/'+ru, ru)
+        return url
+
     class Meta:
         verbose_name = _("File")
         verbose_name_plural = _("Files")
