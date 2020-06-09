@@ -53,4 +53,10 @@ def send_mail(subject_template_name, email_template_name, html_email_template_na
         html_email = loader.render_to_string(html_email_template_name, context)
         email_message.attach_alternative(html_email, 'text/html')
 
-    email_message.send()
+    try:
+        email_message.send()
+    except Exception as e:
+        if settings.DEBUG:
+            print (str(e))
+        else:
+            raise e
