@@ -15,13 +15,14 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.4.0',
+    version='0.4.1',
 
     description='A bunch of libraries for building backend enterprise on django',
     long_description=long_description,
+    long_description_content_type="text/markdown",
 
     # The project's main homepage.
-    url='https://github.com/ardzix/',
+    url='https://github.com/ardzix/django-enterprise-core',
 
     # Author details
     author='Arif Dzikrullah',
@@ -36,14 +37,14 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
 
         # Pick your license as you wish (should match "license" above)
-        'License :: OSI Approved :: GPL 3.0 License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
