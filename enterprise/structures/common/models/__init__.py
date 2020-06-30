@@ -6,12 +6,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.conf import settings
 
-# from core.structures.authentication.models import User
 from enterprise.libs.moment import to_timestamp
 from enterprise.libs import storage
 from enterprise.structures.common.models.base import BaseModelGeneric
-
-from core.libs import constant
 
 
 User = settings.AUTH_USER_MODEL

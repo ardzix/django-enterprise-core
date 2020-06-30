@@ -147,10 +147,6 @@ class User(AbstractUser):
     def __str__(self):
         return '%s <%s>' % (self.full_name, self.email)
 
-    def get_profile(self):
-        from core.structures.account.models import Profile
-        return Profile.objects.filter(created_by=self).first()
-
     def get_groups(self):
         return ', '.join(list(self.groups.values_list('name', flat=True)))
 

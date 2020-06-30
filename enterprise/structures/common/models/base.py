@@ -11,7 +11,6 @@ from django.db.models import Manager as GeoManager
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
-# from core.structures.authentication.models import User
 from enterprise.libs.moment import to_timestamp
 from enterprise.libs.base62 import base62_encode
 
