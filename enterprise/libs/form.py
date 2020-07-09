@@ -1,31 +1,33 @@
 '''
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # File: form.py
-# Project: django-enterprise-core
-# File Created: Tuesday, 21st August 2018 11:56:49 pm
-#
+# Project: core.lakon.app
+# File Created: Friday, 7th September 2018 3:50:58 am
+# 
 # Author: Arif Dzikrullah
 #         ardzix@hotmail.com>
 #         https://github.com/ardzix/>
-#
-# Last Modified: Tuesday, 21st August 2018 11:56:49 pm
+# 
+# Last Modified: Friday, 7th September 2018 3:51:22 am
 # Modified By: arifdzikrullah (ardzix@hotmail.com>)
-#
+# 
 # Hand-crafted & Made with Love
-# Copyright - 2018 Ardz Co, https://github.com/ardzix/django-enterprise-core
+# Copyright - 2018 Lakon, lakon.app
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '''
 
 
+import nexmo
+import uuid
+import re
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
 from django.contrib.auth.forms import *
-from django import forms
-from django.conf import settings
-from django.utils.translation import gettext_lazy as _
-from crispy_forms import helper, layout, bootstrap
-
-from enterprise.structures.authentication.models import User, EmailVerification, send_verification_email
-
+from django.forms import ModelForm
+from django.contrib.auth import get_user_model
+from django.utils.translation import gettext, gettext_lazy as _
+from .nonce import NonceObject
 
 class ErrorDiv(ErrorList):
     def __str__(self):
@@ -41,76 +43,34 @@ class ErrorDiv(ErrorList):
             errors = ''.join(['<div class="error">%s</div>' % e for e in self])
             return '<div class="errors">%s</div>' % errors
 
-
-class AuthForm(forms.Form):
-    phone_number = forms.CharField(
-        label=False,
-        widget=forms.TextInput(attrs={'placeholder': _('Email/Phone number')})
-    )
-    password = forms.CharField(
-        label=False,
-        widget=forms.PasswordInput(attrs={'placeholder': _('Password')})
-    )
-
-    def clean(self):
-        cleaned_data = super().clean()
-        phone_number = cleaned_data['phone_number']
-        password = cleaned_data['password']
-        user = authenticate(phone_number=phone_number, password=password)
-        if not user:
-            if getattr(settings, 'AUTO_VERIFY_EMAIL'):
-                user_temp = User.objects.filter(email=phone_number).first()
-                if user_temp and user_temp.is_active:
-                    ev = EmailVerification.objects.filter(
-                        email=phone_number).first()
-                    if ev:
-                        if ev.is_verified:
-                            user = authenticate(
-                                phone_number=user_temp.phone_number, password=password)
-                        else:
-                            self.add_error(
-                                'phone_number',
-                                _('Your email has not been verified, please check your email to verify it'))
-                            self.verify_email(phone_number, user_temp)
-            else:
-                user = authenticate(
-                            email=phone_number, password=password)
-
-        if user:
-            if user.is_active:
-                cleaned_data['user'] = user
-            else:
-                self.add_error('phone_number', _('Your account is not active'))
-        else:
-            self.add_error(
-                'phone_number',
-                _('Email/Phone and Password missmatch'))
-
-        return cleaned_data
-
-    def verify_email(self, email, user):
-        ev = send_verification_email(email, user, is_reset_password=True)
-        ev.user = user
-        ev.save()
-
+class AuthForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = helper.FormHelper()
-        self.helper.form_tag = False
-        self.helper.layout = layout.Layout(
-            bootstrap.PrependedText(
-                'phone_number',
-                '<i class="fas fa-user"></i>',
-                wrapper_class='col-md-12 m-b-10'
-            ),
-            bootstrap.PrependedText(
-                'password',
-                '<i class="fas fa-lock"></i>',
-                wrapper_class='col-md-12'
-            ),
-        )
-        self.helper.render_unmentioned_fields = True
-        self.helper.disable_csrf = True
+        super(AuthForm, self).__init__(*args, **kwargs)
+
+        self.error_class = ErrorDiv
+
+        self.fields["username"].widget.attrs = {
+            "class": "form-control"
+        }
+
+        self.fields["password"].widget.attrs = {
+            "class": "form-control"
+        }
+
+        self.fields["username"].label = "Phone number"
+
+class NewPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(NewPasswordForm, self).__init__(*args, **kwargs)
+
+        self.error_class = ErrorDiv
+
+        self.fields["new_password1"].widget.attrs = {
+            "class": "form-control"
+        }
+        self.fields["new_password2"].widget.attrs = {
+            "class": "form-control"
+        }
 
 
 class ChangePasswordForm(PasswordChangeForm):
@@ -119,35 +79,112 @@ class ChangePasswordForm(PasswordChangeForm):
 
         self.error_class = ErrorDiv
 
-        self.fields['old_password'].widget.attrs = {
-            'class': 'form-control'
+        self.fields["old_password"].widget.attrs = {
+            "class": "form-control"
         }
-        self.fields['new_password1'].widget.attrs = {
-            'class': 'form-control'
+        self.fields["new_password1"].widget.attrs = {
+            "class": "form-control"
         }
-        self.fields['new_password2'].widget.attrs = {
-            'class': 'form-control'
+        self.fields["new_password2"].widget.attrs = {
+            "class": "form-control"
         }
 
+class RegisterForm(UserCreationForm):
+    class Meta:
+        model = get_user_model()
+        fields = ("phone_number",)
 
-class SetPasswordForm(SetPasswordForm):
+
     def __init__(self, *args, **kwargs):
-        super(SetPasswordForm, self).__init__(*args, **kwargs)
+        super(RegisterForm, self).__init__(*args, **kwargs)
 
         self.error_class = ErrorDiv
 
-        self.fields['new_password1'].widget.attrs = {
-            'class': 'form-control'
-        }
-        self.fields['new_password2'].widget.attrs = {
-            'class': 'form-control'
+        self.fields["phone_number"].widget.attrs = {
+            "class": "form-control"
         }
 
+        self.fields["password1"].widget.attrs = {
+            "class": "form-control"
+        }
+        self.fields["password1"].required=False
 
-class RegisterForm(forms.Form):
-    full_name = forms.CharField(widget=forms.TextInput(
-        attrs={'placeholder': 'Full Name', 'class': 'form-control'}
-    ))
-    phone_number = forms.CharField(widget=forms.TextInput(
-        attrs={'placeholder': 'Phone Number', 'class': 'form-control'}
-    ))
+        self.fields["password2"].widget.attrs = {
+            "class": "form-control"
+        }
+        self.fields["password2"].required=False
+
+
+class PhoneCheckForm(forms.ModelForm):
+    request_id = None
+    phone_number = None
+
+    class Meta:
+        model = get_user_model()
+        fields = ("phone_number",)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        phone = self.cleaned_data.get('phone_number')
+
+        client = nexmo.Client(key=settings.NEXMO_API_KEY, secret=settings.NEXMO_API_SECRET)
+        verify_resp = client.start_verification(number=phone, brand='lakon.app')
+        if not verify_resp['status'] == '0' and not verify_resp['status'] == '10':
+            raise forms.ValidationError(
+                verify_resp['error_text']
+            )
+
+        self.request_id = verify_resp['request_id']
+        self.phone_number = phone
+
+        return cleaned_data
+
+
+class PhoneVerifyForm(forms.Form):
+    code = forms.IntegerField(
+        label=_("Verification COde"),
+        widget=forms.NumberInput,
+        help_text="We are sending a code to your phone number, please write down here",
+    )
+
+    request_id = forms.CharField(
+        widget=forms.HiddenInput
+    )
+
+    phone_number = forms.CharField(
+        widget=forms.HiddenInput
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        code = self.cleaned_data.get('code')
+        request_id = self.cleaned_data.get('request_id')
+        client = nexmo.Client(key=settings.NEXMO_API_KEY, secret=settings.NEXMO_API_SECRET)
+        response = client.check_verification(request_id, code=code)
+
+        if not response['status'] == '0':
+            raise forms.ValidationError(
+                response['error_text']
+            )
+
+        return cleaned_data
+
+
+class NonceModelForm(ModelForm):
+    def save(self, created_by=None, commit=True):
+        if not hasattr(self, 'cleaned_data'):
+            raise ValidationError({'detail':'Please validate before saving'})
+
+        if 'nonce' not in self.cleaned_data:
+            if not self.instance.nonce:
+                self.instance.nonce = str(uuid.uuid4())
+        if created_by and getattr(self.instance, 'created_by', None) is None:
+            self.instance.created_by = created_by
+
+        return super(NonceModelForm, self).save(commit=commit)
+
+    def get_class_name(self):
+        return self.__class__.__name__
+
+    def get_pretty_class_name(self):
+        return re.sub("([a-z])([A-Z])","\g<1> \g<2>", self.get_class_name())
