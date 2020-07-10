@@ -29,7 +29,7 @@ from django import forms
 
 from enterprise.libs.form import *
 from enterprise.libs.view import ProtectedMixin
-from enterprise.structures.authentication.models import EmailVerification
+from enterprise.structures.authentication.models import EmailVerification, User
 
 
 # Create your views here.
