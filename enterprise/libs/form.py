@@ -45,7 +45,7 @@ class ErrorDiv(ErrorList):
 
 class AuthForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
-        super(AuthForm, self).__init__(*args, **kwargs)
+        super(AuthenticationForm, self).__init__(*args, **kwargs)
 
         self.error_class = ErrorDiv
 
@@ -58,6 +58,25 @@ class AuthForm(AuthenticationForm):
         }
 
         self.fields["username"].label = "Phone number"
+
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        user = authenticate(username=username, password=password)
+        if not user:
+            user = authenticate(phone_number=username, password=password)
+
+        if user:
+            if user.is_active:
+                self.cleaned_data['user'] = user
+            else:
+                self.add_error('username', _('Your account is not active'))
+        else:
+            self.add_error(
+                'username',
+                _('Username/Phone and Password missmatch'))
+
+        return self.cleaned_data
 
 class NewPasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
