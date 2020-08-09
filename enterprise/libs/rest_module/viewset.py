@@ -155,3 +155,8 @@ class SingleObjectOwnedViewSet(UGCGenericViewSet,
                                mixins.RetrieveModelMixin,
                                mixins.UpdateModelMixin):
     pass
+
+
+class SingleObjectRetrieveViewSet(UGCGenericViewSet,
+                      mixins.RetrieveModelMixin):
+    pass
