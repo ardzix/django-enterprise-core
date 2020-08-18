@@ -22,3 +22,14 @@ class CategoryFilterBackend(SearchFilter):
             type='string',
             description='Search by category short name'
         )]
+
+
+class ViewAtFilterBackend(SearchFilter):
+    def get_schema_fields(self, view):
+        return [coreapi.Field(
+            name='is_viewed',
+            location='query',
+            required=False,
+            type='boolean',
+            description='Filter by status view'
+        )]
