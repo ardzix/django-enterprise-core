@@ -90,25 +90,25 @@ class APILog(models.Model):
 
 
 class File(BaseModelGeneric):
-    # display_name = models.CharField(max_length=150)
-    # short_name = models.SlugField(max_length=150)
+    display_name = models.CharField(max_length=150)
+    short_name = models.SlugField(max_length=150, blank=True, null=True)
     file = models.FileField(
         storage=storage.FILE_STORAGE,
         max_length=300,
         blank=True,
         null=True
     )
-    # description = models.TextField(blank=True, null=True)
-    # content_type = models.ForeignKey(
-    #     ContentType,
-    #     on_delete=models.CASCADE,
-    #     blank=True,
-    #     null=True)
-    # object_id = models.PositiveIntegerField(blank=True, null=True)
-    # content_object = GenericForeignKey('content_type', 'object_id')
+    description = models.TextField(blank=True, null=True)
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
+    object_id = models.PositiveIntegerField(blank=True, null=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
-        return self.file
+        return self.display_name
 
     def get_file(self):
         if self.file:

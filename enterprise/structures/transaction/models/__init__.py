@@ -37,17 +37,10 @@ from enterprise.libs.pay_constants import (WITHDRAW_STATUSES, INVOICE_STATUSES,
                                       PAYMENT_STATUSES, TOPUP_STATUSES)
 from enterprise.structures.common.models import BaseModelGeneric
 
-from core.structures.account.models import Company
-
 from .midtrans import Midtrans
 from .manual import Manual
 
 User = settings.AUTH_USER_MODEL
-
-
-class Investment(BaseModelGeneric):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    amount = models.IntegerField
 
 
 class Wallet(BaseModelGeneric):

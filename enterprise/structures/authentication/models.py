@@ -19,7 +19,6 @@
 
 import uuid
 import hashlib
-import nexmo
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import pre_save, post_save
@@ -32,8 +31,6 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from ...libs.base62 import base62_encode
 from ...libs.otp import generate_otp_code
 from django.conf import settings
-
-nexmo_client = nexmo.Client(key=settings.NEXMO_API_KEY, secret=settings.NEXMO_API_SECRET)
 
 
 class UserManager(BaseUserManager):
@@ -85,7 +82,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
                                     )
 
     full_name = models.CharField(_('full name'), max_length=150, blank=True)
-    # nick_name = models.CharField(_('nick name'), max_length=150, blank=True)
+    nick_name = models.CharField(_('nick name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), unique=True)
     is_staff = models.BooleanField(
         _('staff status'),
@@ -125,9 +122,9 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         """
         return self.full_name
 
-    # def get_short_name(self):
-    #     """Return the short name for the user."""
-    #     return self.nick_name
+    def get_short_name(self):
+        """Return the short name for the user."""
+        return self.nick_name
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""
@@ -198,11 +195,13 @@ def send_verification_email(email, user, base_url=None, *args, **kwargs):
     subject_template_name = "email/email_verify.txt"
     html_email_template_name = "email/email_verify.html"
     email_template_name = html_email_template_name
-    code_object = hashlib.md5(user.full_name.encode('utf-8'))
-    code = code_object.hexdigest()
+    code = generate_otp_code(6)
+    code_hash_object = hashlib.md5(user.full_name.encode('utf-8'))
+    code_hash = code_hash_object.hexdigest()
 
     context = {
         "code": code,
+        "code_hash": code_hash,
         "name": user.full_name
     }
 
@@ -243,7 +242,9 @@ class PhoneVerification(models.Model):
 
 
 def send_verification_message(phone_number, *args, **kwargs):
+    import nexmo
     code = generate_otp_code(6)
+    nexmo_client = nexmo.Client(key=settings.NEXMO_API_KEY, secret=settings.NEXMO_API_SECRET)
     nexmo_client.send_message(
         {
             "from": "InvestX",
