@@ -71,7 +71,7 @@ setup(
         'arrow==0.16.0',
         'pycountry==20.7.3',
         'rackspacesdk==0.7.5',
-        'openstacksdk==0.49.0',
+        'openstacksdk==0.17.2',
         'PyJWT==1.7.1'
     ],
 
