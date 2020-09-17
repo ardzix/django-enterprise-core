@@ -172,7 +172,8 @@ class RegisterToken(models.Model):
 
 class EmailVerification(models.Model):
     email = models.EmailField()
-    code = models.CharField(max_length=100)
+    code = models.CharField(max_length=6)
+    code_hash = models.CharField(max_length=100, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -192,17 +193,18 @@ def send_verification_email(email, user, base_url=None, *args, **kwargs):
     from ...libs.email import send_mail
     # from enterprise.apps.authentication.templates
 
-    subject_template_name = "email/email_verify.txt"
-    html_email_template_name = "email/email_verify.html"
+    subject_template_name = kwargs.get('subject_template_name', 'email/email_verify.txt')
+    html_email_template_name = kwargs.get('html_email_template_name', 'email/email_verify.html')
     email_template_name = html_email_template_name
     code = generate_otp_code(6)
-    code_hash_object = hashlib.md5(user.full_name.encode('utf-8'))
-    code_hash = code_hash_object.hexdigest()
+    code_hash = uuid.uuid4()
 
     context = {
         "code": code,
         "code_hash": code_hash,
-        "name": user.full_name
+        "name": user.full_name,
+        "base_url": getattr(settings, 'BASE_URL'),
+        "frontend_base_url": getattr(settings, 'FRONTEND_BASE_URL')
     }
 
     send_mail(
@@ -216,6 +218,7 @@ def send_verification_email(email, user, base_url=None, *args, **kwargs):
     ev, created = EmailVerification.objects.get_or_create(
         email=email
     )
+    ev.code_hash = code_hash
     ev.code = code
     ev.is_verified = False
     ev.save()
