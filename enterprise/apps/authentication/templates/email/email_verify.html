@@ -1,6 +1,5 @@
-
+<!--{% extends "main.html" %}-->
 {% block content %}
-    <p>Halooo {{name}}</p>
-    <p>Silahkan masukkan code berikut:<br>
-    {{code}}</p>
-{% endblock content %}
+    <p>Halo {{name}}</p><br>
+    <p><a href="/authentication/verify-phone/{{code}}">Klik ini untuk verifikasi email anda</a></p>
+{% endblock %}

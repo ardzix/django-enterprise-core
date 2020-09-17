@@ -18,6 +18,8 @@
 
 
 import uuid
+import hashlib
+import nexmo
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import pre_save, post_save
@@ -28,6 +30,10 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from ...libs.base62 import base62_encode
+from ...libs.otp import generate_otp_code
+from django.conf import settings
+
+nexmo_client = nexmo.Client(key=settings.NEXMO_API_KEY, secret=settings.NEXMO_API_SECRET)
 
 
 class UserManager(BaseUserManager):
@@ -79,7 +85,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
                                     )
 
     full_name = models.CharField(_('full name'), max_length=150, blank=True)
-    nick_name = models.CharField(_('nick name'), max_length=150, blank=True)
+    # nick_name = models.CharField(_('nick name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), unique=True)
     is_staff = models.BooleanField(
         _('staff status'),
@@ -119,9 +125,9 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         """
         return self.full_name
 
-    def get_short_name(self):
-        """Return the short name for the user."""
-        return self.nick_name
+    # def get_short_name(self):
+    #     """Return the short name for the user."""
+    #     return self.nick_name
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""
@@ -172,7 +178,7 @@ class EmailVerification(models.Model):
     code = models.CharField(max_length=100)
     is_verified = models.BooleanField(default=False)
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         blank=True,
         null=True)
@@ -181,19 +187,19 @@ class EmailVerification(models.Model):
         return self.email
 
     class Meta:
-        verbose_name = _('Email Varification')
-        verbose_name_plural = _('Email Varifications')
+        verbose_name = _('Email Verification')
+        verbose_name_plural = _('Email Verifications')
 
 
 def send_verification_email(email, user, base_url=None, *args, **kwargs):
     from ...libs.email import send_mail
-    from ...libs.otp import generate_otp_code
-    from django.conf import settings
+    # from enterprise.apps.authentication.templates
 
     subject_template_name = "email/email_verify.txt"
     html_email_template_name = "email/email_verify.html"
     email_template_name = html_email_template_name
-    code = generate_otp_code(6)
+    code_object = hashlib.md5(user.full_name.encode('utf-8'))
+    code = code_object.hexdigest()
 
     context = {
         "code": code,
@@ -216,6 +222,40 @@ def send_verification_email(email, user, base_url=None, *args, **kwargs):
     ev.save()
 
     return ev
+
+
+class PhoneVerification(models.Model):
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    code = models.CharField(max_length=100)
+    is_verified = models.BooleanField(default=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
+
+    def __str__(self):
+        return self.phone_number
+
+    class Meta:
+        verbose_name = _('Phone Verification')
+        verbose_name_plural = _('Phone Verifications')
+
+
+def send_verification_message(phone_number, *args, **kwargs):
+    code = generate_otp_code(6)
+    nexmo_client.send_message(
+        {
+            "from": "InvestX",
+            "to": phone_number,
+            "text": f"Your OTP code is {code}",
+        }
+    )
+    pv, created = PhoneVerification.objects.get_or_create(phone_number=phone_number)
+    pv.code = code
+    pv.save()
+
+    return pv
 
 
 @receiver(pre_save, sender=User)

@@ -57,6 +57,6 @@ def send_mail(subject_template_name, email_template_name, html_email_template_na
         email_message.send()
     except Exception as e:
         if settings.DEBUG:
-            print (str(e))
+            print(str(e))
         else:
             raise e
