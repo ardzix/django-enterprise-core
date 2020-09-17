@@ -19,6 +19,7 @@
 
 from .midtrans import Gopay, BankTransfer, MandiriEChannel, CreditCard, Snap
 
+
 class PaymentManager(object):
     channel = 'wallet'
     channel_manager = None
@@ -45,7 +46,7 @@ class PaymentManager(object):
                 card=kwargs.get('card'),
             )
         elif channel == 'wallet':
-            from ..wallet import WalletChannelManager
+            from .wallet import WalletChannelManager
             self.channel_manager = WalletChannelManager(invoice=kwargs.get('invoice'))
         elif channel == 'snap':
             self.channel_manager = Snap(

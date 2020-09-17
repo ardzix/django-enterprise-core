@@ -21,6 +21,7 @@ from .models import *
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth import get_user_model as U
 from django.contrib.contenttypes.models import ContentType
+from ...structures.authentication.models import User
 
 
 class UserForm(ModelForm):

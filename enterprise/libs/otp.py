@@ -18,7 +18,6 @@
 import random
 
 
-
 def generate_otp_code(length):
     """Generate OTP code with custom length
 

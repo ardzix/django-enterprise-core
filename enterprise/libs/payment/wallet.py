@@ -28,6 +28,7 @@ def get_balance(user):
         ).aggregate(Sum('amount'))['amount__sum']
     return balance if balance is not None else Decimal(0)
 
+
 def transfer_wallet(from_user, to_user, total, obj=None, description="Transfer balance"):
 
     if total <= 0:
