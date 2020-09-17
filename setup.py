@@ -63,15 +63,15 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'Django==2.2.13',
-        'djangorestframework==3.9.1',
-        'timeago==1.0.8',
-        'psycopg2==2.7.5',
+        'Django==3.1.1',
+        'djangorestframework==3.11.1',
+        'timeago==1.0.14',
+        'psycopg2==2.8.6',
         'postgis==1.0.4',
-        'arrow==0.12.1',
-        'pycountry==17.5.14',
+        'arrow==0.16.1',
+        'pycountry==20.7.3',
         'rackspacesdk==0.7.5',
-        'openstacksdk==0.17.2',
+        'openstacksdk==0.49.0',
         'PyJWT==1.7.1'
     ],
 
