@@ -68,7 +68,7 @@ setup(
         'timeago==1.0.14',
         'psycopg2==2.8.6',
         'postgis==1.0.4',
-        'arrow==0.16.1',
+        'arrow==0.16.0',
         'pycountry==20.7.3',
         'rackspacesdk==0.7.5',
         'openstacksdk==0.49.0',
