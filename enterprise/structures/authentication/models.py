@@ -199,12 +199,15 @@ def send_verification_email(email, user, base_url=None, *args, **kwargs):
     code = generate_otp_code(6)
     code_hash = uuid.uuid4()
 
+    base_url = getattr(settings, 'BASE_URL')
+    frontend_base_url = getattr(settings, 'FRONTEND_BASE_URL') if hasattr(settings, 'FRONTEND_BASE_URL') else base_url
+
     context = {
         "code": code,
         "code_hash": code_hash,
         "name": user.full_name,
-        "base_url": getattr(settings, 'BASE_URL'),
-        "frontend_base_url": getattr(settings, 'FRONTEND_BASE_URL')
+        "base_url": base_url,
+        "frontend_base_url": frontend_base_url
     }
 
     send_mail(
