@@ -72,8 +72,11 @@ setup(
         'pycountry==20.7.3',
         'rackspacesdk==0.7.5',
         'openstacksdk==0.17.2',
-        'PyJWT==1.7.1',
-        # '-e git+https://github.com/ardzix/django-datatable.git#egg=datatable'
+        'PyJWT==1.7.1'
+    ],
+
+    dependency_links=[
+        'git+https://github.com/ardzix/django-datatable.git#egg=datatable'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).
