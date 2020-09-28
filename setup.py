@@ -76,7 +76,7 @@ setup(
     ],
 
     dependency_links=[
-        'git+https://github.com/ardzix/django-datatable.git#egg=datatable'
+        'https://github.com/ardzix/django-datatable.git#egg=datatable'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).
