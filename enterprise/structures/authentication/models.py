@@ -172,7 +172,7 @@ class RegisterToken(models.Model):
 
 class EmailVerification(models.Model):
     email = models.EmailField()
-    code = models.CharField(max_length=6)
+    code = models.CharField(max_length=100)
     code_hash = models.CharField(max_length=100, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     user = models.ForeignKey(
