@@ -247,7 +247,7 @@ class PhoneVerification(models.Model):
         verbose_name_plural = _('Phone Verifications')
 
 
-def send_verification_message(phone_number, *args, **kwargs):
+def send_verification_phone(phone_number, *args, **kwargs):
     import nexmo
     code = generate_otp_code(6)
     nexmo_client = nexmo.Client(key=settings.NEXMO_API_KEY, secret=settings.NEXMO_API_SECRET)
