@@ -71,6 +71,7 @@ setup(
         'pycountry==17.5.14',
         'rackspacesdk==0.7.5',
         'openstacksdk==0.17.2',
+        'google-cloud-storage==1.31.2',
         'PyJWT==1.7.1'
     ],
 
