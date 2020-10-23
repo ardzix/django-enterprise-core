@@ -15,7 +15,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.4.1',
+    version='0.4.2',
 
     description='A bunch of libraries for building backend enterprise on django',
     long_description=long_description,
@@ -63,17 +63,18 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'Django==2.2.13',
-        'djangorestframework==3.9.1',
-        'timeago==1.0.8',
-        'psycopg2==2.7.5',
+        'Django==3.1.1',
+        'djangorestframework==3.11.1',
+        'timeago==1.0.14',
+        'psycopg2==2.8.6',
         'postgis==1.0.4',
-        'arrow==0.12.1',
-        'pycountry==17.5.14',
+        'arrow==0.16.0',
+        'pycountry==20.7.3',
         'rackspacesdk==0.7.5',
         'openstacksdk==0.17.2',
         'PyJWT==1.7.1',
-        'user-agents==2.2.0'
+        'user-agents==2.2.0',
+        'datatable @ git+https://github.com/ardzix/django-datatable.git#egg=datatable'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).

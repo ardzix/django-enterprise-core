@@ -92,7 +92,6 @@ class UserFormView(ProtectedMixin, TemplateView):
 
         if form.is_valid():
             user = form.save(commit=False)
-            user.groups.set(form.cleaned_data.get('groups'))
 
             if form.cleaned_data.get(
                     'password') and form.cleaned_data.get('password') != '':
@@ -101,6 +100,7 @@ class UserFormView(ProtectedMixin, TemplateView):
                 user.password = u_pass
 
             user.save()
+            user.groups.set(form.cleaned_data.get('groups'))
             if hasattr(user, 'permissions'):
                 user.permissions.set(form.cleaned_data.get('permissions'))
                 user.save()

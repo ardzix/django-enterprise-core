@@ -91,7 +91,7 @@ class APILog(models.Model):
 
 class File(BaseModelGeneric):
     display_name = models.CharField(max_length=150)
-    short_name = models.SlugField(max_length=150)
+    short_name = models.SlugField(max_length=150, blank=True, null=True)
     file = models.FileField(
         storage=storage.FILE_STORAGE,
         max_length=300,

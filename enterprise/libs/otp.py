@@ -29,7 +29,6 @@ MAX_OTP_ATTEMPT = getattr(settings, "MAX_OTP_ATTEMPT", 4)
 SMS_GATEWAY_PROVIDER = getattr(settings, "SMS_GATEWAY_PROVIDER", "wavecell")
 AVAILABLE_SMS_GATEWAY = ['nexmo', 'wavecell']
 
-
 def generate_otp_code(length):
     """Generate OTP code with custom length
 
