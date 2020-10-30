@@ -7,7 +7,7 @@ from django.utils.crypto import get_random_string
 from django.utils.deconstruct import deconstructible
 from django.utils.encoding import force_text as force_unicode, smart_str
 from django.utils.functional import cached_property
-
+from django.contrib.auth import get_user_model
 from google.cloud import storage
 
 
@@ -16,7 +16,7 @@ class GoogleCloudStorage(FileSystemStorage):
         if not settings.USE_GCS:
             return None
 
-        self.purpose = kwargs.get('purpose')
+        self.purpose = kwargs.pop('purpose')
         # connect to the bucket(kur-bri-co-id)
         self.client = storage.Client.from_service_account_json(
             settings.GCP_CREDENTIAL)
@@ -26,7 +26,7 @@ class GoogleCloudStorage(FileSystemStorage):
     def _open(self, name, mode='rb'):
         return ContentFile(self.get_blob(name).download_as_string())
 
-    def _save(self, sourcefile, name, encode_name=True):
+    def _save(self, name, content, encode_name=True):
         if encode_name:
             # name will be something like 'dev/file/2020-10-13/kNnauKls.png'
             name = self.get_valid_name(name)
@@ -36,15 +36,15 @@ class GoogleCloudStorage(FileSystemStorage):
         bucket = bucket.blob(name)
 
         # this upload file will return nothing
-        bucket.upload_from_filename(sourcefile)
+        bucket.upload_from_file(content)
 
         # get url
-        image_url = self.get_blob(name)._properties['selfLink']
+        uploaded = self.get_blob(name)
 
         if self.purpose and hasattr(uploaded, "name"):
             from enterprise.structures.integration.models import ResizeImageTemp
             rit = ResizeImageTemp(
-                image=image_url,
+                image=uploaded._properties['selfLink'],
                 purpose=self.purpose)
             rit.created_by = get_user_model().objects.first()
             rit.save()
