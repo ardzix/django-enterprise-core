@@ -66,7 +66,7 @@ setup(
         'Django==3.1.1',
         'djangorestframework==3.11.1',
         'timeago==1.0.14',
-        'psycopg2==2.8.6',
+        # 'psycopg2==2.8.6',
         'postgis==1.0.4',
         'arrow==0.16.0',
         'pycountry==20.7.3',
