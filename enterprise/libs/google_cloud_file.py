@@ -10,7 +10,7 @@ from django.utils.functional import cached_property
 from django.contrib.auth import get_user_model
 from google.cloud import storage
 
-
+@deconstructible
 class GoogleCloudStorage(FileSystemStorage):
     def __init__(self, *args, **kwargs):
         if not settings.USE_GCS:
@@ -44,12 +44,13 @@ class GoogleCloudStorage(FileSystemStorage):
         if self.purpose and hasattr(uploaded, "name"):
             from enterprise.structures.integration.models import ResizeImageTemp
             rit = ResizeImageTemp(
+                # image=uploaded._properties['mediaLink'],
                 image=uploaded._properties['selfLink'],
                 purpose=self.purpose)
             rit.created_by = get_user_model().objects.first()
             rit.save()
 
-        return name
+        return rit.image.replace(settings.GCS_BASE_URL,"")
 
     def get_valid_name(self, name):
         extension = os.path.splitext(name)[1]

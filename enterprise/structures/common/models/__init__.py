@@ -119,7 +119,10 @@ class File(BaseModelGeneric):
         return None
 
     def get_safe_url(self):
-        ru = settings.RACKSPACE_BASE_URL + '/'
+        if settings.USE_RACKSPACE:
+            ru = settings.RACKSPACE_BASE_URL + '/'
+        else:
+            ru = settings.GCS_BASE_URL + '/'
         url = self.file.url
         if 'http' in url:
             url = url.replace(ru,'')
