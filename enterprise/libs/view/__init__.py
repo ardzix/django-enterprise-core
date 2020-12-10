@@ -30,7 +30,9 @@ from django.conf import settings
 from django.shortcuts import redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 from rest_framework.authtoken.models import Token
+from user_agents import parse
 from ..brand import BrandManager
 User = settings.AUTH_USER_MODEL
 
@@ -195,3 +197,44 @@ class JSONResponseMixin(object):
     def handle_no_permission(self, request, *args, **kwargs):
         return permission_denied(
             request, "403: you're not authorized to access this app")
+
+class ResponsiveTemplateView(TemplateView):
+    """
+    Auto get template if user agen desktop or mobile
+
+    usage:
+
+    from enterprise.lib.view import ResponsiveTemplateView
+
+    class HomeView(ResponsiveTemplateView):
+        template_name = 'home/index.html'
+        def get(self, request):
+            ....
+    
+    from core above, automaticly if UA is mobile
+    template_name will be change automaticly to
+
+        'home/mobile/index.html'
+    
+    So, you must create folder and mobile template first
+    """
+
+    def get_template(self, request, template_name):
+        """
+        get template automaticly to mobile template
+        """
+
+        ua_string = request.META.get("HTTP_USER_AGENT")
+        user_agent = parse(ua_string)
+
+        if user_agent.is_mobile:
+            template_name_list = template_name.split("/")
+            template_name_list.insert(-1, "mobile")
+            template_name = "/".join(template_name_list)
+
+        return template_name
+
+    def dispatch(self, request, *args, **kwargs):
+        self.template_name = self.get_template(request, self.template_name)
+
+        return super().dispatch(request, *args, **kwargs)

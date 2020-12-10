@@ -291,3 +291,13 @@ def save_ev(sender, instance, **kwargs):
         if ev:
             ev.user = instance
             ev.save()
+
+
+class OTPAttempt(models.Model):
+    phone_number = models.CharField(max_length=20)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
+    attempt_at = models.DateTimeField(default=timezone.now)

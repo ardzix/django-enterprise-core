@@ -73,6 +73,7 @@ setup(
         'rackspacesdk==0.7.5',
         'openstacksdk==0.17.2',
         'PyJWT==1.7.1',
+        'user-agents==2.2.0',
         'datatable @ git+https://github.com/ardzix/django-datatable.git#egg=datatable'
     ],
 
