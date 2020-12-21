@@ -3,8 +3,8 @@ import json
 
 from django.conf import settings
 
-WAVECELL_API_KEY = getattr(settings, 'WAVECELL_API_KEY')
-WAVECELL_SUB_ACC = getattr(settings, 'WAVECELL_SUB_ACC')
+WAVECELL_API_KEY = getattr(settings, 'WAVECELL_API_KEY', '')
+WAVECELL_SUB_ACC = getattr(settings, 'WAVECELL_SUB_ACC', '')
 DEFAULT_TEMPLATE = "JAGA KERAHASIAAN ANDA, KODE TIDAK UNTUK DIBAGIKAN. Kode RAHASIA anda adalah {code}"
 
 
