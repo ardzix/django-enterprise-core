@@ -66,7 +66,6 @@ setup(
         'Django==3.1.1',
         'djangorestframework==3.11.1',
         'timeago==1.0.14',
-        # 'psycopg2==2.8.6',
         'postgis==1.0.4',
         'arrow==0.16.0',
         'pycountry==20.7.3',
@@ -74,7 +73,6 @@ setup(
         'openstacksdk==0.17.2',
         'PyJWT==1.7.1',
         'user-agents==2.2.0',
-        'datatable @ git+https://github.com/ardzix/django-datatable.git#egg=datatable'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).
