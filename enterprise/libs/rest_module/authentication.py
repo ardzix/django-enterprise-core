@@ -6,7 +6,7 @@ from django.conf import settings
 
 from rest_framework import exceptions
 from rest_framework.authentication import TokenAuthentication
-from .permissions import *
+from .permission import *
 
 SAFE_METHODS = ['GET', ]
 EXPIRED_TOKEN = getattr(settings, 'EXPIRED_TOKEN', '24h')
