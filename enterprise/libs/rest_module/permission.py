@@ -96,15 +96,11 @@ class PanelPermission(BasePermission):
     }
 
     def has_permission(self, request, view):
-        # If user not logged in, return False
-        if not request.user.is_authenticated:
-            return False
+        # If user is super, return True
+        if request.user.is_authenticated and request.user.is_superuser or request.user.is_staff:
+            return True
 
-        # If user is not staff nor super, return False
-        if not request.user.is_staff or request.user.is_superuser:
-            return False
-
-        return True
+        return False
 
     def has_object_permission(self, request, view, obj):
         # Allow if user is superuser
