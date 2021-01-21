@@ -17,7 +17,8 @@
 '''
 
 from rest_framework import mixins
-from enterprise.libs.rest_module.permission import JWTAuthenticated, IsAuthenticated, AllowAny
+from enterprise.libs.rest_module.permissions import JWTAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import GenericViewSet
 from .authentication import *
 
