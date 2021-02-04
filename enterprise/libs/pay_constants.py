@@ -201,3 +201,19 @@ BANK_CHOICES = (
     ("RBS", "Royal Bank of Scotland (RBS)"),
     ("STANDARD_CHARTERED", "Standard Chartered Bank"),
 )
+PAYMENT_CHANNELS = {
+    ('wallet', _('Wecare Wallet')),
+    ('gopay', _('GoPay')),
+    ('permata', _('Bank Transfer Permata')),
+    ('bca', _('Bank Transfer BCA')),
+    ('bni', _('Bank Transfer BNI')),
+    ('mandiri', _('Bank Transfer Mandiri')),
+    ('credit_card', _('Credit Card')),
+    ('snap', _('Midtrans Snap')),
+    ('ovo', _('OVO')),
+    ('dana', _('Dana')),
+    ('linkaja', _('Linkaja')),
+    ('jenius', _('Jenius')),
+    ('paypal', _('Paypal')),
+    ('shopeepay', _('Shopee Pay')),
+}

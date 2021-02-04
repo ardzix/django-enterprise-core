@@ -67,6 +67,7 @@ class _BaseMidtransPay(object):
     '''
     payload = {}
     invoice = None
+    request_status_code = None
 
     def __init__(self, payment_type, invoice):
         self.invoice = invoice
@@ -145,11 +146,17 @@ class _BaseMidtransPay(object):
         print(self.payload)
         r = requests.post(url, data=json.dumps(self.payload, cls=DjangoJSONEncoder), headers=headers)
         r_dict = r.json()
+        self.request_status_code = r_dict.get('status_code')
 
         return r_dict
 
     def charge(self, user, amount):
         from enterprise.structures.transaction.models.midtrans import Midtrans
+        from enterprise.structures.transaction.models import Invoice
+
+        invoice = Invoice.objects.get(number=self.invoice.number)
+        invoice.published_at = datetime.datetime.now()
+        invoice.save()
 
         if not self.invoice:
             raise Exception('Invoice is null')
@@ -229,6 +236,17 @@ class CreditCard(_BaseMidtransPay):
   
         )
 
+class OneClick(_BaseMidtransPay):
+    def __init__(self, invoice, *args, **kwargs):
+        super().__init__('credit_card', invoice=invoice)
+        self.add_payload(
+            credit_card = {
+                'token_id': kwargs.get('token_id'),
+                'save_token_id': True,
+            }
+  
+        )
+
 class Snap(_BaseMidtransPay):
     def __init__(self, invoice, *args, **kwargs):
         super(Snap, self).__init__('snap', invoice=invoice)
@@ -237,6 +255,13 @@ class Snap(_BaseMidtransPay):
             payment_channel = PAYMENT_TYPE_CHOICES
         self.add_payload(credit_card = {'secure':True})
         self.add_payload(enabled_payments = list(k for k,v in payment_channel))
+        if 'bca_va' in payment_channel:
+            self.add_payload(
+                bca_va = {
+                    'va_number': kwargs.get('phone_number'),
+                    'sub_company_code': '10775',
+                }
+            )
 
     def get_charge_url(self):
         return '%s/snap/v1/transactions' % getattr(settings, 'APP_URL',
