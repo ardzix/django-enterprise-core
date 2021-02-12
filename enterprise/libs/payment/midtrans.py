@@ -84,11 +84,9 @@ class _BaseMidtransPay(object):
                 self.add_callbacks(
                     {
                         'finish': '%s?inv=%s' % (
-                            reverse('donation:success'), 
                             invoice.number
                         ),
                         'pending': '%s?inv=%s' % (
-                            reverse('payment:status'), 
                             invoice.number
                         ),
                     }
@@ -102,7 +100,7 @@ class _BaseMidtransPay(object):
                     "id": item.id62,
                     "price": int(item.amount),
                     "quantity": item.qty,
-                    "name": item.item_name,
+                    "name": item.name,
                 })
             self.add_item_details(items)
 
