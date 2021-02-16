@@ -83,10 +83,10 @@ class _BaseMidtransPay(object):
             try:
                 self.add_callbacks(
                     {
-                        'finish': '%s?inv=%s' % (
+                        'finish': '/success/?inv=%s' % (
                             invoice.number
                         ),
-                        'pending': '%s?inv=%s' % (
+                        'pending': '/pending/?inv=%s' % (
                             invoice.number
                         ),
                     }
