@@ -103,24 +103,26 @@ class ProtectedMixin(LoginRequiredMixin):
             return True
 
         edit = request.GET.get("edit")
+
+        model_name = self.model.__name__ if hasattr(self.model, '__name__') else str(self.model)
         if request.method == "GET":
-            if "view_" + self.model in self.get_permissions(request):
+            if "view_" + model_name in self.get_permissions(request):
                 return True
             if self.is_index_page:
                 return True
         elif edit and request.method == "POST":
-            if "change_" + self.model in self.get_permissions(request):
+            if "change_" + model_name in self.get_permissions(request):
                 return True
         elif not edit and request.method == "POST":
-            if "add_" + self.model in self.get_permissions(request):
+            if "add_" + model_name in self.get_permissions(request):
                 return True
         elif request.method == "DELETE":
-            if "delete_" + self.model in self.get_permissions(request):
+            if "delete_" + model_name in self.get_permissions(request):
                 return True
         elif edit and request.method == "PUT":
-            if "approve_" + self.model in self.get_permissions(request):
+            if "approve_" + model_name in self.get_permissions(request):
                 return True
-            elif "publish_" + self.model in self.get_permissions(request):
+            elif "publish_" + model_name in self.get_permissions(request):
                 return True
 
         return False
