@@ -66,13 +66,13 @@ setup(
         'Django==3.1.1',
         'djangorestframework==3.11.1',
         'timeago==1.0.14',
-        'psycopg2==2.8.6',
         'postgis==1.0.4',
         'arrow==0.16.0',
         'pycountry==20.7.3',
         'rackspacesdk==0.7.5',
         'openstacksdk==0.17.2',
         'PyJWT==2.0.0'
+        'user-agents==2.2.0',
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).

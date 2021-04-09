@@ -247,7 +247,7 @@ class PhoneVerification(models.Model):
         verbose_name_plural = _('Phone Verifications')
 
 
-def send_verification_message(phone_number, *args, **kwargs):
+def send_verification_phone(phone_number, *args, **kwargs):
     import nexmo
     code = generate_otp_code(6)
     nexmo_client = nexmo.Client(key=settings.NEXMO_API_KEY, secret=settings.NEXMO_API_SECRET)
@@ -291,3 +291,13 @@ def save_ev(sender, instance, **kwargs):
         if ev:
             ev.user = instance
             ev.save()
+
+
+class OTPAttempt(models.Model):
+    phone_number = models.CharField(max_length=20)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
+    attempt_at = models.DateTimeField(default=timezone.now)
