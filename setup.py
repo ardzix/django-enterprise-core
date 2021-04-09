@@ -72,7 +72,7 @@ setup(
         'pycountry==20.7.3',
         'rackspacesdk==0.7.5',
         'openstacksdk==0.17.2',
-        'PyJWT'
+        'PyJWT==2.0.0'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).
