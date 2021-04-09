@@ -71,7 +71,7 @@ setup(
         'pycountry==20.7.3',
         'rackspacesdk==0.7.5',
         'openstacksdk==0.17.2',
-        'PyJWT==2.0.0'
+        'PyJWT==2.0.0',
         'user-agents==2.2.0',
     ],
 
