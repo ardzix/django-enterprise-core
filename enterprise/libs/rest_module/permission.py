@@ -53,8 +53,7 @@ class IsOwnerOrReadOnly(BasePermission):
         return False
 
     def has_object_permission(self, request, view, obj):
-
-        if view.action in ['list', 'retrieve']:
+        if view.action in ['list', 'retrieve', 'create']:
             return True
 
         # if not list or retrieve, if not log in then always False
