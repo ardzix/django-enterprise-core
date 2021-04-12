@@ -73,10 +73,10 @@ class UGCGenericViewSet(GenericViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        if self.action in ['update', 'delete']:
-            permission_classes = [IsOwnerAuthenticated]
-        else:
+        if self.action in ['list', 'retrieve', 'create']:
             permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [IsOwnerAuthenticated]
         self.permission_classes = permission_classes
         return [permission() for permission in permission_classes]
 
