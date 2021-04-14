@@ -77,7 +77,6 @@ class UGCGenericViewSet(GenericViewSet):
             permission_classes = [IsAuthenticated]
         else:
             permission_classes = [IsOwnerAuthenticated]
-        print(permission_classes)
         self.permission_classes = permission_classes
         return [permission() for permission in permission_classes]
 
