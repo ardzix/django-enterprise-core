@@ -64,7 +64,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         'Django==3.1.1',
-        'djangorestframework==3.11.1',
+        'djangorestframework==3.11.2',
         'timeago==1.0.14',
         'postgis==1.0.4',
         'arrow==0.16.0',
