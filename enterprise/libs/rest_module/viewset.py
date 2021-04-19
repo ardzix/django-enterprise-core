@@ -146,7 +146,7 @@ class PrivateContentRetrieveViewSet(PrivateContentGenericViewSet,
     pass
 
 
-class RetrieveViewSet(UGCGenericViewSet,
+class RetrieveViewSet(GenericViewSet,
                       mixins.RetrieveModelMixin,
                       mixins.ListModelMixin):
     pass
