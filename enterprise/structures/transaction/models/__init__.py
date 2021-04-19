@@ -39,6 +39,13 @@ from enterprise.structures.common.models import BaseModelGeneric
 
 from .midtrans import Midtrans
 from .manual import Manual
+from .jenius import Jenius
+from .ovo import Ovo
+from .paypal import Paypal
+from .dana import Dana
+from .linkaja import Linkaja
+from .doku import Doku
+from .shopeepay import Shopeepay
 
 User = settings.AUTH_USER_MODEL
 
@@ -98,6 +105,34 @@ class Invoice(BaseModelGeneric):
     def get_formatted_amount(self):
         return 'Rp.{:,.0f},-'.format(self.amount)
 
+    def get_payment_method(self):
+        if self.status == 'pending':
+            return 'Unpaid'
+
+        tp = TopUp.objects.filter(
+            invoice = self
+        ).first()
+
+        if tp:
+            if tp.midtrans:
+                return tp.midtrans.payment_type
+            elif tp.ovo:
+                return 'Ovo'
+            elif tp.paypal:
+                return 'Paypal'
+            elif tp.jenius:
+                return 'Jenius'
+            elif tp.dana:
+                return 'Dana'
+            elif tp.linkaja:
+                return 'Linkaja'
+            elif tp.doku:
+                return 'doku'
+            else:
+                return 'Insert Manual'
+        else:
+            return 'Wallet'
+
     class Meta:
         verbose_name = _("Invoice")
         verbose_name_plural = _("Invoices")
@@ -125,6 +160,12 @@ class InvoiceItem(BaseModelGeneric):
     def get_formatted_amount(self):
         return 'Rp.{:,.0f},-'.format(self.amount)
 
+    def get_type_item(self):
+        if self.content_type:
+            return self.content_type.model
+        
+        return '-'
+
     class Meta:
         verbose_name = _("Invoice Item")
         verbose_name_plural = _("Invoice Items")
@@ -140,6 +181,36 @@ class TopUp(BaseModelGeneric):
     )
     manual = models.ForeignKey(
         Manual,
+        on_delete=models.CASCADE,
+        blank=True, null=True
+    )
+    jenius = models.ForeignKey(
+        Jenius, 
+        on_delete=models.CASCADE,
+        blank=True, null=True
+    )
+    ovo = models.ForeignKey(
+        Ovo, 
+        on_delete=models.CASCADE,
+        blank=True, null=True
+    )
+    paypal = models.ForeignKey(
+        Paypal, 
+        on_delete=models.CASCADE,
+        blank=True, null=True
+    )
+    dana = models.ForeignKey(
+        Dana,
+        on_delete=models.CASCADE,
+        blank=True, null=True
+    )
+    linkaja = models.ForeignKey(
+        Linkaja,
+        on_delete=models.CASCADE,
+        blank=True, null=True
+    )
+    doku = models.ForeignKey(
+        Doku,
         on_delete=models.CASCADE,
         blank=True, null=True
     )
@@ -182,7 +253,7 @@ class Bank(BaseModelGeneric):
 
 class BankAccount(BaseModelGeneric):
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE)
-    number = models.CharField(max_length=20)
+    number = models.CharField(max_length=50)
     name = models.CharField(max_length=120)
     notes = models.TextField(blank=True, null=True)  # branch name, etc.d
 
@@ -193,6 +264,57 @@ class BankAccount(BaseModelGeneric):
         verbose_name = _("Bank Account")
         verbose_name_plural = _("Bank Accounts")
 
+class CashOutSession(BaseModelGeneric):
+    number = models.CharField(max_length=20)
+    begin_at = models.DateTimeField()
+    end_at = models.DateTimeField()
+    processed_at = models.DateTimeField(blank=True, null=True)
+    processed_by = models.ForeignKey(User, related_name='cashoutbatch_processed_by', on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.number
+
+    def set_number(self):
+        self.number = to_timestamp(timezone.now())
+
+    class Meta:
+        app_label = "cashout"
+
+
+class CashOutRequest(BaseModelGeneric):
+    # use : created_by, approved_by; created_by = requester, approved_by = managed_by
+    session = models.ForeignKey(CashOutSession, on_delete=models.CASCADE)
+    last_pk = models.BigIntegerField()
+    total_balance = models.DecimalField(max_digits=19, decimal_places=2)
+    total_requested = models.DecimalField(max_digits=19, decimal_places=2)
+    status = models.CharField(max_length=20, choices=WITHDRAW_STATUSES, default="pending")
+
+    def __str__(self):
+        return "%s:%s" % (self.session.number, self.created_by)
+
+    @property
+    def batch(self):
+        return self.session.number
+
+    def get_buttons(self):
+        buttons = [  
+            {
+                "style":"margin:2px", 
+                "class":"btn btn-sm btn-danger btn-cons btn-animated from-left pg pg-arrow_right", 
+                "on_click" : "delete_data", 
+                "icon":"fa-trash", 
+                "text": "Delete"
+            } 
+        ]
+
+        button_str = ""
+        for b in buttons:
+            button_str += '<button type="button" style="'+b['style']+'" class="'+b['class']+'" onclick="'+b['on_click']+'(\''+self.id62+'\')"><span><i class="fa '+b['icon']+'"></i>&nbsp;'+b['text']+'</span></button>'
+
+        return button_str
+
+    class Meta:
+        app_label = "cashout"
 
 class Withdraw(BaseModelGeneric):
     # use : created_by, approved_by; created_by = requester, approved_by = managed_by

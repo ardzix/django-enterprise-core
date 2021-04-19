@@ -284,6 +284,10 @@ class _BaseAbstract(models.Model):
 
     # Setter
     def set_lat_lng(self, field_name, value):
+        '''
+        Set latitude, longitude in django point to a pointfield model field
+        field_name must be present on the model and must be gis point field
+        '''
         point = None
 
         if hasattr(

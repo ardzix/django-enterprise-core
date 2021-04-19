@@ -22,12 +22,12 @@ from django.conf import settings
 from datetime import datetime, timedelta
 
 from enterprise.libs.sms import Wavecell, Nexmo
-from enterprise.structures.authentication.models import OTPAttempt
 
 RANGE_OTP_ATTEMPT = getattr(settings, "RANGE_OTP_ATTEMPT", 1)  # value in hour
 MAX_OTP_ATTEMPT = getattr(settings, "MAX_OTP_ATTEMPT", 4)
 SMS_GATEWAY_PROVIDER = getattr(settings, "SMS_GATEWAY_PROVIDER", "wavecell")
 AVAILABLE_SMS_GATEWAY = ['nexmo', 'wavecell']
+
 
 def generate_otp_code(length):
     """Generate OTP code with custom length
@@ -76,6 +76,7 @@ class OTPManager(object):
         This method should be return true if phone number has reached limit attempt
         Limit attempt can be setting at settings.py
         '''
+        from enterprise.structures.authentication.models import OTPAttempt
 
         phone_number = self.phone_number
         periode = datetime.now() - timedelta(hours=RANGE_OTP_ATTEMPT)
@@ -89,6 +90,8 @@ class OTPManager(object):
         return False
 
     def request_otp(self, *args, **kwargs):
+        from enterprise.structures.authentication.models import OTPAttempt
+
         request_id = None
         errors = None
         phone_number = self.phone_number
