@@ -149,7 +149,7 @@ class PrivateContentRetrieveViewSet(PrivateContentGenericViewSet,
 class RetrieveViewSet(GenericViewSet,
                       mixins.RetrieveModelMixin,
                       mixins.ListModelMixin):
-    pass
+    lookup_field = 'id62'
 
 
 class SingleObjectOwnedViewSet(UGCGenericViewSet,
