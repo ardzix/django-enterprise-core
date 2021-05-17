@@ -237,13 +237,11 @@ class WalletChannelManager(object):
                 'amount': item.amount,
             })
 
-            receiver = item.content_object.owned_by
-
-            transfer_wallet(
+            receiver = item.content_object
+            transfer_fund(
                 user,
-                receiver,
                 int(item.amount * item.qty),
-                obj=item,
+                obj=receiver,
                 description='%s: %s%s' % (
                     item.content_type.__str__(),
                     item.name,
@@ -257,5 +255,6 @@ class WalletChannelManager(object):
 
         return {
             'message': 'Transfer success',
+            'success': True,
             'items': items
         }
