@@ -114,7 +114,7 @@ class _BaseAbstract(models.Model):
 
     def approve(self, user=None, *args, **kwargs):
         if user:
-            # mark when the record deleted
+            # mark when the record approver
             self.unapproved_at = None
             self.unapproved_at_timestamp = None
             self.unapproved_by = None
@@ -124,10 +124,11 @@ class _BaseAbstract(models.Model):
 
             # save it
             return super(_BaseAbstract, self).save(*args, **kwargs)
+        raise Exception('You must specify user parameter')
 
     def unapprove(self, user=None, *args, **kwargs):
         if user:
-            # mark when the record reovered
+            # mark when the record unapproved
             self.approved_at = None
             self.approved_at_timestamp = None
             self.approved_by = None
@@ -137,6 +138,7 @@ class _BaseAbstract(models.Model):
 
             # save it
             return super(_BaseAbstract, self).save(*args, **kwargs)
+        raise Exception('You must specify user object')
 
     def reject(self, user=None, *args, **kwargs):
         self.unapprove(user, *args, **kwargs)
@@ -153,6 +155,7 @@ class _BaseAbstract(models.Model):
 
             # save it
             return super(_BaseAbstract, self).save(*args, **kwargs)
+        raise Exception('You must specify user object')
 
     def unpublish(self, user=None, *args, **kwargs):
         if user:
@@ -166,17 +169,18 @@ class _BaseAbstract(models.Model):
 
             # save it
             return super(_BaseAbstract, self).save(*args, **kwargs)
+        raise Exception('You must specify user object')
 
     def delete(self, user=None, *args, **kwargs):
         if user:
             # mark when the record deleted
             self.deleted_by = user
+            self.deleted_at = timezone.now()
+            self.deleted_at_timestamp = to_timestamp(self.deleted_at)
 
-        self.deleted_at = timezone.now()
-        self.deleted_at_timestamp = to_timestamp(self.deleted_at)
-
-        # save it if there's a deleter
-        return super(_BaseAbstract, self).save(*args, **kwargs)
+            # save it if there's a deleter
+            return super(_BaseAbstract, self).save(*args, **kwargs)
+        raise Exception('You must specify user object')
 
     def permanent_delete(self, *args, **kwargs):
         return super(_BaseAbstract, self).delete(*args, **kwargs)
@@ -188,8 +192,9 @@ class _BaseAbstract(models.Model):
             self.deleted_at_timestamp = None
             self.deleted_by = user
 
-            # save it if there's a deleter
+            # save it if there's a recoverer
             return super(_BaseAbstract, self).save(*args, **kwargs)
+        raise Exception('You must specify user object')
 
     def log(self, user, message, *args, **kwargs):
         log = Log()

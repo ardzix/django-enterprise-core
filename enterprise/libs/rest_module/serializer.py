@@ -68,7 +68,7 @@ class CommonSerializer(object):
         return result
 
 
-class LakonModelSerializer(ModelSerializer):
+class LakonModelSerializer(ModelSerializer,CommonSerializer):
     def create(self, validated_data):
         if 'nonce' not in validated_data:
             raise ValidationError({'detail': 'Please provide nonce'})

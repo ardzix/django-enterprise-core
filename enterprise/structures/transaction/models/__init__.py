@@ -172,6 +172,11 @@ class InvoiceItem(BaseModelGeneric):
 
 
 class TopUp(BaseModelGeneric):
+    '''
+    Topup wallet
+    it is a connector from invoice transaction for topup to a wallet object
+    it has post_save signal that handle approval process to make wallet object
+    '''
     amount = models.DecimalField(max_digits=19, decimal_places=2)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     midtrans = models.ForeignKey(
@@ -221,13 +226,16 @@ class TopUp(BaseModelGeneric):
     def __str__(self):
         return "%s - %s" % (self.created_by, self.amount, )
 
-    def approve(self, *args, **kwargs):
+    def approve(self, user,  *args, **kwargs):
         self.status = 'approve'
-        self.save(*args, **kwargs)
+        super().approve(user, *args, **kwargs)
 
-    def deny(self, *args, **kwargs):
+    def reject(self, user, *args, **kwargs):
         self.status = 'deny'
-        self.save(*args, **kwargs)
+        super().reject(user, *args, **kwargs)
+
+    def deny(self, user, *args, **kwargs):
+        return self.reject(user, *args, **kwargs)
 
     def get_formatted_amount(self):
         return 'Rp.{:,.0f},-'.format(self.amount)
@@ -235,6 +243,35 @@ class TopUp(BaseModelGeneric):
     class Meta:
         verbose_name = _("Top Up")
         verbose_name_plural = _("Top Up")
+
+
+@receiver(post_save, sender=TopUp)
+def do_topup(sender, instance, created, **kwargs):
+    from enterprise.libs.payment.wallet import topup_wallet, transfer_wallet
+
+    if instance.status == "approve":
+        topup_wallet(
+            topup=instance,
+            description="TopUp wallet <invoice: %s>" % instance.invoice.number
+        )
+
+        for item in instance.invoice.get_items():
+            print(item)
+            print("transfering balance")
+            if item.content_object:
+                receiver = item.content_object.owned_by
+                transfer_wallet(
+                    instance.owned_by,
+                    receiver,
+                    int(item.amount),
+                    obj=item,
+                    description='%s: %s' % (
+                        item.content_type.__str__(),
+                        item.name
+                    )
+                )
+        instance.status = 'success'
+        instance.save()
 
 
 # Bank
@@ -337,35 +374,6 @@ class Withdraw(BaseModelGeneric):
     class Meta:
         verbose_name = _("Withdraw")
         verbose_name_plural = _("Withdraws")
-
-
-@receiver(post_save, sender=TopUp)
-def do_topup(sender, instance, created, **kwargs):
-    from enterprise.libs.payment.wallet import topup_wallet, transfer_wallet
-
-    if instance.status == "approve":
-        topup_wallet(
-            topup=instance,
-            description="TopUp wallet <invoice: %s>" % instance.invoice.number
-        )
-
-        for item in instance.invoice.get_items():
-            print(item)
-            print("transfering balance")
-            if item.content_object:
-                receiver = item.content_object.owned_by
-                transfer_wallet(
-                    instance.owned_by,
-                    receiver,
-                    int(item.amount),
-                    obj=item,
-                    description='%s: %s' % (
-                        item.content_type.__str__(),
-                        item.name
-                    )
-                )
-        instance.status = 'success'
-        instance.save()
 
 
 def get_default_data():
