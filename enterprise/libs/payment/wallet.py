@@ -212,7 +212,8 @@ def test_fund_wallet():
     withdraw_fund(u, 5000, object, 'Tes transfer fund')
     print('current balance is %s' % '{0:,}'.format(get_balance(u)))
     print('current fund is %s' % '{0:,}'.format(get_fund(object)))
-    deduct_wallet(u, 10000, 'Tes wallet deduction')
+    deduct_wallet(u, topup, description='Tes wallet deduction')
+    print('current balance is %s' % '{0:,}'.format(get_balance(u)))
 
 
 class WalletChannelManager(object):
