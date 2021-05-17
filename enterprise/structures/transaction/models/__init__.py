@@ -51,6 +51,9 @@ User = settings.AUTH_USER_MODEL
 
 
 class Wallet(BaseModelGeneric):
+    '''
+    Personal wallet of users
+    '''
     amount = models.DecimalField(max_digits=19, decimal_places=2)
     description = models.CharField(max_length=200, blank=True, null=True)
     content_type = models.ForeignKey(
@@ -70,6 +73,30 @@ class Wallet(BaseModelGeneric):
     class Meta:
         verbose_name = _("Wallet")
         verbose_name_plural = _("Wallet")
+
+class Fund(BaseModelGeneric):
+    '''
+    Fund of objects, for example: fund of a campaign
+    '''
+    amount = models.DecimalField(max_digits=19, decimal_places=2)
+    description = models.CharField(max_length=200, blank=True, null=True)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, blank=True, null=True)
+    object_id = models.PositiveIntegerField(blank=True, null=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):
+        return "%s:%s" % (self.created_by, self.amount)
+
+    def get_formatted_amount(self):
+        return 'Rp.{:,.0f},-'.format(self.amount)
+
+    def get_absolute_formatted_amount(self):
+        return 'Rp.{:,.0f},-'.format(abs(self.amount))
+
+    class Meta:
+        verbose_name = _("Fund")
+        verbose_name_plural = _("Funds")
 
 
 class Invoice(BaseModelGeneric):
@@ -300,58 +327,6 @@ class BankAccount(BaseModelGeneric):
     class Meta:
         verbose_name = _("Bank Account")
         verbose_name_plural = _("Bank Accounts")
-
-class CashOutSession(BaseModelGeneric):
-    number = models.CharField(max_length=20)
-    begin_at = models.DateTimeField()
-    end_at = models.DateTimeField()
-    processed_at = models.DateTimeField(blank=True, null=True)
-    processed_by = models.ForeignKey(User, related_name='cashoutbatch_processed_by', on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return self.number
-
-    def set_number(self):
-        self.number = to_timestamp(timezone.now())
-
-    class Meta:
-        app_label = "cashout"
-
-
-class CashOutRequest(BaseModelGeneric):
-    # use : created_by, approved_by; created_by = requester, approved_by = managed_by
-    session = models.ForeignKey(CashOutSession, on_delete=models.CASCADE)
-    last_pk = models.BigIntegerField()
-    total_balance = models.DecimalField(max_digits=19, decimal_places=2)
-    total_requested = models.DecimalField(max_digits=19, decimal_places=2)
-    status = models.CharField(max_length=20, choices=WITHDRAW_STATUSES, default="pending")
-
-    def __str__(self):
-        return "%s:%s" % (self.session.number, self.created_by)
-
-    @property
-    def batch(self):
-        return self.session.number
-
-    def get_buttons(self):
-        buttons = [  
-            {
-                "style":"margin:2px", 
-                "class":"btn btn-sm btn-danger btn-cons btn-animated from-left pg pg-arrow_right", 
-                "on_click" : "delete_data", 
-                "icon":"fa-trash", 
-                "text": "Delete"
-            } 
-        ]
-
-        button_str = ""
-        for b in buttons:
-            button_str += '<button type="button" style="'+b['style']+'" class="'+b['class']+'" onclick="'+b['on_click']+'(\''+self.id62+'\')"><span><i class="fa '+b['icon']+'"></i>&nbsp;'+b['text']+'</span></button>'
-
-        return button_str
-
-    class Meta:
-        app_label = "cashout"
 
 class Withdraw(BaseModelGeneric):
     # use : created_by, approved_by; created_by = requester, approved_by = managed_by
