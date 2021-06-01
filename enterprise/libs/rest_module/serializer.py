@@ -71,8 +71,10 @@ class CommonSerializer(object):
     def get_status(self, obj):
         return {
             'approved': True if obj.approved_at else False,
+            'rejected': True if obj.unapproved_at else False,
             'published': True if obj.published_at else False,
             'approved_by': self.user_dict(obj.approved_by),
+            'rejected_by': self.user_dict(obj.unapproved_by),
             'published_by': self.user_dict(obj.published_by)
         }
 
@@ -81,7 +83,6 @@ class CommonSerializer(object):
             return None
         return {
             'email': user.email,
-            'phone_number': user.phone_number,
             'full_name': user.full_name,
         }
 
