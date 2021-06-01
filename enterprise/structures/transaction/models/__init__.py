@@ -46,6 +46,7 @@ from .dana import Dana
 from .linkaja import Linkaja
 from .doku import Doku
 from .shopeepay import Shopeepay
+from .espay import Espay
 
 User = settings.AUTH_USER_MODEL
 
