@@ -80,7 +80,7 @@ class EspayPG(_BaseEspay):
         espay.created_by = user
         espay.save()
 
-        rq_uuid = uuid4()
+        rq_uuid = str(uuid4())
         rq_datetime = datetime.now()
         order_id = self.get_order_id(espay.id62)
         ccy = getattr(settings, 'ESPAY_CCY', 'IDR')
