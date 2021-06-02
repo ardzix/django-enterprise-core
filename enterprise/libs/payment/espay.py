@@ -117,6 +117,8 @@ class EspayPG(_BaseEspay):
             'signature': signature
         }
         self.add_payload(payload)
+        espay.payload = payload
+        espay.save()
 
         result = self.request(self.get_send_invoice_url())
         espay.responses = result
