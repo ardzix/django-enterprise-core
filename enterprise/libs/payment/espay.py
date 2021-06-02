@@ -84,7 +84,7 @@ class EspayPG(_BaseEspay):
         rq_datetime = datetime.now()
         order_id = self.get_order_id(espay.id62)
         ccy = getattr(settings, 'ESPAY_CCY', 'IDR')
-        comm_code = getattr(settings, 'ESPAY_COMMERCE_CODE', 'SGWSOCIALITTA')
+        comm_code = getattr(settings, 'ESPAY_COMMERCE_CODE', '')
         remark1 = user.phone_number
         remark2 = user.full_name
         remark3 = user.email
