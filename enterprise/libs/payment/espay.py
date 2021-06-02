@@ -81,7 +81,7 @@ class EspayPG(_BaseEspay):
         espay.save()
 
         rq_uuid = str(uuid4())
-        rq_datetime = datetime.now()
+        rq_datetime = str(datetime.now())
         order_id = self.get_order_id(espay.id62)
         ccy = getattr(settings, 'ESPAY_CCY', 'IDR')
         comm_code = getattr(settings, 'ESPAY_COMMERCE_CODE', 'SGWSOCIALITTA')
