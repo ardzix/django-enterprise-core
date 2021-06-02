@@ -114,7 +114,8 @@ class EspayPG(_BaseEspay):
             'bank_code': bank_code,
             'update': update,
             'va_expired': va_expired,
-            'signature': signature
+            'signature': signature,
+            'bare_signature': bare_signature
         }
         self.add_payload(payload)
         espay.payload = payload
