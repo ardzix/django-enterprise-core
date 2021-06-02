@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 
 SIGNATURE_KEY = getattr(settings, 'ESPAY_SIGNATURE_KEY', '')
+API_KEY = getattr(settings, 'ESPAY_API_KEY', '')
 
 
 class _BaseEspay(object):
@@ -134,7 +135,7 @@ class BankView(viewsets.GenericViewSet, mixins.ListModelMixin):
         }
         url = '%smerchant/merchantinfo' % getattr(settings, 'ESPAY_API_URL',
                                                    'https://sandbox-api.espay.id/rest/')
-        r = requests.post(url, data={'key': SIGNATURE_KEY}, headers=headers)
+        r = requests.post(url, data={'key': API_KEY}, headers=headers)
         resp = r.json()
 
         if not 'error_code' in resp:
