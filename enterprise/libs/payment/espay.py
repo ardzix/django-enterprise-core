@@ -80,8 +80,8 @@ class EspayPG(_BaseEspay):
         espay.created_by = user
         espay.save()
 
-        rq_uuid = str(uuid4())
-        rq_datetime = str(datetime.now())
+        rq_uuid = uuid4()
+        rq_datetime = datetime.now()
         order_id = self.get_order_id(espay.id62)
         ccy = getattr(settings, 'ESPAY_CCY', 'IDR')
         comm_code = getattr(settings, 'ESPAY_COMMERCE_CODE', 'SGWSOCIALITTA')
@@ -102,8 +102,8 @@ class EspayPG(_BaseEspay):
         signature = self.get_signature(bare_signature)
 
         payload = {
-            'rq_uuid': rq_uuid,
-            'rq_datetime': rq_datetime,
+            'rq_uuid': str(rq_uuid),
+            'rq_datetime': str(rq_datetime),
             'order_id': order_id,
             'amount': amount,
             'ccy': ccy,
@@ -111,7 +111,7 @@ class EspayPG(_BaseEspay):
             'remark1': remark1,
             'remark2': remark2,
             'remark3': remark3,
-            'bank_code': bank_code,
+            'bank_code': str(bank_code),
             'update': update,
             'va_expired': va_expired,
             'signature': signature,
