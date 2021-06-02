@@ -105,7 +105,7 @@ class EspayPG(_BaseEspay):
             'rq_uuid': str(rq_uuid),
             'rq_datetime': str(rq_datetime),
             'order_id': order_id,
-            'amount': amount,
+            'amount': str(amount),
             'ccy': ccy,
             'comm_code': comm_code,
             'remark1': remark1,
