@@ -82,6 +82,7 @@ class EspayPG(_BaseEspay):
 
         invoice = self.invoice
         invoice.published_at = datetime.now()
+        invoice.status = 'process'
         invoice.save()
         user = invoice.owned_by
 
@@ -277,7 +278,7 @@ class NotificationSerializer(serializers.Serializer):
     debit_from_bank = serializers.CharField()
     debit_from = serializers.CharField(required=False)
     debit_from_name = serializers.CharField(required=False)
-    credit_from_bank = serializers.CharField()
+    credit_from_bank = serializers.CharField(required=False)
     credit_from = serializers.CharField(required=False)
     credit_from_name = serializers.CharField(required=False)
     product_code = serializers.CharField()
