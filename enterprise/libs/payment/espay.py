@@ -41,7 +41,7 @@ class _BaseEspay(object):
     def add_payload(self, *args, **kwargs):
         self.payload = {**self.payload, **kwargs}
 
-    def request(self, url):
+    def post_request(self, url):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
         }
@@ -139,7 +139,7 @@ class EspayPG(_BaseEspay):
         espay.payload = payload
         espay.save()
 
-        result = self.request(self.get_send_invoice_url())
+        result = self.post_request(self.get_send_invoice_url())
         espay.responses = result
         espay.save()
 
