@@ -198,16 +198,18 @@ class InquirySerializer(serializers.Serializer):
         if password != ESPAY_PASSWORD or comm_code != ESPAY_COMMERCE_CODE:
             validated_data['error_message'] = 'Invalid credentials'
             validated_data['error_code'] = '0403'
+            return validated_data
 
         espay = Espay.objects.filter(
             transaction_id = order_id
         ).last()
-        payload = espay.payload
 
         if not espay:
             validated_data['error_message'] = 'Order not found'
             validated_data['error_code'] = '0404'
+            return validated_data
 
+        payload = espay.payload
         validated_data['error_message'] = 'Success'
         validated_data['error_code'] = '0000'
         validated_data['rs_datetime'] = datetime.now()
