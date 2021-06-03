@@ -29,7 +29,7 @@ class _BaseEspay(object):
         self.invoice = invoice
 
     def get_order_id(self):
-        order_id = self.invoice.id+'-'+self.invoice.number
+        order_id = str(self.invoice.id)+'-'+self.invoice.number
         if not getattr(settings, 'PRODUCTION', False):
             order_id = '%s-%s-%s' % (
                 order_id.split('-')[0],
