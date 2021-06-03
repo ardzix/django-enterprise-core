@@ -156,6 +156,8 @@ class Invoice(BaseModelGeneric):
                 return 'Linkaja'
             elif tp.doku:
                 return 'doku'
+            elif tp.espay:
+                return 'espay'
             else:
                 return 'Insert Manual'
         else:
@@ -244,6 +246,11 @@ class TopUp(BaseModelGeneric):
     )
     doku = models.ForeignKey(
         Doku,
+        on_delete=models.CASCADE,
+        blank=True, null=True
+    )
+    espay = models.ForeignKey(
+        Espay,
         on_delete=models.CASCADE,
         blank=True, null=True
     )

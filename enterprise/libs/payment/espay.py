@@ -1,4 +1,7 @@
+from enterprise.structures.transaction.models import Invoice, TopUp
 from enterprise.structures.transaction.models.espay import Espay
+from enterprise.libs.payment.wallet import topup_wallet, get_balance
+from enterprise.libs.payment import PaymentManager
 import requests
 import hashlib
 import json
@@ -62,7 +65,8 @@ class _BaseEspay(object):
         method = req.method
         uri = req.url
         data = req.body
-        req_headers = ['"{0}: {1}"'.format(k, v) for k, v in req.headers.items()]
+        req_headers = ['"{0}: {1}"'.format(k, v)
+                       for k, v in req.headers.items()]
         req_headers = " -H ".join(req_headers)
         return command.format(method=method, headers=req_headers, data=data, uri=uri)
 
@@ -71,7 +75,7 @@ class EspayPG(_BaseEspay):
 
     def get_send_invoice_url(self):
         return '%smerchantpg/sendinvoice' % getattr(settings, 'ESPAY_API_URL',
-                                                   'https://sandbox-api.espay.id/rest/')
+                                                    'https://sandbox-api.espay.id/rest/')
 
     def send_invoice(self, bank_code):
         from enterprise.structures.transaction.models.espay import Espay
@@ -152,7 +156,7 @@ class BankView(viewsets.GenericViewSet, mixins.ListModelMixin):
             'Content-Type': 'application/x-www-form-urlencoded',
         }
         url = '%smerchant/merchantinfo' % getattr(settings, 'ESPAY_API_URL',
-                                                   'https://sandbox-api.espay.id/rest/')
+                                                  'https://sandbox-api.espay.id/rest/')
         r = requests.post(url, data={'key': API_KEY}, headers=headers)
         resp = r.json()
 
@@ -161,7 +165,7 @@ class BankView(viewsets.GenericViewSet, mixins.ListModelMixin):
                 {'error_message': r.text},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         if resp.get('error_code') != '0000':
             return Response(
                 {'error_message': resp.get('error_message')},
@@ -173,6 +177,7 @@ class BankView(viewsets.GenericViewSet, mixins.ListModelMixin):
             status=status.HTTP_200_OK
         )
 
+
 class InquirySerializer(serializers.Serializer):
     rq_uuid = serializers.CharField()
     rq_datetime = serializers.DateTimeField()
@@ -183,7 +188,7 @@ class InquirySerializer(serializers.Serializer):
     order_id = serializers.CharField()
 
     def validate(self, attrs):
-        validated_data= super().validate(attrs)
+        validated_data = super().validate(attrs)
         password = validated_data.get('password')
         comm_code = validated_data.get('comm_code')
         order_id = validated_data.get('order_id')
@@ -194,7 +199,7 @@ class InquirySerializer(serializers.Serializer):
             return validated_data
 
         espay = Espay.objects.filter(
-            transaction_id = order_id
+            transaction_id=order_id
         ).last()
 
         if not espay:
@@ -207,11 +212,11 @@ class InquirySerializer(serializers.Serializer):
         validated_data['error_code'] = '0000'
         validated_data['amount'] = espay.amount
         validated_data['ccy'] = payload.get('ccy')
-        validated_data['description'] = 'Payment for: %s' % order_id.split('-')[0]
+        validated_data['description'] = 'Payment for: %s' % order_id.split(
+            '-')[0]
         validated_data['trx_date'] = espay.created_at
 
         salt_string = 'INQUIRY-RS'
-
         uuid = uuid4()
         rs_datetime = str(datetime.now())
         validated_data['response_rq_uuid'] = uuid
@@ -219,8 +224,8 @@ class InquirySerializer(serializers.Serializer):
         error_code = validated_data.get('error_code')
         ##Signature Key##rq_uuid##rs_datetime##order_id##error_code##INQUIRY-RS##
         bare_signature = '##%s##%s##%s##%s##%s##%s##' % (
-            SIGNATURE_KEY, 
-            uuid, 
+            SIGNATURE_KEY,
+            uuid,
             rs_datetime,
             order_id,
             error_code,
@@ -234,10 +239,11 @@ class InquirySerializer(serializers.Serializer):
 
         return validated_data
 
+
 class InquiryView(viewsets.GenericViewSet, mixins.CreateModelMixin):
     serializer_class = InquirySerializer
     permission_classes = (permissions.AllowAny,)
-    
+
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -257,3 +263,135 @@ class InquiryView(viewsets.GenericViewSet, mixins.CreateModelMixin):
         headers = self.get_success_headers(serializer.data)
         return Response(response, status=status.HTTP_201_CREATED, headers=headers)
 
+
+class NotificationSerializer(serializers.Serializer):
+    rq_uuid = serializers.CharField()
+    rq_datetime = serializers.DateTimeField()
+    password = serializers.CharField(required=False)
+    signature = serializers.CharField()
+    member_id = serializers.CharField(required=False)
+    comm_code = serializers.CharField()
+    order_id = serializers.CharField()
+    ccy = serializers.CharField()
+    amount = serializers.DecimalField(max_digits=19, decimal_places=2)
+    debit_from_bank = serializers.CharField()
+    debit_from = serializers.CharField(required=False)
+    debit_from_name = serializers.CharField(required=False)
+    credit_from_bank = serializers.CharField()
+    credit_from = serializers.CharField(required=False)
+    credit_from_name = serializers.CharField(required=False)
+    product_code = serializers.CharField()
+    payment_datetime = serializers.DateTimeField()
+    payment_ref = serializers.CharField()
+
+    def get_order_id(self, number):
+        encoded = '%s-%s' % (
+            number,
+            hashlib.sha256(number.encode()).hexdigest()
+        )
+        return encoded.upper()[0:20]
+
+    def validate(self, attrs):
+        validated_data = super().validate(attrs)
+        amount = validated_data.get('amount')
+        password = validated_data.get('password')
+        comm_code = validated_data.get('comm_code')
+        order_id = validated_data.get('order_id')
+
+        if password != ESPAY_PASSWORD or comm_code != ESPAY_COMMERCE_CODE:
+            validated_data['error_message'] = 'Invalid credentials'
+            validated_data['error_code'] = '0403'
+            return validated_data
+
+        espay = Espay.objects.filter(
+            transaction_id=order_id
+        ).last()
+
+        if not espay:
+            validated_data['error_message'] = 'Order not found'
+            validated_data['error_code'] = '0404'
+            return validated_data
+
+        invoice = None
+        for i in Invoice.objects.filter(number__icontains=order_id.split('-')[0]):
+            if self.get_order_id(i.number) == order_id:
+                invoice = i
+
+        if not invoice:
+            validated_data['error_message'] = 'Invoice not found'
+            validated_data['error_code'] = '0404'
+            return validated_data
+
+        user = invoice.owned_by
+        topup = TopUp.objects.create(
+            amount=amount,
+            invoice=invoice,
+            espay=espay,
+            created_by=user
+        )
+        topup.approve(user)
+        topup_wallet(topup, description="Topup form %s %s %s" % (
+            validated_data.get('debit_from_bank'),
+            validated_data.get('debit_from'),
+            validated_data.get('debit_from_name'),
+        ))
+        balance = get_balance(user)
+
+        if balance >= invoice.amount:
+
+            payment = PaymentManager(
+                channel='wallet',
+                invoice=invoice
+            )
+            channel_manager = payment.get_channel_manager()
+            channel_manager.charge(user, invoice.amount)
+
+        validated_data['error_code'] = '0000'
+
+        salt_string = 'PAYMENTREPORT-RS'
+        uuid = uuid4()
+        rs_datetime = str(datetime.now())
+        validated_data['response_rq_uuid'] = uuid
+        validated_data['response_rs_datetime'] = rs_datetime
+        error_code = validated_data.get('error_code')
+        ##Signature Key##rq_uuid##rs_datetime##order_id##error_code##INQUIRY-RS##
+        bare_signature = '##%s##%s##%s##%s##%s##%s##' % (
+            SIGNATURE_KEY,
+            uuid,
+            rs_datetime,
+            order_id,
+            error_code,
+            salt_string
+        )
+        upper_signature = bare_signature.upper()
+        signature = hashlib.sha256(upper_signature.encode()).hexdigest()
+
+        validated_data['response_signature'] = signature
+        validated_data['bare_response_signature'] = bare_signature
+
+        validated_data['response_reconcile_id'] = invoice.id
+        validated_data['response_reconcile_datetime'] = invoice.approved_at
+
+        return validated_data
+
+
+class NotificationView(viewsets.GenericViewSet, mixins.CreateModelMixin):
+    serializer_class = NotificationSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        response = {
+            'rq_uuid': serializer.validated_data.get('response_rq_uuid'),
+            'rs_datetime': serializer.validated_data.get('response_rs_datetime'),
+            'error_code': serializer.validated_data.get('error_code'),
+            'error_message': serializer.validated_data.get('error_message'),
+            'order_id': serializer.validated_data.get('order_id'),
+            'signature': serializer.validated_data.get('response_signature'),
+            'bare_signature': serializer.validated_data.get('bare_response_signature'),
+            'reconcile_id': serializer.validated_data.get('response_reconcile_id'),
+            'reconcile_datetime': serializer.validated_data.get('response_reconcile_datetime'),
+        }
+        headers = self.get_success_headers(serializer.data)
+        return Response(response, status=status.HTTP_201_CREATED, headers=headers)
