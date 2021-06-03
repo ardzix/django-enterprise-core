@@ -199,7 +199,7 @@ class InquirySerializer(serializers.Serializer):
             return validated_data
 
         espay = Espay.objects.filter(
-            nonce = order_id
+            transaction_id = order_id
         ).last()
 
         if not espay:
