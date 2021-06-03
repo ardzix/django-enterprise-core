@@ -234,6 +234,11 @@ class InquirySerializer(serializers.Serializer):
 
         validated_data['signature'] = signature
 
+        payload['rs_signature'] = signature
+        payload['rs_bare_signature'] = bare_signature
+        espay.payload = payload
+        espay.save()
+
         return validated_data
 
 class InquiryView(viewsets.GenericViewSet, mixins.CreateModelMixin):
