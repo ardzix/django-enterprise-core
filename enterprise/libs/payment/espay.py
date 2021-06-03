@@ -28,15 +28,15 @@ class _BaseEspay(object):
     def __init__(self, invoice):
         self.invoice = invoice
 
-    def get_order_id(self, espay_id62):
-        order_id = self.invoice.number+'-'+espay_id62
+    def get_order_id(self):
+        order_id = self.invoice.id+'-'+self.invoice.number
         if not getattr(settings, 'PRODUCTION', False):
             order_id = '%s-%s-%s' % (
                 order_id.split('-')[0],
                 datetime.timestamp(datetime.now()),
                 order_id.split('-')[1]
             )
-        return order_id
+        return order_id.upper()
 
     def add_payload(self, *args, **kwargs):
         self.payload = {**self.payload, **kwargs}
@@ -99,7 +99,7 @@ class EspayPG(_BaseEspay):
 
         rq_uuid = uuid4()
         rq_datetime = datetime.now()
-        order_id = self.get_order_id(espay.id62)
+        order_id = self.get_order_id()
         ccy = getattr(settings, 'ESPAY_CCY', 'IDR')
         comm_code = ESPAY_COMMERCE_CODE
         remark1 = user.phone_number
