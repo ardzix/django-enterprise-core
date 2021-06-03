@@ -184,7 +184,7 @@ class InquirySerializer(serializers.Serializer):
     error_message = serializers.CharField(required=False)
     error_code = serializers.CharField(required=False)
     rs_datetime = serializers.DateTimeField(required=False)
-    amount = serializers.DecimalField(required=False)
+    amount = serializers.DecimalField(required=False, max_digits=19, decimal_places=2)
     ccy = serializers.CharField(required=False)
     description = serializers.CharField(required=False)
     trx_date = serializers.DateTimeField(required=False)
