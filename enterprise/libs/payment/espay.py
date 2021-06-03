@@ -134,7 +134,7 @@ class EspayPG(_BaseEspay):
             'signature': signature,
             'bare_signature': bare_signature
         }
-        self.add_payload(payload)
+        self.add_payload(payload=payload)
         espay.transaction_id = order_id
         espay.payload = payload
         espay.save()
