@@ -212,7 +212,7 @@ class InquirySerializer(serializers.Serializer):
         validated_data['error_code'] = '0000'
         validated_data['rs_datetime'] = datetime.now()
         validated_data['amount'] = espay.amount
-        validated_data['ccy'] = payload.ccy
+        validated_data['ccy'] = payload.get('ccy')
         validated_data['description'] = 'Payment for: %s' % order_id
         validated_data['trx_date'] = espay.created_at
 
