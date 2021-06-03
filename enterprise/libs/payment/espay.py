@@ -118,25 +118,23 @@ class EspayPG(_BaseEspay):
         )
         signature = self.get_signature(bare_signature)
 
-        payload = {
-            'rq_uuid': str(rq_uuid),
-            'rq_datetime': str(rq_datetime),
-            'order_id': order_id,
-            'amount': str(amount),
-            'ccy': ccy,
-            'comm_code': comm_code,
-            'remark1': remark1,
-            'remark2': remark2,
-            'remark3': remark3,
-            'bank_code': str(bank_code),
-            'update': update,
-            'va_expired': va_expired,
-            'signature': signature,
-            'bare_signature': bare_signature
-        }
-        self.add_payload(payload=payload)
+        self.add_payload(rq_uuid=str(rq_uuid))
+        self.add_payload(rq_datetime=str(rq_datetime))
+        self.add_payload(order_id=order_id)
+        self.add_payload(amount=str(amount))
+        self.add_payload(ccy=ccy)
+        self.add_payload(comm_code=comm_code)
+        self.add_payload(remark1=remark1)
+        self.add_payload(remark2=remark2)
+        self.add_payload(remark3=remark3)
+        self.add_payload(bank_code=str(bank_code))
+        self.add_payload(update=update)
+        self.add_payload(va_expired=va_expired)
+        self.add_payload(signature=signature)
+        self.add_payload(bare_signature=bare_signature)
+
         espay.transaction_id = order_id
-        espay.payload = payload
+        espay.payload = self.payload
         espay.save()
 
         result = self.post_request(self.get_send_invoice_url())
@@ -144,7 +142,7 @@ class EspayPG(_BaseEspay):
         espay.save()
 
         response = {
-            'payload': payload,
+            'payload': self.payload,
             'result': result,
             'curl': self.get_curl()
         }
