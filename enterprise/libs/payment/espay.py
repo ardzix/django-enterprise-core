@@ -91,7 +91,7 @@ class EspayPG(_BaseEspay):
         update = 'N'
         va_expired = getattr(settings, 'ESPAY_VA_EXPIRED_MINUTE', '120')
         bare_signature = '##%s##%s##%s##%s##%s##%s##%s##SENDINVOICE##' % (
-            API_KEY,
+            SIGNATURE_KEY,
             rq_uuid,
             rq_datetime,
             order_id,
@@ -112,8 +112,6 @@ class EspayPG(_BaseEspay):
             'remark2': remark2,
             'remark3': remark3,
             'bank_code': str(bank_code),
-            'product_code': '',
-            'customer_id': '',
             'update': update,
             'va_expired': va_expired,
             'signature': signature,
