@@ -142,8 +142,8 @@ class EspayPG(_BaseEspay):
         espay.save()
 
         response = {
-            'payload': self.payload,
-            'result': result
+            'payload': espay.payload,
+            'result': espay.responses
         }
         return response
 
