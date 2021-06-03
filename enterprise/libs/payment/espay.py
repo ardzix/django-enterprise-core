@@ -1,3 +1,4 @@
+from enterprise.structures.transaction.models.espay import Espay
 import requests
 import hashlib
 import json
@@ -5,12 +6,14 @@ from django.conf import settings
 from uuid import uuid4
 from datetime import datetime
 from django.core.serializers.json import DjangoJSONEncoder
-from rest_framework import mixins, viewsets, status
+from rest_framework import mixins, viewsets, status, serializers, permissions
 from rest_framework.response import Response
 
 
 SIGNATURE_KEY = getattr(settings, 'ESPAY_SIGNATURE_KEY', '')
 API_KEY = getattr(settings, 'ESPAY_API_KEY', '')
+ESPAY_COMMERCE_CODE = getattr(settings, 'ESPAY_COMMERCE_CODE', '')
+ESPAY_PASSWORD = getattr(settings, 'ESPAY_PASSWORD', '')
 
 
 class _BaseEspay(object):
@@ -84,7 +87,7 @@ class EspayPG(_BaseEspay):
         rq_datetime = datetime.now()
         order_id = self.get_order_id(espay.id62)
         ccy = getattr(settings, 'ESPAY_CCY', 'IDR')
-        comm_code = getattr(settings, 'ESPAY_COMMERCE_CODE', '')
+        comm_code = ESPAY_COMMERCE_CODE
         remark1 = user.phone_number
         remark2 = user.full_name
         remark3 = user.email
@@ -118,6 +121,7 @@ class EspayPG(_BaseEspay):
             'bare_signature': bare_signature
         }
         self.add_payload(payload)
+        espay.transaction_id = order_id
         espay.payload = payload
         espay.save()
 
@@ -157,3 +161,48 @@ class BankView(viewsets.GenericViewSet, mixins.ListModelMixin):
             resp.get('data'),
             status=status.HTTP_200_OK
         )
+
+class InquirySerializer(serializers.Serializer):
+    rq_uuid = serializers.CharField()
+    password = serializers.CharField(required=False)
+    signature = serializers.CharField()
+    comm_code = serializers.CharField(required=False)
+    order_id = serializers.CharField()
+    error_message = serializers.CharField(required=False)
+    error_code = serializers.CharField(required=False)
+    rs_datetime = serializers.DateTimeField(required=False)
+
+    def validate(self, attrs):
+        validated_data= super().validate(attrs)
+        password = validated_data.get('password')
+        comm_code = validated_data.get('comm_code')
+        order_id = validated_data.get('order_id')
+
+        if password != ESPAY_PASSWORD or comm_code != ESPAY_COMMERCE_CODE:
+            validated_data['error_message'] = 'Invalid credentials'
+            validated_data['error_code'] = '0403'
+
+        espay = Espay.objects.filter(
+            transaction_id = order_id
+        )
+
+        if not espay:
+            validated_data['error_message'] = 'Order not found'
+            validated_data['error_code'] = '0404'
+
+        validated_data['error_message'] = 'Success'
+        validated_data['error_code'] = '0000'
+        validated_data['rs_datetime'] = datetime.now()
+
+        validated_data.pop('password')
+        validated_data.pop('comm_code')
+
+        return validated_data
+
+class InquiryView(viewsets.GenericViewSet, mixins.CreateModelMixin):
+    serializer_class = InquirySerializer
+    permission_classes = (permissions.AllowAny,)
+    
+    def perform_create(self, serializer):
+        pass
+
