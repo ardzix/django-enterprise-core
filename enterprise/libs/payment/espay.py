@@ -175,18 +175,12 @@ class BankView(viewsets.GenericViewSet, mixins.ListModelMixin):
 
 class InquirySerializer(serializers.Serializer):
     rq_uuid = serializers.CharField()
+    rq_datetime = serializers.DateTimeField()
     password = serializers.CharField(required=False)
     signature = serializers.CharField()
-    bare_signature = serializers.CharField(required=False)
-    comm_code = serializers.CharField(required=False)
+    member_id = serializers.CharField(required=False)
+    comm_code = serializers.CharField()
     order_id = serializers.CharField()
-    error_message = serializers.CharField(required=False)
-    error_code = serializers.CharField(required=False)
-    rs_datetime = serializers.DateTimeField(required=False)
-    amount = serializers.DecimalField(required=False, max_digits=19, decimal_places=2)
-    ccy = serializers.CharField(required=False)
-    description = serializers.CharField(required=False)
-    trx_date = serializers.DateTimeField(required=False)
 
     def validate(self, attrs):
         validated_data= super().validate(attrs)
@@ -211,10 +205,9 @@ class InquirySerializer(serializers.Serializer):
         payload = espay.payload
         validated_data['error_message'] = 'Success'
         validated_data['error_code'] = '0000'
-        validated_data['rs_datetime'] = datetime.now()
         validated_data['amount'] = espay.amount
         validated_data['ccy'] = payload.get('ccy')
-        validated_data['description'] = 'Payment for: %s' % order_id
+        validated_data['description'] = 'Payment for: %s' % order_id.split('-')[0]
         validated_data['trx_date'] = espay.created_at
 
         salt_string = 'INQUIRY-RS'
