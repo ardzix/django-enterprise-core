@@ -47,10 +47,6 @@ class _BaseEspay(object):
 
         return r_dict
 
-    def get_send_invoice_url(self):
-        return '%sdigitalpay/pushtopay' % getattr(settings, 'ESPAY_API_URL',
-                                                   'https://sandbox-api.espay.id/rest/')
-
     def get_signature(self, bare_signature):
         upper_signature = bare_signature.upper()
         signature = hashlib.sha256(upper_signature.encode()).hexdigest()
@@ -58,6 +54,10 @@ class _BaseEspay(object):
 
 
 class EspayPG(_BaseEspay):
+
+    def get_send_invoice_url(self):
+        return '%smerchantpg/sendinvoice' % getattr(settings, 'ESPAY_API_URL',
+                                                   'https://sandbox-api.espay.id/rest/')
 
     def send_invoice(self, bank_code):
         from enterprise.structures.transaction.models.espay import Espay
@@ -112,6 +112,8 @@ class EspayPG(_BaseEspay):
             'remark2': remark2,
             'remark3': remark3,
             'bank_code': str(bank_code),
+            'product_code': '',
+            'customer_id': '',
             'update': update,
             'va_expired': va_expired,
             'signature': signature,
