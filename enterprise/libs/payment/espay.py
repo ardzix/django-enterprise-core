@@ -144,8 +144,8 @@ class EspayPG(_BaseEspay):
         espay.save()
 
         response = {
-            'payload': 'payload',
-            'response': 'response',
+            'payload': payload,
+            'result': result,
             'curl': self.get_curl()
         }
         return response
