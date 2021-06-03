@@ -141,12 +141,7 @@ class EspayPG(_BaseEspay):
         espay.responses = result
         espay.save()
 
-        response = {
-            'payload': espay.payload,
-            'result': espay.responses,
-            'curl': self.get_curl()
-        }
-        return response
+        return result
 
 
 class BankView(viewsets.GenericViewSet, mixins.ListModelMixin):
