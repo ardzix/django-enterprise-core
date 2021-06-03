@@ -236,8 +236,8 @@ class InquirySerializer(serializers.Serializer):
         upper_signature = bare_signature.upper()
         signature = hashlib.sha256(upper_signature.encode()).hexdigest()
 
-        validated_data['signature'] = signature
-        validated_data['bare_signature'] = bare_signature
+        validated_data['response_signature'] = signature
+        validated_data['bare_response_signature'] = bare_signature
 
         return validated_data
 
@@ -245,6 +245,19 @@ class InquiryView(viewsets.GenericViewSet, mixins.CreateModelMixin):
     serializer_class = InquirySerializer
     permission_classes = (permissions.AllowAny,)
     
-    def perform_create(self, serializer):
-        pass
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        response = {
+            'error_code': serializer.validated_data.get('error_code'),
+            'error_message': serializer.validated_data.get('error_message'),
+            'order_id': serializer.validated_data.get('order_id'),
+            'amount': serializer.validated_data.get('amount'),
+            'ccy': serializer.validated_data.get('ccy'),
+            'description': serializer.validated_data.get('description'),
+            'signature': serializer.validated_data.get('response_signature'),
+            'bare_signature': serializer.validated_data.get('bare_response_signature'),
+        }
+        headers = self.get_success_headers(serializer.data)
+        return Response(response, status=status.HTTP_201_CREATED, headers=headers)
 
