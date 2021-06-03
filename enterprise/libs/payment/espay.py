@@ -29,14 +29,7 @@ class _BaseEspay(object):
         self.invoice = invoice
 
     def get_order_id(self):
-        order_id = str(self.invoice.id)+'-'+self.invoice.number
-        if not getattr(settings, 'PRODUCTION', False):
-            order_id = '%s-%s-%s' % (
-                order_id.split('-')[0],
-                datetime.timestamp(datetime.now()),
-                order_id.split('-')[1]
-            )
-        return order_id.upper()
+        return hashlib.sha256(self.invoice.number.encode()).hexdigest().upper()
 
     def add_payload(self, *args, **kwargs):
         self.payload = {**self.payload, **kwargs}
@@ -135,6 +128,7 @@ class EspayPG(_BaseEspay):
 
         espay.transaction_id = order_id
         espay.payload = self.payload
+        espay.nonce = rq_uuid
         espay.save()
 
         result = self.post_request(self.get_send_invoice_url())
@@ -201,7 +195,7 @@ class InquirySerializer(serializers.Serializer):
             return validated_data
 
         espay = Espay.objects.filter(
-            transaction_id = order_id
+            nonce = order_id
         ).last()
 
         if not espay:
