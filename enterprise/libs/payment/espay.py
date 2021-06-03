@@ -143,8 +143,7 @@ class EspayPG(_BaseEspay):
 
         response = {
             'payload': self.payload,
-            'result': result,
-            'curl': self.get_curl()
+            'result': result
         }
         return response
 
