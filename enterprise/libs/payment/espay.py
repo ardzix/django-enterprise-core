@@ -23,6 +23,7 @@ class _BaseEspay(object):
     payload = {}
     invoice = None
     request_status_code = None
+    request = None
 
     def __init__(self, invoice):
         self.invoice = invoice
@@ -46,6 +47,7 @@ class _BaseEspay(object):
         }
         r = requests.post(url, data=self.payload, headers=headers)
         r_dict = r.json()
+        self.request = r
         self.request_status_code = r_dict.get('status_code')
 
         return r_dict
@@ -54,6 +56,18 @@ class _BaseEspay(object):
         upper_signature = bare_signature.upper()
         signature = hashlib.sha256(upper_signature.encode()).hexdigest()
         return signature
+
+    def get_curl(self):
+        if not self.request:
+            return '-'
+        req = self.request.request
+        command = "curl -X {method} -H {headers} -d '{data}' '{uri}'"
+        method = req.method
+        uri = req.url
+        data = req.body
+        req_headers = ['"{0}: {1}"'.format(k, v) for k, v in req.headers.items()]
+        req_headers = " -H ".join(req_headers)
+        return command.format(method=method, headers=req_headers, data=data, uri=uri)
 
 
 class EspayPG(_BaseEspay):
@@ -128,7 +142,13 @@ class EspayPG(_BaseEspay):
         result = self.request(self.get_send_invoice_url())
         espay.responses = result
         espay.save()
-        return result
+
+        response = {
+            'payload': 'payload',
+            'response': 'response',
+            'curl': self.get_curl(r)
+        }
+        return response
 
 
 class BankView(viewsets.GenericViewSet, mixins.ListModelMixin):
