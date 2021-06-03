@@ -30,10 +30,10 @@ class _BaseEspay(object):
 
     def get_order_id(self):
         encoded = '%s-%s' % (
-            hashlib.sha256(self.invoice.number.encode()).hexdigest(),
-            self.invoice.number
+            self.invoice.number,
+            hashlib.sha256(self.invoice.number.encode()).hexdigest()
         )
-        return encoded.upper()
+        return encoded.upper()[0:20]
 
     def add_payload(self, *args, **kwargs):
         self.payload = {**self.payload, **kwargs}
