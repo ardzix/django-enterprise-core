@@ -82,7 +82,6 @@ class EspayPG(_BaseEspay):
 
         invoice = self.invoice
         invoice.published_at = datetime.now()
-        invoice.status = 'process'
         invoice.save()
         user = invoice.owned_by
 
