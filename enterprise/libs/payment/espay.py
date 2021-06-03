@@ -201,7 +201,7 @@ class InquirySerializer(serializers.Serializer):
 
         espay = Espay.objects.filter(
             transaction_id = order_id
-        )
+        ).last()
         payload = espay.payload
 
         if not espay:
