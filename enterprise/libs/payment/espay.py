@@ -217,12 +217,12 @@ class InquirySerializer(serializers.Serializer):
         validated_data['description'] = 'Payment for: %s' % order_id
         validated_data['trx_date'] = espay.created_at
 
-        validated_data.pop('password')
-        validated_data.pop('comm_code')
         salt_string = 'INQUIRY-RS'
 
-        uuid = validated_data.get('rq_uuid')
-        rs_datetime = validated_data.get('rs_datetime')
+        uuid = uuid4()
+        rs_datetime = str(datetime.now())
+        validated_data['response_rq_uuid'] = uuid
+        validated_data['response_rs_datetime'] = rs_datetime
         error_code = validated_data.get('error_code')
         ##Signature Key##rq_uuid##rs_datetime##order_id##error_code##INQUIRY-RS##
         bare_signature = '##%s##%s##%s##%s##%s##%s##' % (
@@ -249,6 +249,8 @@ class InquiryView(viewsets.GenericViewSet, mixins.CreateModelMixin):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         response = {
+            'rq_uuid': serializer.validated_data.get('response_rq_uuid'),
+            'rs_datetime': serializer.validated_data.get('response_rs_datetime'),
             'error_code': serializer.validated_data.get('error_code'),
             'error_message': serializer.validated_data.get('error_message'),
             'order_id': serializer.validated_data.get('order_id'),
@@ -257,6 +259,7 @@ class InquiryView(viewsets.GenericViewSet, mixins.CreateModelMixin):
             'description': serializer.validated_data.get('description'),
             'signature': serializer.validated_data.get('response_signature'),
             'bare_signature': serializer.validated_data.get('bare_response_signature'),
+            'trx_date': serializer.validated_data.get('trx_date')
         }
         headers = self.get_success_headers(serializer.data)
         return Response(response, status=status.HTTP_201_CREATED, headers=headers)
