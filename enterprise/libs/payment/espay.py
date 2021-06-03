@@ -177,6 +177,7 @@ class InquirySerializer(serializers.Serializer):
     rq_uuid = serializers.CharField()
     password = serializers.CharField(required=False)
     signature = serializers.CharField()
+    bare_signature = serializers.CharField(required=False)
     comm_code = serializers.CharField(required=False)
     order_id = serializers.CharField()
     error_message = serializers.CharField(required=False)
@@ -220,24 +221,23 @@ class InquirySerializer(serializers.Serializer):
         validated_data.pop('comm_code')
         salt_string = 'INQUIRY-RS'
 
+        uuid = validated_data.get('rq_uuid')
+        rs_datetime = validated_data.get('rs_datetime')
+        error_code = validated_data.get('error_code')
         ##Signature Key##rq_uuid##rs_datetime##order_id##error_code##INQUIRY-RS##
         bare_signature = '##%s##%s##%s##%s##%s##%s##' % (
             SIGNATURE_KEY, 
-            validated_data.get('rq_uuid'), 
-            validated_data.get('rs_datetime'),
+            uuid, 
+            rs_datetime,
             order_id,
-            validated_data.get('error_code'),
+            error_code,
             salt_string
         )
         upper_signature = bare_signature.upper()
         signature = hashlib.sha256(upper_signature.encode()).hexdigest()
 
         validated_data['signature'] = signature
-
-        payload['rs_signature'] = signature
-        payload['rs_bare_signature'] = bare_signature
-        espay.payload = payload
-        espay.save()
+        validated_data['bare_signature'] = bare_signature
 
         return validated_data
 
