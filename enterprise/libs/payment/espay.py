@@ -127,7 +127,7 @@ class EspayPG(_BaseEspay):
         self.add_payload(remark1=remark1)
         self.add_payload(remark2=remark2)
         self.add_payload(remark3=remark3)
-        self.add_payload(bank_code=str(bank_code))
+        self.add_payload(bank_code=bank_code)
         self.add_payload(update=update)
         self.add_payload(va_expired=va_expired)
         self.add_payload(signature=signature)
@@ -189,6 +189,10 @@ class InquirySerializer(serializers.Serializer):
     error_message = serializers.CharField(required=False)
     error_code = serializers.CharField(required=False)
     rs_datetime = serializers.DateTimeField(required=False)
+    amount = serializers.DecimalField(required=False)
+    ccy = serializers.CharField(required=False)
+    description = serializers.CharField(required=False)
+    trx_date = serializers.DateTimeField(required=False)
 
     def validate(self, attrs):
         validated_data= super().validate(attrs)
@@ -203,6 +207,7 @@ class InquirySerializer(serializers.Serializer):
         espay = Espay.objects.filter(
             transaction_id = order_id
         )
+        payload = espay.payload
 
         if not espay:
             validated_data['error_message'] = 'Order not found'
@@ -211,9 +216,28 @@ class InquirySerializer(serializers.Serializer):
         validated_data['error_message'] = 'Success'
         validated_data['error_code'] = '0000'
         validated_data['rs_datetime'] = datetime.now()
+        validated_data['amount'] = espay.amount
+        validated_data['ccy'] = payload.ccy
+        validated_data['description'] = 'Payment for: %s' % order_id
+        validated_data['trx_date'] = espay.created_at
 
         validated_data.pop('password')
         validated_data.pop('comm_code')
+        salt_string = 'INQUIRY-RS'
+
+        ##Signature Key##rq_uuid##rs_datetime##order_id##error_code##INQUIRY-RS##
+        bare_signature = '##%s##%s##%s##%s##%s##%s##' % (
+            SIGNATURE_KEY, 
+            validated_data.get('rq_uuid'), 
+            validated_data.get('rs_datetime'),
+            order_id,
+            validated_data.get('error_code'),
+            salt_string
+        )
+        upper_signature = bare_signature.upper()
+        signature = hashlib.sha256(upper_signature.encode()).hexdigest()
+
+        validated_data['signature'] = signature
 
         return validated_data
 
