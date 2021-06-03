@@ -11,7 +11,7 @@ class Espay(BaseModelGeneric):
     payment_type = models.CharField(max_length=40)
     transaction_status = models.CharField(
         choices=PAYMENT_STATUSES, max_length=40)
-    transaction_id = models.CharField(max_length=40, blank=True, null=True)
+    transaction_id = models.CharField(max_length=300, blank=True, null=True)
     amount = models.DecimalField(default=0, decimal_places=2, max_digits=12)
     payload = JSONField(blank=True, null=True)
     responses = JSONField(blank=True, null=True)
