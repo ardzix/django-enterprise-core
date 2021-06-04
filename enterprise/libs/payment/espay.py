@@ -1,6 +1,6 @@
 from enterprise.structures.transaction.models import Invoice, TopUp
 from enterprise.structures.transaction.models.espay import Espay
-from enterprise.libs.payment.wallet import topup_wallet, get_balance
+from enterprise.libs.payment.wallet import get_balance
 from enterprise.libs.payment import PaymentManager
 import requests
 import hashlib
@@ -328,18 +328,13 @@ class NotificationSerializer(serializers.Serializer):
             return validated_data
 
         user = invoice.owned_by
-        topup = TopUp(
+        topup = TopUp.objects.create(
             amount=amount,
             invoice=invoice,
             espay=espay,
             created_by=user
         )
         topup.approve(user)
-        topup_wallet(topup, description="Topup form %s %s %s" % (
-            validated_data.get('debit_from_bank'),
-            validated_data.get('debit_from'),
-            validated_data.get('debit_from_name'),
-        ))
         balance = get_balance(user)
 
         if balance >= invoice.amount:
