@@ -322,8 +322,13 @@ class NotificationSerializer(serializers.Serializer):
             validated_data['error_code'] = '0404'
             return validated_data
 
+        if invoice.status != 'pending':
+            validated_data['error_message'] = 'Invoice %s' % invoice.status
+            validated_data['error_code'] = '0400'
+            return validated_data
+
         user = invoice.owned_by
-        topup = TopUp.objects.create(
+        topup = TopUp(
             amount=amount,
             invoice=invoice,
             espay=espay,
