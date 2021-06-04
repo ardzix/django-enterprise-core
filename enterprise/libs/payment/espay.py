@@ -323,7 +323,7 @@ class NotificationSerializer(serializers.Serializer):
             return validated_data
 
         if invoice.status != 'pending':
-            validated_data['error_message'] = 'Invoice %s' % invoice.status
+            validated_data['error_message'] = 'Invoice can not be paid, because its status is %s' % invoice.status
             validated_data['error_code'] = '0400'
             return validated_data
 
@@ -347,6 +347,7 @@ class NotificationSerializer(serializers.Serializer):
             channel_manager.charge(user, invoice.amount)
 
         validated_data['error_code'] = '0000'
+        validated_data['error_message'] = 'Payment success'
 
         salt_string = 'PAYMENTREPORT-RS'
         uuid = uuid4()
