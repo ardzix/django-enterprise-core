@@ -295,16 +295,17 @@ def do_topup(sender, instance, created, **kwargs):
             print("transfering balance")
             if item.content_object:
                 receiver = item.content_object.owned_by
-                transfer_wallet(
-                    instance.owned_by,
-                    receiver,
-                    int(item.amount),
-                    obj=item,
-                    description='%s: %s' % (
-                        item.content_type.__str__(),
-                        item.name
+                if receiver != instance.owned_by:
+                    transfer_wallet(
+                        instance.owned_by,
+                        receiver,
+                        int(item.amount),
+                        obj=item,
+                        description='%s: %s' % (
+                            item.content_type.__str__(),
+                            item.name
+                        )
                     )
-                )
         instance.status = 'success'
         instance.save()
 
