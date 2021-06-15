@@ -87,7 +87,7 @@ class CommonSerializer(object):
         }
 
 
-class LakonModelSerializer(ModelSerializer,CommonSerializer):
+class LakonModelSerializer(ModelSerializer, CommonSerializer):
     def create(self, validated_data):
         if 'nonce' not in validated_data:
             raise ValidationError({'detail': 'Please provide nonce'})
@@ -97,7 +97,6 @@ class LakonModelSerializer(ModelSerializer,CommonSerializer):
         no = NonceObject(model=model, nonce=nonce)
 
         validated_data['created_by'] = self.context.get('request').user
-
         if no.is_exist():
             return super(LakonModelSerializer, self).update(
                 no.get_instance(), validated_data)

@@ -146,7 +146,7 @@ class _BaseAbstract(models.Model):
         # generate id62
         if self.id and not self.id62:
             self.id62 = base62_encode(self.id)
-            instance = super(_BaseAbstract, self).save(*args, **kwargs)
+            instance = super(_BaseAbstract, self).save(force_update=True)
 
         return instance
 
@@ -271,7 +271,7 @@ class _BaseAbstract(models.Model):
     def get_content_type(self):
         return ContentType.objects.get_for_model(self)
 
-    def get_lat_lng(self, field_name):
+    def get_lat_lng(self, field_name='lat_lng'):
         point = getattr(self, field_name, None)
 
         if point is not None and hasattr(point, "x") and hasattr(point, "y"):
