@@ -29,9 +29,8 @@ from django.db.models import Manager as GeoManager
 from django.contrib.gis.db.models import PointField
 from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-
+from django.conf import settings
 
 class _BaseAbstract(models.Model):
     site = models.ForeignKey(
@@ -39,7 +38,7 @@ class _BaseAbstract(models.Model):
         related_name="%(app_label)s_%(class)s_site",
         blank=True,
         null=True,
-        on_delete="cascade")
+        on_delete=models.CASCADE)
     nonce = models.CharField(max_length=128, blank=True, null=True)
     id62 = models.CharField(
         max_length=100,
@@ -50,70 +49,70 @@ class _BaseAbstract(models.Model):
     created_at = models.DateTimeField(db_index=True)
     created_at_timestamp = models.PositiveIntegerField(db_index=True)
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name="%(app_label)s_%(class)s_created_by",
-        on_delete="cascade")
+        on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(db_index=True, blank=True, null=True)
     updated_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
     updated_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         related_name="%(app_label)s_%(class)s_updated_by",
-        on_delete="cascade")
+        on_delete=models.CASCADE)
 
     published_at = models.DateTimeField(blank=True, null=True)
     published_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
     published_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         related_name="%(app_label)s_%(class)s_published_by",
-        on_delete="cascade")
+        on_delete=models.CASCADE)
 
     unpublished_at = models.DateTimeField(blank=True, null=True)
     unpublished_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
     unpublished_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         related_name="%(app_label)s_%(class)s_unpublished_by",
-        on_delete="cascade")
+        on_delete=models.CASCADE)
 
     approved_at = models.DateTimeField(blank=True, null=True)
     approved_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
     approved_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         related_name="%(app_label)s_%(class)s_approved_by",
-        on_delete="cascade")
+        on_delete=models.CASCADE)
 
     unapproved_at = models.DateTimeField(blank=True, null=True)
     unapproved_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
     unapproved_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         related_name="%(app_label)s_%(class)s_unapproved_by",
-        on_delete="cascade")
+        on_delete=models.CASCADE)
 
     deleted_at = models.DateTimeField(blank=True, null=True)
     deleted_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
     deleted_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         db_index=True,
         blank=True,
         null=True,
         related_name="%(app_label)s_%(class)s_deleted_by",
-        on_delete="cascade")
+        on_delete=models.CASCADE)
 
     # http://stackoverflow.com/questions/7880691/using-geodjango-model-as-an-abstract-class
     objects = GeoManager()
@@ -343,10 +342,10 @@ class _BaseAbstract(models.Model):
 
 class BaseModelGeneric(_BaseAbstract):
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         db_index=True,
         related_name="%(app_label)s_%(class)s_created_by",
-        on_delete="cascade")
+        on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -354,10 +353,10 @@ class BaseModelGeneric(_BaseAbstract):
 
 class BaseModelUnique(_BaseAbstract):
     created_by = models.OneToOneField(
-        User,
+        settings.AUTH_USER_MODEL,
         db_index=True,
         related_name="%(app_label)s_%(class)s_created_by",
-        on_delete="cascade")
+        on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
