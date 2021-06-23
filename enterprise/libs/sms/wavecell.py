@@ -6,6 +6,7 @@ from django.conf import settings
 WAVECELL_API_KEY = getattr(settings, 'WAVECELL_API_KEY', '')
 WAVECELL_SUB_ACC = getattr(settings, 'WAVECELL_SUB_ACC', '')
 DEFAULT_TEMPLATE = "JAGA KERAHASIAAN ANDA, KODE TIDAK UNTUK DIBAGIKAN. Kode RAHASIA anda adalah {code}"
+BRAND = getattr(settings, 'BRAND', 'Django Enterprise')
 
 
 class Wavecell(object):
@@ -17,7 +18,7 @@ class Wavecell(object):
 
         # get information
         self.template = kwargs.get('template', DEFAULT_TEMPLATE)
-        self.brand = kwargs.get('brand', 'Django Enterprise')
+        self.brand = kwargs.get('brand', BRAND)
         self.headers = {
             "Authorization": "Bearer %s" % WAVECELL_API_KEY
         }
