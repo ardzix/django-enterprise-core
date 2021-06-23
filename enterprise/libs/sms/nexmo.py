@@ -2,8 +2,8 @@ import nexmo
 
 from django.conf import settings
 
-NEXMO_API_KEY = getattr(settings, 'NEXMO_API_KEY')
-NEXMO_API_SECRET = getattr(settings, 'NEXMO_API_SECRET')
+NEXMO_API_KEY = getattr(settings, 'NEXMO_API_KEY', '')
+NEXMO_API_SECRET = getattr(settings, 'NEXMO_API_SECRET', '')
 BRAND = getattr(settings, 'BRAND', 'Django Enterprise')
 
 
