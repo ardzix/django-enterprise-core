@@ -5,6 +5,7 @@ from django.conf import settings
 
 WAVECELL_API_KEY = getattr(settings, 'WAVECELL_API_KEY', '')
 WAVECELL_SUB_ACC = getattr(settings, 'WAVECELL_SUB_ACC', '')
+WAVECELL_SOURCE = getattr(settings, 'WAVECELL_SOURCE', '')
 DEFAULT_TEMPLATE = "JAGA KERAHASIAAN ANDA, KODE TIDAK UNTUK DIBAGIKAN. Kode RAHASIA anda adalah {code}"
 BRAND = getattr(settings, 'BRAND', 'Django Enterprise')
 VERIFY_URL = "https://api.wavecell.com/verify/v2/"
@@ -43,7 +44,7 @@ class Wavecell(object):
             "codeType": "NUMERIC",
             "channel": "sms",
             "sms": {
-                "source": brand,
+                "source": WAVECELL_SOURCE,
                 "encoding": "AUTO"
             }
         }
@@ -82,12 +83,11 @@ class Wavecell(object):
     def send_sms(self, phone_number, text):
         url = f'{SENDSMS_URL}subaccounts/{WAVECELL_SUB_ACC}/messages'
         headers = self.headers
-        brand = self.brand
-        code = None
+        res_data = None
         errors = None
 
         body = { 
-            "source": brand, 
+            "source": WAVECELL_SOURCE, 
             "destination": phone_number, 
             "text": text, 
             "encoding": "AUTO" 
@@ -97,8 +97,7 @@ class Wavecell(object):
 
         if response.status_code == 200:
             res_data = json.loads(response.text)
-            code = res_data.get('code')
         else:
             errors = dict(json.loads(response.text))
 
-        return code, errors
+        return res_data, errors
