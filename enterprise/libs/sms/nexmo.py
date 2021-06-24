@@ -45,3 +45,6 @@ class Nexmo(object):
             errors = response['error_text']
 
         return is_valid, errors
+
+    def send_sms(self, phone_number, text):
+        pass

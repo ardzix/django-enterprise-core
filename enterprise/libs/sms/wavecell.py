@@ -7,6 +7,8 @@ WAVECELL_API_KEY = getattr(settings, 'WAVECELL_API_KEY', '')
 WAVECELL_SUB_ACC = getattr(settings, 'WAVECELL_SUB_ACC', '')
 DEFAULT_TEMPLATE = "JAGA KERAHASIAAN ANDA, KODE TIDAK UNTUK DIBAGIKAN. Kode RAHASIA anda adalah {code}"
 BRAND = getattr(settings, 'BRAND', 'Django Enterprise')
+VERIFY_URL = "https://api.wavecell.com/verify/v2/"
+SENDSMS_URL = "https://sms.8x8.com/api/v1/"
 
 
 class Wavecell(object):
@@ -23,10 +25,9 @@ class Wavecell(object):
             "Authorization": "Bearer %s" % WAVECELL_API_KEY
         }
 
-        self.base_url = "https://api.wavecell.com/verify/v2/"
 
     def request_otp(self, phone_number, otp_length=6):
-        url = self.base_url + WAVECELL_SUB_ACC
+        url = VERIFY_URL + WAVECELL_SUB_ACC
         headers = self.headers
         template = self.template
         brand = self.brand
@@ -59,7 +60,7 @@ class Wavecell(object):
 
     def verify_otp(self, session_id, code):
         headers = self.headers
-        url = "{}{}/{}?code={}".format(self.base_url,
+        url = "{}{}/{}?code={}".format(VERIFY_URL,
                                        WAVECELL_SUB_ACC, session_id, code)
 
         response = requests.get(url, headers=headers)
@@ -77,3 +78,27 @@ class Wavecell(object):
             is_valid = True
 
         return is_valid, errors
+
+    def send_sms(self, phone_number, text):
+        url = f'{SENDSMS_URL}subaccounts/{WAVECELL_SUB_ACC}/messages'
+        headers = self.headers
+        brand = self.brand
+        code = None
+        errors = None
+
+        body = { 
+            "source": brand, 
+            "destination": phone_number, 
+            "text": text, 
+            "encoding": "AUTO" 
+        }
+
+        response = requests.post(url, headers=headers, json=body)
+
+        if response.status_code == 200:
+            res_data = json.loads(response.text)
+            code = res_data.get('code')
+        else:
+            errors = dict(json.loads(response.text))
+
+        return code, errors
