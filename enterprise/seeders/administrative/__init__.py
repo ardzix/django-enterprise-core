@@ -56,7 +56,7 @@ def import_regency():
             name = row[2]
 
             try:
-                province = Province.objects.get(id=province_id, name=name)
+                province = Province.objects.get(id=province_id)
                 Regency.objects.get_or_create(id=id, province=province, name=name)
 
                 line_count += 1
@@ -80,7 +80,7 @@ def import_district():
             name = row[2]
 
             try:
-                regency = Regency.objects.get(id=regency_id, name=name)
+                regency = Regency.objects.get(id=regency_id)
                 District.objects.get_or_create(id=id, regency=regency, name=name)
 
                 line_count += 1
@@ -104,7 +104,7 @@ def import_village():
             name = row[2]
 
             try:
-                district = District.objects.get(id=district_id, name=name)
+                district = District.objects.get(id=district_id)
                 Village.objects.get_or_create(id=id, district=district, name=name)
 
                 line_count += 1
