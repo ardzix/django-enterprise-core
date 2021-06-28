@@ -8,7 +8,7 @@ from django.conf import settings
 
 from enterprise.libs.moment import to_timestamp
 from enterprise.libs import storage
-from enterprise.structures.common.models.base import BaseModelGeneric
+from enterprise.libs.model import BaseModelGeneric
 
 
 User = settings.AUTH_USER_MODEL

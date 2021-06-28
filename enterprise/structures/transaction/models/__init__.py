@@ -35,7 +35,7 @@ from enterprise.libs.moment import to_timestamp
 from enterprise.libs.decimal_lib import dec_to_str
 from enterprise.libs.pay_constants import (WITHDRAW_STATUSES, INVOICE_STATUSES,
                                       PAYMENT_STATUSES, TOPUP_STATUSES)
-from enterprise.structures.common.models import BaseModelGeneric
+from enterprise.libs.model import BaseModelGeneric
 
 from .midtrans import Midtrans
 from .manual import Manual

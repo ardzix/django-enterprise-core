@@ -22,7 +22,6 @@ from datetime import timedelta
 from itertools import chain
 from enterprise.libs.moment import to_timestamp
 from enterprise.libs.base62 import base62_encode
-from enterprise.structures.common.models import Log
 from django.db import models
 from django.utils import timezone
 from django.db.models import Manager as GeoManager
@@ -226,6 +225,7 @@ class _BaseAbstract(models.Model):
             return super(_BaseAbstract, self).save(*args, **kwargs)
 
     def log(self, user, message, *args, **kwargs):
+        from enterprise.structures.common.models import Log
         log = Log()
         log.content_type = self.get_content_type()
         log.object_id = self.id
