@@ -23,7 +23,7 @@ def clean_all():
 
 def import_province():
     with open(CSV_DIRECTORY + "/provinces.csv") as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=";")
+        csv_reader = csv.reader(csv_file, delimiter=",")
         line_count = 0
         for row in csv_reader:
             if line_count == 0:
@@ -44,7 +44,7 @@ def import_province():
 
 def import_regency():
     with open(CSV_DIRECTORY + "/regencies.csv") as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=";")
+        csv_reader = csv.reader(csv_file, delimiter=",")
         line_count = 0
         for row in csv_reader:
             if line_count == 0:
@@ -57,7 +57,8 @@ def import_regency():
 
             try:
                 province = Province.objects.get(id=province_id)
-                Regency.objects.get_or_create(id=id, province=province, name=name)
+                Regency.objects.get_or_create(
+                    id=id, province=province, name=name)
 
                 line_count += 1
             except Exception as error:
@@ -68,7 +69,7 @@ def import_regency():
 
 def import_district():
     with open(CSV_DIRECTORY + "/districts.csv") as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=";")
+        csv_reader = csv.reader(csv_file, delimiter=",")
         line_count = 0
         for row in csv_reader:
             if line_count == 0:
@@ -78,10 +79,14 @@ def import_district():
             id = row[0]
             regency_id = row[1]
             name = row[2]
+            postal_code = row[3]
 
             try:
                 regency = Regency.objects.get(id=regency_id)
-                District.objects.get_or_create(id=id, regency=regency, name=name)
+                district, _ = District.objects.get_or_create(
+                    id=id, regency=regency, name=name)
+                district.postal_code = postal_code
+                district.save()
 
                 line_count += 1
             except Exception as error:
@@ -92,7 +97,7 @@ def import_district():
 
 def import_village():
     with open(CSV_DIRECTORY + "/villages.csv") as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=";")
+        csv_reader = csv.reader(csv_file, delimiter=",")
         line_count = 0
         for row in csv_reader:
             if line_count == 0:
@@ -102,11 +107,14 @@ def import_village():
             id = row[0]
             district_id = row[1]
             name = row[2]
+            postal_code = row[3]
 
             try:
                 district = District.objects.get(id=district_id)
-                Village.objects.get_or_create(id=id, district=district, name=name)
-
+                village = Village.objects.filter(village_code=id).last()
+                if not village:
+                    village, _ = Village.objects.get_or_create(
+                        village_code=id, district=district, name=name, postal_code=postal_code)
                 line_count += 1
             except Exception as error:
                 print({"name": name, "error": str(error)})
