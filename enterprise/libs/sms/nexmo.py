@@ -2,8 +2,9 @@ import nexmo
 
 from django.conf import settings
 
-NEXMO_API_KEY = getattr(settings, 'NEXMO_API_KEY')
-NEXMO_API_SECRET = getattr(settings, 'NEXMO_API_SECRET')
+NEXMO_API_KEY = getattr(settings, 'NEXMO_API_KEY', '')
+NEXMO_API_SECRET = getattr(settings, 'NEXMO_API_SECRET', '')
+BRAND = getattr(settings, 'BRAND', 'Django Enterprise')
 
 
 class Nexmo(object):
@@ -15,7 +16,7 @@ class Nexmo(object):
         client = nexmo.Client(key=NEXMO_API_KEY, secret=NEXMO_API_SECRET)
 
         self.client = client
-        self.brand = kwargs.get('brand', 'Django Enterprise')
+        self.brand = kwargs.get('brand', BRAND)
 
     def request_otp(self, phone_number, otp_length=6):
         brand = self.brand
@@ -44,3 +45,6 @@ class Nexmo(object):
             errors = response['error_text']
 
         return is_valid, errors
+
+    def send_sms(self, phone_number, text):
+        pass
