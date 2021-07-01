@@ -1,43 +1,26 @@
-'''
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# File: model.py
-# Project: django-enterprise-core
-# File Created: Tuesday, 21st August 2018 4:43:40 pm
-#
-# Author: Arif Dzikrullah
-#         ardzix@hotmail.com>
-#         https://github.com/ardzix/>
-#
-# Last Modified: Tuesday, 21st August 2018 4:43:41 pm
-# Modified By: arifdzikrullah (ardzix@hotmail.com>)
-#
-# Hand-crafted & Made with Love
-# Copyright - 2018 Ardz Co, https://github.com/ardzix/django-enterprise-core
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-'''
-
-
+from __future__ import unicode_literals
 import timeago
 from datetime import timedelta
 from itertools import chain
-from enterprise.libs.moment import to_timestamp
-from enterprise.libs.base62 import base62_encode
 from django.db import models
 from django.utils import timezone
-from django.db.models import Manager as GeoManager
-from django.contrib.gis.db.models import PointField
+from django.contrib.gis.db import models as geo
 from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
+from django.db.models import Manager as GeoManager
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
+from enterprise.libs.moment import to_timestamp
+from enterprise.libs.base62 import base62_encode
+
+
+User = settings.AUTH_USER_MODEL
+
+
 class _BaseAbstract(models.Model):
-    site = models.ForeignKey(
-        Site,
-        related_name="%(app_label)s_%(class)s_site",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+    site = models.ForeignKey(Site, related_name="%(app_label)s_%(class)s_site",
+                             blank=True, null=True, on_delete=models.CASCADE,)
     nonce = models.CharField(max_length=128, blank=True, null=True)
     id62 = models.CharField(
         max_length=100,
@@ -47,77 +30,52 @@ class _BaseAbstract(models.Model):
 
     created_at = models.DateTimeField(db_index=True)
     created_at_timestamp = models.PositiveIntegerField(db_index=True)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="%(app_label)s_%(class)s_created_by",
-        on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE,
+                                   related_name="%(app_label)s_%(class)s_created_by")
+
+    owned_at = models.DateTimeField(db_index=True)
+    owned_at_timestamp = models.PositiveIntegerField(db_index=True)
+    owned_by = models.ForeignKey(User, on_delete=models.CASCADE,
+                                 related_name="%(app_label)s_%(class)s_owner")
 
     updated_at = models.DateTimeField(db_index=True, blank=True, null=True)
     updated_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
-    updated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        related_name="%(app_label)s_%(class)s_updated_by",
-        on_delete=models.CASCADE)
+    updated_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
+                                   related_name="%(app_label)s_%(class)s_updated_by")
 
     published_at = models.DateTimeField(blank=True, null=True)
     published_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
-    published_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        related_name="%(app_label)s_%(class)s_published_by",
-        on_delete=models.CASCADE)
+    published_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
+                                     related_name="%(app_label)s_%(class)s_published_by")
 
     unpublished_at = models.DateTimeField(blank=True, null=True)
     unpublished_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
-    unpublished_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        related_name="%(app_label)s_%(class)s_unpublished_by",
-        on_delete=models.CASCADE)
+    unpublished_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name="%(app_label)s_%(class)s_unpublished_by")
 
     approved_at = models.DateTimeField(blank=True, null=True)
     approved_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
-    approved_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        related_name="%(app_label)s_%(class)s_approved_by",
-        on_delete=models.CASCADE)
+    approved_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
+                                    related_name="%(app_label)s_%(class)s_approved_by")
 
     unapproved_at = models.DateTimeField(blank=True, null=True)
     unapproved_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
-    unapproved_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        related_name="%(app_label)s_%(class)s_unapproved_by",
-        on_delete=models.CASCADE)
+    unapproved_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE,
+                                      related_name="%(app_label)s_%(class)s_unapproved_by")
 
     deleted_at = models.DateTimeField(blank=True, null=True)
     deleted_at_timestamp = models.PositiveIntegerField(
         db_index=True, blank=True, null=True)
-    deleted_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        db_index=True,
-        blank=True,
-        null=True,
-        related_name="%(app_label)s_%(class)s_deleted_by",
-        on_delete=models.CASCADE)
+    deleted_by = models.ForeignKey(User, db_index=True, blank=True,
+                                   null=True, on_delete=models.CASCADE,
+                                   related_name="%(app_label)s_%(class)s_deleted_by")
 
-    # http://stackoverflow.com/questions/7880691/using-geodjango-model-as-an-abstract-class
     objects = GeoManager()
-
-    def is_owner(self, user):
-        return self.created_by.pk == user.pk
 
     def save(self, *args, **kwargs):
         now = timezone.now()
@@ -126,7 +84,7 @@ class _BaseAbstract(models.Model):
         [
             self.set_lat_lng(name, getattr(self, name))
             for name in self.get_all_field_names()
-            if isinstance(self._meta.get_field(name), PointField)
+            if isinstance(self._meta.get_field(name), geo.PointField)
         ]
 
         # create first time record
@@ -134,6 +92,10 @@ class _BaseAbstract(models.Model):
             self.site = Site.objects.get_current()
             self.created_at = now
             self.created_at_timestamp = to_timestamp(self.created_at)
+            if self.created_by:
+                self.owned_by = self.created_by
+                self.owned_at = self.created_at
+                self.owned_at_timestamp = self.created_at_timestamp
 
         # always update
         self.updated_at = now
@@ -145,7 +107,8 @@ class _BaseAbstract(models.Model):
         # generate id62
         if self.id and not self.id62:
             self.id62 = base62_encode(self.id)
-            instance = super(_BaseAbstract, self).save(force_update=True)
+            kwargs['force_insert'] = False
+            instance = super(_BaseAbstract, self).save(*args, **kwargs)
 
         return instance
 
@@ -174,6 +137,9 @@ class _BaseAbstract(models.Model):
 
             # save it
             return super(_BaseAbstract, self).save(*args, **kwargs)
+
+    def reject(self, user=None, *args, **kwargs):
+        self.unapprove(user, *args, **kwargs)
 
     def publish(self, user=None, *args, **kwargs):
         if user:
@@ -204,12 +170,13 @@ class _BaseAbstract(models.Model):
     def delete(self, user=None, *args, **kwargs):
         if user:
             # mark when the record deleted
-            self.deleted_at = timezone.now()
-            self.deleted_at_timestamp = to_timestamp(self.deleted_at)
             self.deleted_by = user
 
-            # save it if there's a deleter
-            return super(_BaseAbstract, self).save(*args, **kwargs)
+        self.deleted_at = timezone.now()
+        self.deleted_at_timestamp = to_timestamp(self.deleted_at)
+
+        # save it if there's a deleter
+        return super(_BaseAbstract, self).save(*args, **kwargs)
 
     def permanent_delete(self, *args, **kwargs):
         return super(_BaseAbstract, self).delete(*args, **kwargs)
@@ -225,7 +192,6 @@ class _BaseAbstract(models.Model):
             return super(_BaseAbstract, self).save(*args, **kwargs)
 
     def log(self, user, message, *args, **kwargs):
-        from enterprise.structures.common.models import Log
         log = Log()
         log.content_type = self.get_content_type()
         log.object_id = self.id
@@ -240,6 +206,12 @@ class _BaseAbstract(models.Model):
         return log
 
     # Getter
+    def get_owner(self):
+        return self.owned_by
+
+    def get_creator(self):
+        return self.created_by_by
+
     def get_created_at(self):
         return {
             'utc': self.created_at,
@@ -271,7 +243,7 @@ class _BaseAbstract(models.Model):
     def get_content_type(self):
         return ContentType.objects.get_for_model(self)
 
-    def get_lat_lng(self, field_name='lat_lng'):
+    def get_lat_lng(self, field_name):
         point = getattr(self, field_name, None)
 
         if point is not None and hasattr(point, "x") and hasattr(point, "y"):
@@ -284,13 +256,6 @@ class _BaseAbstract(models.Model):
                 'latitude': 0,
                 'longitude': 0
             }
-
-    def get_all_sizes(self, field_name, sizes=None):
-        if field_name in self._meta.get_all_field_names():
-            image = getattr(self, field_name)
-
-            if hasattr(image, "path"):
-                return generate_all_sizes(image.path, sizes=sizes)
 
     def get_status(self):
         if not self.approved_by and self.unapproved_by:
@@ -315,7 +280,7 @@ class _BaseAbstract(models.Model):
         point = None
 
         if hasattr(
-                self, field_name) and "longitude" in value and "latitude" in value:
+                self, field_name) and value and "longitude" in value and "latitude" in value:
             point = Point(value["longitude"], value["latitude"])
             setattr(self, field_name, point)
 
@@ -341,25 +306,20 @@ class _BaseAbstract(models.Model):
 
 
 class BaseModelGeneric(_BaseAbstract):
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        db_index=True,
-        related_name="%(app_label)s_%(class)s_created_by",
-        on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, db_index=True, on_delete=models.CASCADE,
+                                   related_name="%(app_label)s_%(class)s_created_by")
 
     class Meta:
         abstract = True
 
 
 class BaseModelUnique(_BaseAbstract):
-    created_by = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        db_index=True,
-        related_name="%(app_label)s_%(class)s_created_by",
-        on_delete=models.CASCADE)
+    created_by = models.OneToOneField(User, db_index=True, on_delete=models.CASCADE,
+                                      related_name="%(app_label)s_%(class)s_created_by")
 
     class Meta:
         abstract = True
+
 
 
 class NonceObject(object):
