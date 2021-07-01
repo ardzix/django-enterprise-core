@@ -49,6 +49,7 @@ class District(models.Model):
 
 
 class Village(models.Model):
+    village_code = models.CharField(max_length=20)
     district = models.ForeignKey(District, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     postal_code = models.PositiveIntegerField()
