@@ -20,6 +20,7 @@
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from enterprise.libs.rackspace_cloud_files import RackspaceStorage
+from enterprise.libs.google_cloud_file import GoogleCloudStorage
 
 
 def generate_name(instance, filename):
@@ -74,8 +75,45 @@ if settings.USE_RACKSPACE:
         purpose="PICTURE_PHOTO_SIZES"
     )
 
-else:
+elif settings.USE_GCS:
+    BASE_URL = settings.GCS_BASE_URL
+    VIDEO_STORAGE = GoogleCloudStorage(
+        location="%svideo/" % ROOT_URL,
+        base_url=BASE_URL,
+        purpose="VIDEO_SIZES"
+    )
 
+    FILE_STORAGE = GoogleCloudStorage(
+        location="%sfile/" % ROOT_URL,
+        base_url=BASE_URL,
+        purpose="FILE"
+    )
+
+    AVATAR_STORAGE = GoogleCloudStorage(
+        location="%spicture/avatar/" % ROOT_URL,
+        base_url=BASE_URL,
+        purpose="AVATAR_PHOTO_SIZES"
+    )
+
+    COVER_STORAGE = GoogleCloudStorage(
+        location="%spicture/cover/" % ROOT_URL,
+        base_url=BASE_URL,
+        purpose="COVER_PHOTO_SIZES"
+    )
+
+    LOGO_STORAGE = GoogleCloudStorage(
+        location="%spicture/logo/" % ROOT_URL,
+        base_url=BASE_URL,
+        purpose="LOGO_PHOTO_SIZES"
+    )
+
+    PICTURE_STORAGE = GoogleCloudStorage(
+        location="%spicture/others/" % ROOT_URL,
+        base_url=BASE_URL,
+        purpose="PICTURE_PHOTO_SIZES"
+    )
+
+else:
     VIDEO_STORAGE = FileSystemStorage(
         location='%s/video' %
         MEDIA_ROOT,
