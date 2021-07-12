@@ -18,11 +18,20 @@ GCS_BUCKET_NAME = getattr(settings, 'GCS_BUCKET_NAME', '')
 
 @deconstructible
 class GoogleCloudStorage(FileSystemStorage):
+    '''
+    params:
+    - purpose: Upload purpose, this will be read by resizer
+    - is_public: If true, object ALS will be available to read by public
+    '''
     def __init__(self, *args, **kwargs):
         if not USE_GCS:
             return None
 
         self.purpose = kwargs.pop('purpose')
+
+        # set blob's ACL, granting read access to anonymous users
+        self.is_public = kwargs.pop('is_public', False)
+
         # connect to the bucket(kur-bri-co-id)
         self.client = storage.Client.from_service_account_json(GCP_CREDENTIAL)
 
@@ -45,6 +54,8 @@ class GoogleCloudStorage(FileSystemStorage):
 
         # get url
         uploaded = self.get_blob(name)
+        if self.is_public:
+            uploaded.make_public()
 
         if self.purpose and hasattr(uploaded, "name"):
             from enterprise.structures.integration.models import ResizeImageTemp
@@ -55,7 +66,8 @@ class GoogleCloudStorage(FileSystemStorage):
             rit.created_by = get_user_model().objects.first()
             rit.save()
 
-        return rit.image.replace(GCS_BASE_URL,"")
+        print(uploaded._properties)
+        return uploaded._properties['mediaLink']
 
     def get_valid_name(self, name):
         extension = os.path.splitext(name)[1]
@@ -68,16 +80,6 @@ class GoogleCloudStorage(FileSystemStorage):
         )
         rand_name = f'{get_random_string()}{extension}'
         return f'testing/file/{date}/{rand_name}'
-
-    @cached_property
-    def location(self):
-        return self._location
-
-    @cached_property
-    def base_url(self):
-        if self._base_url:
-            self._base_url = self._base_url
-        return self._base_url
 
     def get_bucket(self, bucket_name=''):
         return self.client.bucket(bucket_name if bucket_name != '' else GCS_BUCKET_NAME)
@@ -151,3 +153,7 @@ class GoogleCloudStorage(FileSystemStorage):
         new_blob = self.get_bucket().rename_blob(blob, new_name)
 
         return
+
+
+    def url(self, name):
+        return name

@@ -25,8 +25,8 @@ from enterprise.libs.google_cloud_file import GoogleCloudStorage
 
 USE_GCS = getattr(settings, 'USE_GCS', False)
 USE_RACKSPACE = getattr(settings, 'USE_RACKSPACE', False)
-GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', False)
-RACKSPACE_BASE_URL = getattr(settings, 'RACKSPACE_BASE_URL', False)
+GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', '')
+RACKSPACE_BASE_URL = getattr(settings, 'RACKSPACE_BASE_URL', '')
 
 def generate_name(instance, filename):
     pass
