@@ -88,7 +88,7 @@ class GoogleCloudStorage(FileSystemStorage):
                 )
             )
         )
-        rand_name = f'{get_random_string()}{extension}'
+        rand_name = f'{get_random_string(32)}{extension}'
         return f'testing/file/{date}/{rand_name}'
 
     def get_bucket(self, bucket_name=''):
