@@ -12,9 +12,9 @@ from google.cloud import storage
 
 
 USE_GCS = getattr(settings, 'USE_GCS', False)
-GCP_CREDENTIAL = getattr(settings, 'GCP_CREDENTIAL', False)
-GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', False)
-GCS_BUCKET_NAME = getattr(settings, 'GCS_BUCKET_NAME', False)
+GCP_CREDENTIAL = getattr(settings, 'GCP_CREDENTIAL', '')
+GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', '')
+GCS_BUCKET_NAME = getattr(settings, 'GCS_BUCKET_NAME', '')
 
 @deconstructible
 class GoogleCloudStorage(FileSystemStorage):
