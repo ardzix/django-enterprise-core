@@ -6,12 +6,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.conf import settings
 
-# from core.structures.authentication.models import User
 from enterprise.libs.moment import to_timestamp
 from enterprise.libs import storage
-from enterprise.structures.common.models.base import BaseModelGeneric
-
-from core.libs import constant
+from enterprise.libs.model import BaseModelGeneric
 
 
 User = settings.AUTH_USER_MODEL
@@ -94,7 +91,7 @@ class APILog(models.Model):
 
 class File(BaseModelGeneric):
     display_name = models.CharField(max_length=150)
-    short_name = models.SlugField(max_length=150)
+    short_name = models.SlugField(max_length=150, blank=True, null=True)
     file = models.FileField(
         storage=storage.FILE_STORAGE,
         max_length=300,

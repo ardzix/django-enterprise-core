@@ -2,3 +2,5 @@
 .vscode
 enterprise.egg-info
 __pycache__
+dist
+build

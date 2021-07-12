@@ -26,6 +26,7 @@ class CommonSerializer(object):
     published_at = SerializerMethodField()
     deleted_at = SerializerMethodField()
     point = SerializerMethodField()
+    status = SerializerMethodField()
 
     def get_created_at(self, obj):
         if obj.created_at:
@@ -41,7 +42,7 @@ class CommonSerializer(object):
             return {
                 'utc': obj.published_at,
                 'timestamp': obj.published_at_timestamp,
-                'timeago': timeago.format(obj.published_at.replace(tzinfo=None) + timedelta(hours=7))
+                'timeago': timeago.format(obj.published_at.replace(tzinfo=None) + timedelta(hours=7)),
             }
         return None
 
@@ -67,8 +68,26 @@ class CommonSerializer(object):
 
         return result
 
+    def get_status(self, obj):
+        return {
+            'approved': True if obj.approved_at else False,
+            'rejected': True if obj.unapproved_at else False,
+            'published': True if obj.published_at else False,
+            'approved_by': self.user_dict(obj.approved_by),
+            'rejected_by': self.user_dict(obj.unapproved_by),
+            'published_by': self.user_dict(obj.published_by)
+        }
 
-class LakonModelSerializer(ModelSerializer):
+    def user_dict(self, user):
+        if not user:
+            return None
+        return {
+            'email': user.email,
+            'full_name': user.full_name,
+        }
+
+
+class LakonModelSerializer(ModelSerializer, CommonSerializer):
     def create(self, validated_data):
         if 'nonce' not in validated_data:
             raise ValidationError({'detail': 'Please provide nonce'})
@@ -78,7 +97,6 @@ class LakonModelSerializer(ModelSerializer):
         no = NonceObject(model=model, nonce=nonce)
 
         validated_data['created_by'] = self.context.get('request').user
-
         if no.is_exist():
             return super(LakonModelSerializer, self).update(
                 no.get_instance(), validated_data)

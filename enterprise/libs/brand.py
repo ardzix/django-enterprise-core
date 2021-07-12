@@ -34,10 +34,6 @@ class BrandManager(object):
         if kwargs.get('user'):
             self.set_by_user(kwargs.get('user'))
 
-    def brand_objects(self):
-        from core.structures.account.models import Brand
-        return Brand.objects
-
     def set_by_instance(self, instance):
         self.brands.append(instance)
         self.change_instance()

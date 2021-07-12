@@ -18,6 +18,7 @@
 
 
 import uuid
+import hashlib
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import pre_save, post_save
@@ -28,6 +29,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from ...libs.base62 import base62_encode
+from ...libs.otp import generate_otp_code
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -147,10 +150,6 @@ class User(AbstractUser):
     def __str__(self):
         return '%s <%s>' % (self.full_name, self.email)
 
-    def get_profile(self):
-        from core.structures.account.models import Profile
-        return Profile.objects.filter(created_by=self).first()
-
     def get_groups(self):
         return ', '.join(list(self.groups.values_list('name', flat=True)))
 
@@ -174,9 +173,10 @@ class RegisterToken(models.Model):
 class EmailVerification(models.Model):
     email = models.EmailField()
     code = models.CharField(max_length=100)
+    code_hash = models.CharField(max_length=100, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         blank=True,
         null=True)
@@ -185,23 +185,29 @@ class EmailVerification(models.Model):
         return self.email
 
     class Meta:
-        verbose_name = _('Email Varification')
-        verbose_name_plural = _('Email Varifications')
+        verbose_name = _('Email Verification')
+        verbose_name_plural = _('Email Verifications')
 
 
 def send_verification_email(email, user, base_url=None, *args, **kwargs):
     from ...libs.email import send_mail
-    from ...libs.otp import generate_otp_code
-    from django.conf import settings
+    # from enterprise.apps.authentication.templates
 
-    subject_template_name = "email/email_verify.txt"
-    html_email_template_name = "email/email_verify.html"
+    subject_template_name = kwargs.get('subject_template_name', 'email/email_verify.txt')
+    html_email_template_name = kwargs.get('html_email_template_name', 'email/email_verify.html')
     email_template_name = html_email_template_name
     code = generate_otp_code(6)
+    code_hash = uuid.uuid4()
+
+    base_url = getattr(settings, 'BASE_URL')
+    frontend_base_url = getattr(settings, 'FRONTEND_BASE_URL') if hasattr(settings, 'FRONTEND_BASE_URL') else base_url
 
     context = {
         "code": code,
-        "name": user.full_name
+        "code_hash": code_hash,
+        "name": user.full_name,
+        "base_url": base_url,
+        "frontend_base_url": frontend_base_url
     }
 
     send_mail(
@@ -215,11 +221,48 @@ def send_verification_email(email, user, base_url=None, *args, **kwargs):
     ev, created = EmailVerification.objects.get_or_create(
         email=email
     )
+    ev.code_hash = code_hash
     ev.code = code
     ev.is_verified = False
     ev.save()
 
     return ev
+
+
+class PhoneVerification(models.Model):
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    code = models.CharField(max_length=100)
+    is_verified = models.BooleanField(default=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
+
+    def __str__(self):
+        return self.phone_number
+
+    class Meta:
+        verbose_name = _('Phone Verification')
+        verbose_name_plural = _('Phone Verifications')
+
+
+def send_verification_phone(phone_number, *args, **kwargs):
+    import nexmo
+    code = generate_otp_code(6)
+    nexmo_client = nexmo.Client(key=settings.NEXMO_API_KEY, secret=settings.NEXMO_API_SECRET)
+    nexmo_client.send_message(
+        {
+            "from": "InvestX",
+            "to": phone_number,
+            "text": f"Your OTP code is {code}",
+        }
+    )
+    pv, created = PhoneVerification.objects.get_or_create(phone_number=phone_number)
+    pv.code = code
+    pv.save()
+
+    return pv
 
 
 @receiver(pre_save, sender=User)
@@ -248,3 +291,13 @@ def save_ev(sender, instance, **kwargs):
         if ev:
             ev.user = instance
             ev.save()
+
+
+class OTPAttempt(models.Model):
+    phone_number = models.CharField(max_length=20)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
+    attempt_at = models.DateTimeField(default=timezone.now)

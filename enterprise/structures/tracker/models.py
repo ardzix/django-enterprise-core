@@ -52,7 +52,7 @@ def create_tracker(request, trigger_action, is_get_or_create=False, log=None, os
     if not request.user.is_anonymous:
         user = request.user
 
-    useragent = request.META['HTTP_USER_AGENT']
+    useragent = request.META.get('HTTP_USER_AGENT', '')
     ip_address = get_client_ip(request)
     visited_page = request.META.get('HTTP_REFERER', None)
 

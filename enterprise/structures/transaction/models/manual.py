@@ -19,11 +19,11 @@
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 
 from enterprise.libs.payment.midtrans import PAYMENT_STATUSES
 from enterprise.libs import storage
-from enterprise.structures.common.models import BaseModelGeneric
+from enterprise.libs.model import BaseModelGeneric
 
 
 class Manual(BaseModelGeneric):

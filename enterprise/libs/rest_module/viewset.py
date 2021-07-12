@@ -17,7 +17,8 @@
 '''
 
 from rest_framework import mixins
-from enterprise.libs.rest_module.permission import JWTAuthenticated, IsAuthenticated, AllowAny
+from enterprise.libs.rest_module.permission import JWTAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import GenericViewSet
 from .authentication import *
 
@@ -72,10 +73,10 @@ class UGCGenericViewSet(GenericViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        if self.action in ['update', 'delete']:
-            permission_classes = [IsOwnerAuthenticated]
-        else:
+        if self.action in ['list', 'retrieve', 'create']:
             permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [IsOwnerAuthenticated]
         self.permission_classes = permission_classes
         return [permission() for permission in permission_classes]
 
@@ -145,13 +146,18 @@ class PrivateContentRetrieveViewSet(PrivateContentGenericViewSet,
     pass
 
 
-class RetrieveViewSet(UGCGenericViewSet,
+class RetrieveViewSet(GenericViewSet,
                       mixins.RetrieveModelMixin,
                       mixins.ListModelMixin):
-    pass
+    lookup_field = 'id62'
 
 
 class SingleObjectOwnedViewSet(UGCGenericViewSet,
                                mixins.RetrieveModelMixin,
                                mixins.UpdateModelMixin):
+    pass
+
+
+class SingleObjectRetrieveViewSet(UGCGenericViewSet,
+                      mixins.RetrieveModelMixin):
     pass
