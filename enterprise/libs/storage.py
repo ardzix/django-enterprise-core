@@ -23,6 +23,11 @@ from enterprise.libs.rackspace_cloud_files import RackspaceStorage
 from enterprise.libs.google_cloud_file import GoogleCloudStorage
 
 
+USE_GCS = getattr(settings, 'USE_GCS', False)
+USE_RACKSPACE = getattr(settings, 'USE_RACKSPACE', False)
+GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', False)
+RACKSPACE_BASE_URL = getattr(settings, 'RACKSPACE_BASE_URL', False)
+
 def generate_name(instance, filename):
     pass
 
@@ -37,8 +42,8 @@ else:
     UPLOAD_ROOT = "%sstatic/upload/" % settings.BASE_URL
 
 
-if settings.USE_RACKSPACE:
-    BASE_URL = settings.RACKSPACE_BASE_URL
+if USE_RACKSPACE:
+    BASE_URL = RACKSPACE_BASE_URL
     VIDEO_STORAGE = RackspaceStorage(
         location="%svideo/" % ROOT_URL,
         base_url=BASE_URL,
@@ -75,8 +80,8 @@ if settings.USE_RACKSPACE:
         purpose="PICTURE_PHOTO_SIZES"
     )
 
-elif settings.USE_GCS:
-    BASE_URL = settings.GCS_BASE_URL
+elif USE_GCS:
+    BASE_URL = GCS_BASE_URL
     VIDEO_STORAGE = GoogleCloudStorage(
         location="%svideo/" % ROOT_URL,
         base_url=BASE_URL,
