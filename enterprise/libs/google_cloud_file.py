@@ -10,16 +10,21 @@ from django.utils.functional import cached_property
 from django.contrib.auth import get_user_model
 from google.cloud import storage
 
+
+USE_GCS = getattr(settings, 'USE_GCS', False)
+GCP_CREDENTIAL = getattr(settings, 'GCP_CREDENTIAL', False)
+GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', False)
+GCS_BUCKET_NAME = getattr(settings, 'GCS_BUCKET_NAME', False)
+
 @deconstructible
 class GoogleCloudStorage(FileSystemStorage):
     def __init__(self, *args, **kwargs):
-        if not settings.USE_GCS:
+        if not USE_GCS:
             return None
 
         self.purpose = kwargs.pop('purpose')
         # connect to the bucket(kur-bri-co-id)
-        self.client = storage.Client.from_service_account_json(
-            settings.GCP_CREDENTIAL)
+        self.client = storage.Client.from_service_account_json(GCP_CREDENTIAL)
 
         super(GoogleCloudStorage, self).__init__(*args, **kwargs)
 
@@ -50,7 +55,7 @@ class GoogleCloudStorage(FileSystemStorage):
             rit.created_by = get_user_model().objects.first()
             rit.save()
 
-        return rit.image.replace(settings.GCS_BASE_URL,"")
+        return rit.image.replace(GCS_BASE_URL,"")
 
     def get_valid_name(self, name):
         extension = os.path.splitext(name)[1]
@@ -75,7 +80,7 @@ class GoogleCloudStorage(FileSystemStorage):
         return self._base_url
 
     def get_bucket(self, bucket_name=''):
-        return self.client.bucket(bucket_name if bucket_name != '' else settings.GCS_BUCKET_NAME)
+        return self.client.bucket(bucket_name if bucket_name != '' else GCS_BUCKET_NAME)
 
     def list_buckets(self):
         # Make an authenticated API request
