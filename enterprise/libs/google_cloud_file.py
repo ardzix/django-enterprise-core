@@ -1,4 +1,5 @@
 import os
+from typing import Sequence
 from django.conf import settings
 from django.utils import timezone
 from django.core.files.base import ContentFile
@@ -15,6 +16,7 @@ USE_GCS = getattr(settings, 'USE_GCS', False)
 GCP_CREDENTIAL = getattr(settings, 'GCP_CREDENTIAL', '')
 GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', '')
 GCS_BUCKET_NAME = getattr(settings, 'GCS_BUCKET_NAME', '')
+GCS_IS_PUBLIC = getattr(settings, 'GCS_IS_PUBLIC', True)
 
 @deconstructible
 class GoogleCloudStorage(FileSystemStorage):
@@ -31,7 +33,7 @@ class GoogleCloudStorage(FileSystemStorage):
         self.purpose = kwargs.pop('purpose')
 
         # set blob's ACL, granting read access to anonymous users
-        self.is_public = kwargs.pop('is_public', False)
+        self.is_public = kwargs.pop('is_public', GCS_IS_PUBLIC)
 
 
         # set blob's ACL, granting read access to specific users
