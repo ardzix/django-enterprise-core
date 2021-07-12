@@ -136,7 +136,7 @@ class RackspaceStorage(FileSystemStorage):
                 )
             )
         )
-        rand_name = '%s%s' % (get_random_string(), extension)
+        rand_name = '%s%s' % (get_random_string(128), extension)
         return '%s%s/%s' % (self.location, date, rand_name)
 
     def delete(self, name):

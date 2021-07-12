@@ -79,6 +79,10 @@ class GoogleCloudStorage(FileSystemStorage):
 
         return blob._properties['mediaLink']
 
+    @cached_property
+    def location(self):
+        return self._location
+
     def get_valid_name(self, name):
         extension = os.path.splitext(name)[1]
         date = os.path.normpath(
@@ -88,8 +92,8 @@ class GoogleCloudStorage(FileSystemStorage):
                 )
             )
         )
-        rand_name = f'{get_random_string(32)}{extension}'
-        return f'testing/file/{date}/{rand_name}'
+        rand_name = f'{get_random_string(128)}{extension}'
+        return '%s%s/%s' % (self.location, date, rand_name)
 
     def get_bucket(self, bucket_name=''):
         return self.client.bucket(bucket_name if bucket_name != '' else GCS_BUCKET_NAME)
