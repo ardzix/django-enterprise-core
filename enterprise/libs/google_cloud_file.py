@@ -22,6 +22,7 @@ class GoogleCloudStorage(FileSystemStorage):
     params:
     - purpose: Upload purpose, this will be read by resizer
     - is_public: If true, object ALS will be available to read by public
+    - users: User emails who will get grants to read the data
     '''
     def __init__(self, *args, **kwargs):
         if not USE_GCS:
@@ -31,6 +32,10 @@ class GoogleCloudStorage(FileSystemStorage):
 
         # set blob's ACL, granting read access to anonymous users
         self.is_public = kwargs.pop('is_public', False)
+
+
+        # set blob's ACL, granting read access to specific users
+        self.users = kwargs.pop('users', [])
 
         # connect to the bucket(kur-bri-co-id)
         self.client = storage.Client.from_service_account_json(GCP_CREDENTIAL)
@@ -53,21 +58,24 @@ class GoogleCloudStorage(FileSystemStorage):
         bucket.upload_from_file(content)
 
         # get url
-        uploaded = self.get_blob(name)
-        if self.is_public:
-            uploaded.make_public()
+        blob = self.get_blob(name)
 
-        if self.purpose and hasattr(uploaded, "name"):
+        for user in self.users:
+            blob.acl.entity("user", identifier=user).grant_read()
+
+        if self.is_public:
+            blob.make_public()
+
+        if self.purpose and hasattr(blob, "name"):
             from enterprise.structures.integration.models import ResizeImageTemp
             rit = ResizeImageTemp(
-                # image=uploaded._properties['mediaLink'],
-                image=uploaded._properties['selfLink'],
+                # image=blob._properties['mediaLink'],
+                image=blob._properties['selfLink'],
                 purpose=self.purpose)
             rit.created_by = get_user_model().objects.first()
             rit.save()
 
-        print(uploaded._properties)
-        return uploaded._properties['mediaLink']
+        return blob._properties['mediaLink']
 
     def get_valid_name(self, name):
         extension = os.path.splitext(name)[1]
