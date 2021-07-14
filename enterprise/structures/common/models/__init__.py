@@ -1,4 +1,6 @@
 import json
+from urllib.parse import unquote
+
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -12,6 +14,11 @@ from enterprise.libs.model import BaseModelGeneric
 
 
 User = settings.AUTH_USER_MODEL
+
+GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', '')
+RACKSPACE_BASE_URL = getattr(settings, 'RACKSPACE_BASE_URL', '')
+USE_GCS = getattr(settings, 'USE_GCS', False)
+USE_RACKSPACE = getattr(settings, 'USE_RACKSPACE', False)
 
 # Create your models here.
 
@@ -116,7 +123,11 @@ class File(BaseModelGeneric):
         return None
 
     def get_safe_url(self):
-        ru = settings.RACKSPACE_BASE_URL + '/'
+        if USE_GCS:
+            return self.file.url
+
+        if USE_RACKSPACE:
+            ru = RACKSPACE_BASE_URL + '/'
         url = self.file.url
         if 'http' in url:
             url = url.replace(ru,'')
