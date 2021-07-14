@@ -72,6 +72,7 @@ username = rackspace_cloud_file.get("username")
 api_key = rackspace_cloud_file.get("key")
 region = rackspace_cloud_file.get("region")
 default_container_settings = rackspace_cloud_file.get("default_container")
+use_rackspace = getattr(settings, "USE_RACKSPACE", False)
 
 conn = connection.Connection(
     username=rackspace_cloud_file,
@@ -83,15 +84,19 @@ conn = connection.Connection(
 @deconstructible
 class RackspaceStorage(FileSystemStorage):
     def __init__(self, *args, **kwargs):
-        use_rackspace = getattr(settings, "USE_RACKSPACE", False)
         if use_rackspace:
             return None
 
-        default_container = kwargs.get(
-            "container", default_container_settings)
-        self.purpose = kwargs.pop("purpose")
-        self.container = conn.object_store.get_container_metadata(
-            default_container)
+        # exception if migration file has already use rackspace
+        try:
+            default_container = kwargs.get(
+                "container", default_container_settings)
+            self.purpose = kwargs.pop("purpose")
+            self.container = conn.object_store.get_container_metadata(
+                default_container)
+        except Exception as _error:
+            pass
+
         super(RackspaceStorage, self).__init__(*args, **kwargs)
 
     def _open(self, name, mode='rb'):
