@@ -66,21 +66,29 @@ obj
 'accept_ranges', 'allow_create', 'allow_delete', 'allow_head', 'allow_list', 'allow_retrieve', 'allow_update',
 'base_path', 'bytes', 'clear', 'container', 'content_disposition', 'content_encoding', 'content_length', 'content_type', 'convert_ids', 'copy_from', 'create', 'create_by_id', 'data', 'delete', 'delete_after', 'delete_at', 'delete_by_id', 'delete_metadata', 'etag', 'existing', 'expires_at', 'find', 'from_id', 'from_name', 'get', 'get_by_id', 'get_data_by_id', 'get_headers', 'get_id', 'get_resource_name', 'hash', 'head', 'head_by_id', 'head_data_by_id', 'id', 'id_attribute', 'if_match', 'if_modified_since', 'if_none_match', 'if_unmodified_since', 'is_content_type_detected', 'is_dirty', 'is_newest', 'is_static_large_object', 'items', 'iteritems', 'iterkeys', 'itervalues', 'keys', 'last_modified_at', 'list', 'location', 'metadata', 'multipart_manifest', 'name', 'name_attribute', 'new', 'object_manifest', 'patch_update', 'pop', 'popitem', 'range', 'resource_key', 'resource_name', 'resources_key', 'service', 'set_headers', 'set_metadata', 'setdefault', 'signature', 'timestamp', 'to_dict', 'transfer_encoding', 'update', 'update_attrs', 'update_by_id', 'values']
 """
+
+rackspace_cloud_file = getattr(settings, "RACKSPACE_CLOUD_FILES", {})
+username = rackspace_cloud_file.get("username")
+api_key = rackspace_cloud_file.get("key")
+region = rackspace_cloud_file.get("region")
+default_container_settings = rackspace_cloud_file.get("default_container")
+
 conn = connection.Connection(
-    username=settings.RACKSPACE_CLOUD_FILES["username"],
-    api_key=settings.RACKSPACE_CLOUD_FILES["key"],
-    region=settings.RACKSPACE_CLOUD_FILES["region"]
+    username=rackspace_cloud_file,
+    api_key=api_key,
+    region=region
 )
 
 
 @deconstructible
 class RackspaceStorage(FileSystemStorage):
     def __init__(self, *args, **kwargs):
-        if not settings.USE_RACKSPACE:
+        use_rackspace = getattr(settings, "USE_RACKSPACE", False)
+        if use_rackspace:
             return None
 
         default_container = kwargs.get(
-            "container", settings.RACKSPACE_CLOUD_FILES["default_container"])
+            "container", default_container_settings)
         self.purpose = kwargs.pop("purpose")
         self.container = conn.object_store.get_container_metadata(
             default_container)
