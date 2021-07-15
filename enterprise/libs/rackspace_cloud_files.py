@@ -67,15 +67,17 @@ obj
 'base_path', 'bytes', 'clear', 'container', 'content_disposition', 'content_encoding', 'content_length', 'content_type', 'convert_ids', 'copy_from', 'create', 'create_by_id', 'data', 'delete', 'delete_after', 'delete_at', 'delete_by_id', 'delete_metadata', 'etag', 'existing', 'expires_at', 'find', 'from_id', 'from_name', 'get', 'get_by_id', 'get_data_by_id', 'get_headers', 'get_id', 'get_resource_name', 'hash', 'head', 'head_by_id', 'head_data_by_id', 'id', 'id_attribute', 'if_match', 'if_modified_since', 'if_none_match', 'if_unmodified_since', 'is_content_type_detected', 'is_dirty', 'is_newest', 'is_static_large_object', 'items', 'iteritems', 'iterkeys', 'itervalues', 'keys', 'last_modified_at', 'list', 'location', 'metadata', 'multipart_manifest', 'name', 'name_attribute', 'new', 'object_manifest', 'patch_update', 'pop', 'popitem', 'range', 'resource_key', 'resource_name', 'resources_key', 'service', 'set_headers', 'set_metadata', 'setdefault', 'signature', 'timestamp', 'to_dict', 'transfer_encoding', 'update', 'update_attrs', 'update_by_id', 'values']
 """
 
-rackspace_cloud_file = getattr(settings, "RACKSPACE_CLOUD_FILES", {})
-username = rackspace_cloud_file.get("username")
-api_key = rackspace_cloud_file.get("key")
-region = rackspace_cloud_file.get("region")
-default_container_settings = rackspace_cloud_file.get("default_container")
-use_rackspace = getattr(settings, "USE_RACKSPACE", False)
+RACKSPACE_CONFIG = getattr(settings, "RACKSPACE_CLOUD_FILES", {})
+USE_RACKSPACE = getattr(settings, "USE_RACKSPACE", False)
+
+username = RACKSPACE_CONFIG.get("username")
+api_key = RACKSPACE_CONFIG.get("key")
+region = RACKSPACE_CONFIG.get("region")
+default_container_config = RACKSPACE_CONFIG.get("default_container")
+
 
 conn = connection.Connection(
-    username=rackspace_cloud_file,
+    username=username,
     api_key=api_key,
     region=region
 )
@@ -84,20 +86,19 @@ conn = connection.Connection(
 @deconstructible
 class RackspaceStorage(FileSystemStorage):
     def __init__(self, *args, **kwargs):
-        if use_rackspace:
+        if not USE_RACKSPACE:
             return None
 
         # exception if migration file has already use rackspace
         try:
             default_container = kwargs.get(
-                "container", default_container_settings)
+                "container", default_container_config)
             self.purpose = kwargs.pop("purpose")
             self.container = conn.object_store.get_container_metadata(
                 default_container)
+            super(RackspaceStorage, self).__init__(*args, **kwargs)
         except Exception as _error:
             pass
-
-        super(RackspaceStorage, self).__init__(*args, **kwargs)
 
     def _open(self, name, mode='rb'):
         # This must return a File object
