@@ -1,4 +1,5 @@
 import os
+import mimetypes
 from typing import Sequence
 from django.conf import settings
 from django.utils import timezone
@@ -57,7 +58,8 @@ class GoogleCloudStorage(FileSystemStorage):
         bucket = bucket.blob(name)
 
         # this upload file will return nothing
-        bucket.upload_from_file(content)
+        type, _encoding = mimetypes.guess_type(name)
+        bucket.upload_from_file(content, content_type=type)
 
         # get url
         blob = self.get_blob(name)

@@ -123,16 +123,20 @@ class File(BaseModelGeneric):
         return None
 
     def get_safe_url(self):
-        if USE_GCS:
-            return self.file.url
-
-        if USE_RACKSPACE:
-            ru = RACKSPACE_BASE_URL + '/'
         url = self.file.url
-        if 'http' in url:
-            url = url.replace(ru,'')
-        if not 'http' in url:
-            url = ru + url
+        if USE_GCS:
+            bucket_url = self.file.url
+            if "/download/storage/v1/b/" in bucket_url:
+                url = bucket_url.replace("/download/storage/v1/b", "").replace("/o/", "/")
+            else:
+                url = self.file.url
+        elif USE_RACKSPACE:
+            rackspace_url = RACKSPACE_BASE_URL + '/'
+            if 'http' in url:
+                url = url.replace(rackspace_url,'')
+            if not 'http' in url:
+                url = rackspace_url + url
+        
         return url
 
     class Meta:

@@ -19,7 +19,6 @@
 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from enterprise.libs.rackspace_cloud_files import RackspaceStorage
 from enterprise.libs.google_cloud_file import GoogleCloudStorage
 
 
@@ -43,6 +42,8 @@ else:
 
 
 if USE_RACKSPACE:
+    from enterprise.libs.rackspace_cloud_files import RackspaceStorage
+
     BASE_URL = RACKSPACE_BASE_URL
     VIDEO_STORAGE = RackspaceStorage(
         location="%svideo/" % ROOT_URL,
