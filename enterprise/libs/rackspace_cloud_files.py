@@ -75,12 +75,14 @@ api_key = RACKSPACE_CONFIG.get("key")
 region = RACKSPACE_CONFIG.get("region")
 default_container_config = RACKSPACE_CONFIG.get("default_container")
 
-
-conn = connection.Connection(
-    username=username,
-    api_key=api_key,
-    region=region
-)
+try:
+    conn = connection.Connection(
+        username=username,
+        api_key=api_key,
+        region=region
+    )
+except:
+    conn = None
 
 
 @deconstructible
