@@ -7,7 +7,7 @@ class DRFResponse:
 
     def get_success_response(self, success_code, data, status=200):
         response_dict = {
-            "status_code": str(self.status),
+            "status_code": status,
             "success_code": success_code,
             "message": self.message,
             "data": data,
@@ -16,7 +16,7 @@ class DRFResponse:
 
     def get_error_response(self, error_code, data, status=400):
         response_dict = {
-            "status_code": str(status),
+            "status_code": status,
             "error_code": error_code,
             "message": self.message,
             "data": data,
