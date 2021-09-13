@@ -135,7 +135,9 @@ class AuthenticationManager(object):
     def generate_new_token(self, user):
         utc_now = datetime.datetime.utcnow()
 
-        token, _created = Token.objects.get_or_create(user)
+        token = Token.objects.filter(user=user).last()
+        if not token:
+            token = Token.objects.create(user=user)
         created_at_token = token.created
 
         # renew token if token expired
