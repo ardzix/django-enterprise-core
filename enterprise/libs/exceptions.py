@@ -48,3 +48,7 @@ class InvalidPhoneNumberFormat(Exception):
 
 class UserDoesNotExists(Exception):
     messages = _("User does not exists")
+
+
+class InvalidOAuthBackend(Exception):
+    messages = _("Invalid oauth backend")

@@ -160,6 +160,8 @@ class AuthenticationManager(object):
             queryset: return user instance
         """
         redirect_uri = OAUTH_REDIRECT_URI
+        if oauth_backend not in ["google-oauth2", "facebook-oauth2"]:
+            raise custom_exceptions.InvalidOAuthBackend
 
         view_request.social_strategy = load_strategy(view_request)
 
