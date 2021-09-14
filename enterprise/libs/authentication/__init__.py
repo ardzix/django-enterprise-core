@@ -160,7 +160,7 @@ class AuthenticationManager(object):
             queryset: return user instance
         """
         redirect_uri = OAUTH_REDIRECT_URI
-        if oauth_backend not in ["google-oauth2", "facebook-oauth2"]:
+        if oauth_backend not in ["google-oauth2", "facebook"]:
             raise custom_exceptions.InvalidOAuthBackend
 
         view_request.social_strategy = load_strategy(view_request)
@@ -342,3 +342,15 @@ class AuthenticationManager(object):
 
         user.set_password(raw_password)
         user.save()
+
+    def user_has_verified(self, user, method):
+        if method == "email":
+            is_verified = EmailVerification.objects.filter(
+                user=user, email=user.email, is_verified=True
+            ).last()
+        else:
+            is_verified = PhoneVerification.objects.filter(
+                user=user, phone_number=user.phone_number, is_verified=True
+            ).last()
+
+        return is_verified
