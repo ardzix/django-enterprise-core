@@ -1,7 +1,6 @@
 import datetime, uuid, operator
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.contrib.auth import get_user_model, authenticate, password_validation
 from django.db.models import Q
 
@@ -17,6 +16,7 @@ from phonenumbers import (
 from phonenumbers.phonenumberutil import NumberParseException
 
 from enterprise.libs import exceptions as custom_exceptions
+from enterprise.libs.email import send_mail
 from enterprise.libs.otp import OTPManager, generate_otp_code
 from enterprise.structures.authentication.models import (
     PhoneVerification,
@@ -240,7 +240,7 @@ class AuthenticationManager(object):
         user.save()
 
     def send_email_verification(
-        self, user, subject_template_name, html_email_template_name
+        self, user, subject_template_name, html_email_template_name, custom_context
     ):
         email_template_name = html_email_template_name
         code = generate_otp_code(6)
@@ -252,6 +252,9 @@ class AuthenticationManager(object):
             if hasattr(settings, "FRONTEND_BASE_URL")
             else base_url
         )
+
+        # remove unverified record
+        EmailVerification.objects.filter(user=user, is_verified=False).delete()
 
         if not code:
             code = str(uuid)
@@ -267,6 +270,7 @@ class AuthenticationManager(object):
             "name": user.full_name,
             "base_url": base_url,
             "frontend_base_url": frontend_base_url,
+            **custom_context,
         }
         send_mail(
             subject_template_name,
@@ -280,6 +284,9 @@ class AuthenticationManager(object):
         return email_verif, {"code": code, "code_hash": code_hash}
 
     def send_phone_verification(self, user, code=None):
+        # remove unverified
+        PhoneVerification.objects.filter(user=user, is_verified=False).delete()
+
         otp_manager = OTPManager(
             phone_number=user.phone_number,
             brand=OTP_BRAND,
@@ -300,10 +307,16 @@ class AuthenticationManager(object):
     def verify_user(self, method, value):
         verify_instance = self._check_otp_or_hash_is_valid(method, value)
 
+        # raise exception if code not valid
+        if not verify_instance:
+            raise custom_exceptions.InvalidCodeOrHashVerification
+
         # activate user by VERIFY_USER_METHODS
-        methods_verified = []
+        methods_verified = True
         user = None
         for method_ in VERIFY_USER_METHODS:
+            if method_ == method:
+                continue
             if method_ == "email":
                 verify_instance = EmailVerification.objects.filter(
                     user=verify_instance.user
@@ -315,22 +328,21 @@ class AuthenticationManager(object):
 
             is_verified = verify_instance and verify_instance.is_verified
 
-            if is_verified:
-                user = verify_instance.user
+            if verify_instance:
                 methods_verified.append(is_verified)
 
         # raise error if verification not found
+        user = verify_instance.user if verify_instance else None
         if not user:
             raise custom_exceptions.InvalidVerificationCode
 
         # activate user if all methods verified. (based on VERIFY_USER_METHODS)
-        user_is_verified = True
-        for mv in methods_verified:
-            user_is_verified = user_is_verified == mv
-
-        if user_is_verified:
+        if methods_verified:
             user.is_active = True
             user.save()
+
+            verify_instance.is_verified = True
+            verify_instance.save()
 
     def check_current_password(self, user, current_password):
         return user.check_password(current_password)

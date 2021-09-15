@@ -52,3 +52,7 @@ class UserDoesNotExists(Exception):
 
 class InvalidOAuthBackend(Exception):
     messages = _("Invalid oauth backend")
+
+
+class InvalidCodeOrHashVerification(Exception):
+    messages = _("Invalid Code or Hash Verification")
