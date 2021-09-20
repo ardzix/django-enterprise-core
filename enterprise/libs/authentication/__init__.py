@@ -232,7 +232,7 @@ class AuthenticationManager(object):
 
     def basic_register(self, email, phone_number, full_name, password):
         email_lower = email.lower()
-        user = self._get_user("email", email_lower)
+        user = self._get_user("email", email_lower, True)
 
         # always attach country code w/o + (plus). eg: 628123456789
         if not self._phone_number_format_is_valid(phone_number):
@@ -243,7 +243,7 @@ class AuthenticationManager(object):
             raise exceptions.ValidationError(error)
 
         if not user:
-            user = self._get_user("phone_number", phone_number)
+            user = self._get_user("phone_number", phone_number, True)
 
         if user and user.phone_number == phone_number:
             raise custom_exceptions.PhoneNumberAlreadyExist(phone_number)
@@ -257,6 +257,11 @@ class AuthenticationManager(object):
 
         if not user:
             user = get_user_model().objects.create(
+                full_name=full_name, email=email_lower, phone_number=phone_number
+            )
+        else:
+            # update user if change phone number
+            get_user_model().objects.filter(id=user.id).update(
                 full_name=full_name, email=email_lower, phone_number=phone_number
             )
 
