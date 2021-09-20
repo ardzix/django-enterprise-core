@@ -72,7 +72,7 @@ class AuthenticationManager(object):
     def _time_is_valid(self, value_to_check, relate, value_comparation):
         return relate(value_to_check, value_comparation)
 
-    def _get_user(self, field_name, value):
+    def _get_user(self, field_name, value, is_active=None):
         """get user by email or phone_number. disable case sensitive
 
         Args:
@@ -82,7 +82,10 @@ class AuthenticationManager(object):
         Returns:
             queryset: User instance or None
         """
-        filter_args = {f"{field_name}__iexact": value, "is_active": True}
+        filter_args = {f"{field_name}__iexact": value}
+        if is_active:
+            filter_args = {**filter_args, "is_active": is_active}
+
         return get_user_model().objects.filter(**filter_args).last()
 
     def _validate_user_is_active(self, user):
@@ -108,7 +111,7 @@ class AuthenticationManager(object):
             return False, error
         return True, None
 
-    def _check_otp_or_hash_is_valid(self, method, value):
+    def _check_otp_or_hash_is_valid(self, method, value, session_id=None):
         if method == "email":
             verify_instance = EmailVerification.objects.filter(
                 Q(code_hash=value) | Q(code=value),
@@ -116,7 +119,7 @@ class AuthenticationManager(object):
             ).last()
         else:
             verify_instance = PhoneVerification.objects.filter(
-                is_verified=False, code=value
+                Q(code=value) | Q(code=session_id), is_verified=False
             ).last()
 
         if not verify_instance:
@@ -130,6 +133,20 @@ class AuthenticationManager(object):
                 verify_instance.created_at, operator.lt, expired
             ):
                 raise custom_exceptions.ExpiredVerificationCode
+
+        # verify otp
+        if method == "phone_number":
+            otp_manager = OTPManager(
+                phone_number=verify_instance.phone_number,
+                brand=OTP_BRAND,
+                otp_length=OTP_CODE_LENGTH,
+                template=OTP_TEMPLATE,
+            )
+            session_id, error = otp_manager.validate_otp(session_id, value)
+
+            if error:
+                raise custom_exceptions.ErrorValidateOTP(error)
+
         return verify_instance
 
     def generate_new_token(self, user):
@@ -233,11 +250,20 @@ class AuthenticationManager(object):
         elif user and user.email.lower() == email_lower:
             raise custom_exceptions.EmailAlreadyExist(email_lower)
 
-        user = get_user_model().objects.create(
-            full_name=full_name, email=email_lower, phone_number=phone_number
+        # check user non active already exists
+        user = self._get_user("email", email_lower, False) or self._get_user(
+            "phone_number", phone_number, False
         )
+
+        if not user:
+            user = get_user_model().objects.create(
+                full_name=full_name, email=email_lower, phone_number=phone_number
+            )
+
         user.set_password(password)
         user.save()
+
+        return user
 
     def send_email_verification(
         self, user, subject_template_name, html_email_template_name, custom_context
@@ -304,15 +330,15 @@ class AuthenticationManager(object):
 
         return phone_verif, session_id
 
-    def verify_user(self, method, value):
-        verify_instance = self._check_otp_or_hash_is_valid(method, value)
+    def verify_user(self, method, value, session_id=None):
+        verify_instance = self._check_otp_or_hash_is_valid(method, value, session_id)
 
         # raise exception if code not valid
         if not verify_instance:
             raise custom_exceptions.InvalidCodeOrHashVerification
 
         # activate user by VERIFY_USER_METHODS
-        methods_verified = True
+        methods_verified = []
         user = None
         for method_ in VERIFY_USER_METHODS:
             if method_ == method:
@@ -331,6 +357,8 @@ class AuthenticationManager(object):
             if verify_instance:
                 methods_verified.append(is_verified)
 
+        methods_verified = False if False in methods_verified else True
+
         # raise error if verification not found
         user = verify_instance.user if verify_instance else None
         if not user:
@@ -343,6 +371,8 @@ class AuthenticationManager(object):
 
             verify_instance.is_verified = True
             verify_instance.save()
+
+        return user
 
     def check_current_password(self, user, current_password):
         return user.check_password(current_password)

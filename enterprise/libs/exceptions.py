@@ -37,6 +37,15 @@ class ErrorSendingOTP(Exception):
         super().__init__(self.message)
 
 
+class ErrorValidateOTP(Exception):
+    message = _("Failed to validate OTP")
+
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+        super().__init__(self.message)
+
+
 class InvalidPhoneNumberFormat(Exception):
     message = _("Invalid phone number format")
 
