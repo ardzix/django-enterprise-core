@@ -150,3 +150,10 @@ else:
         MEDIA_ROOT,
         base_url='%spicture/others/' %
         UPLOAD_ROOT)
+
+
+# chunk upload storage
+STORAGE_CHUNK = FileSystemStorage(
+    location=settings.MEDIA_ROOT + "/chunk",
+    base_url="%sstatic/upload/chunk/" % settings.BASE_URL,
+)
