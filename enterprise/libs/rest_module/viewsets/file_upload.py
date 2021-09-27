@@ -122,9 +122,7 @@ class Base64UploadViewSet(GenericViewSet):
             "file_id62": file_instance.id62,
             "file_name": file_instance.display_name,
         }
-        response.get_success_response("200", data)
-
-        return response
+        return response.get_success_response("200", data)
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -134,9 +132,7 @@ class Base64UploadViewSet(GenericViewSet):
         file_name = serializer.validated_data.get("file_name")
 
         file_instance = self.file_model_class.objects.create(
-            display_name=file_name, file=file_data
+            display_name=file_name, file=file_data, created_by=request.user
         )
 
-        response = self.get_response(file_instance)
-
-        return response
+        return self.get_response(file_instance)
