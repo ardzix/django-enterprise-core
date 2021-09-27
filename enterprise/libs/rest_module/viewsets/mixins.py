@@ -2,7 +2,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 
 
-class ConstantMixin(GenericViewSet):
+class ReferenceConstantMixin(GenericViewSet):
     def generate_response(self):
         constant = self.constant
         response = [{"value": i[0], "text": i[1]} for i in constant]
@@ -15,7 +15,7 @@ class ConstantMixin(GenericViewSet):
         return Response(response)
 
 
-class ModelMixin(GenericViewSet):
+class ReferenceModelMixin(GenericViewSet):
     value_text_field = {"value": "id62", "text": "display_name"}
 
     def list(self, request):
