@@ -16,6 +16,7 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '''
 import timeago
+from uuid import uuid4
 from datetime import timedelta
 from rest_framework.serializers import ModelSerializer, ValidationError, SerializerMethodField
 from ..nonce import NonceObject
@@ -88,14 +89,28 @@ class CommonSerializer(object):
 
 
 class LakonModelSerializer(ModelSerializer, CommonSerializer):
-    def create(self, validated_data):
+    """
+    A `LakonModelSerializer` is just a regular `ModelSerializer` with nonce
+    attached to the model
+    * It requires BaseModelGeneric as model_class
+
+    Attrs:
+        generate_nonce (boolean) [default=False]: generate nonce if not provided
+
+    Raises:
+        ValidationError: error when validation is failed
+    """
+    generate_nonce = False        
+    def create(self, validated_data, *args, **kwargs):
+
         if 'nonce' not in validated_data:
-            raise ValidationError({'detail': 'Please provide nonce'})
+            if self.generate_nonce:
+                validated_data['nonce'] = uuid4()
+            else: 
+                raise ValidationError({'detail': 'Please provide nonce'})
 
-        nonce = validated_data['nonce']
         model = self.Meta.model
-        no = NonceObject(model=model, nonce=nonce)
-
+        no = NonceObject(model=model, nonce=validated_data.get('nonce'))
         validated_data['created_by'] = self.context.get('request').user
         if no.is_exist():
             return super(LakonModelSerializer, self).update(
@@ -104,15 +119,13 @@ class LakonModelSerializer(ModelSerializer, CommonSerializer):
             return super(LakonModelSerializer, self).create(validated_data)
 
     def update(self, instance, validated_data):
-        if 'nonce' not in validated_data:
-            raise ValidationError({'detail': 'Please provide nonce'})
+        if 'nonce' in validated_data:
+            nonce = validated_data['nonce']
+            model = self.Meta.model
+            no = NonceObject(model=model, nonce=nonce)
 
-        nonce = validated_data['nonce']
-        model = self.Meta.model
-        no = NonceObject(model=model, nonce=nonce)
-
-        if not no.get_instance() == self.instance:
-            raise ValidationError({'detail': 'Nonce is not matched'})
+            if not no.get_instance() == self.instance:
+                raise ValidationError({'detail': 'Nonce is not matched'})
 
         return super(LakonModelSerializer, self).update(
             self.instance, validated_data)
