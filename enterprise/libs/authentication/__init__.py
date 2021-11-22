@@ -177,7 +177,7 @@ class AuthenticationManager(object):
             queryset: return user instance
         """
         redirect_uri = OAUTH_REDIRECT_URI
-        if oauth_backend not in ["google-oauth2", "facebook"]:
+        if oauth_backend not in ["google-oauth2", "facebook", "apple-id"]:
             raise custom_exceptions.InvalidOAuthBackend
 
         view_request.social_strategy = load_strategy(view_request)
@@ -274,7 +274,7 @@ class AuthenticationManager(object):
         self, user, subject_template_name, html_email_template_name, custom_context
     ):
         email_template_name = html_email_template_name
-        code = generate_otp_code(6)
+        code = generate_otp_code(OTP_CODE_LENGTH)
         code_hash = str(uuid.uuid4())
 
         base_url = getattr(settings, "BASE_URL")
@@ -314,15 +314,21 @@ class AuthenticationManager(object):
 
         return email_verif, {"code": code, "code_hash": code_hash}
 
-    def send_phone_verification(self, user, code=None):
+    def send_phone_verification(self, user, code=None, phone_number=None, hash=None):
         # remove unverified
         PhoneVerification.objects.filter(user=user, is_verified=False).delete()
 
+        template = OTP_TEMPLATE
+        if hash:
+            template += f" {hash}"
+
+        # for change phone number set phone number to new phone number
+        phone_number_to_send_otp = phone_number or user.phone_number
         otp_manager = OTPManager(
-            phone_number=user.phone_number,
+            phone_number=phone_number_to_send_otp,
             brand=OTP_BRAND,
             otp_length=OTP_CODE_LENGTH,
-            template=OTP_TEMPLATE,
+            template=template,
         )
         session_id, error = otp_manager.request_otp()
 
@@ -330,7 +336,7 @@ class AuthenticationManager(object):
             raise custom_exceptions.ErrorSendingOTP(error)
 
         phone_verif = PhoneVerification.objects.create(
-            code=session_id, user=user, phone_number=user.phone_number
+            code=session_id, user=user, phone_number=phone_number_to_send_otp
         )
 
         return phone_verif, session_id
@@ -349,15 +355,15 @@ class AuthenticationManager(object):
             if method_ == method:
                 continue
             if method_ == "email":
-                verify_instance = EmailVerification.objects.filter(
+                verify_instance_loop = EmailVerification.objects.filter(
                     user=verify_instance.user
                 ).last()
             else:
-                verify_instance = PhoneVerification.objects.filter(
+                verify_instance_loop = PhoneVerification.objects.filter(
                     user=verify_instance.user
                 ).last()
 
-            is_verified = verify_instance and verify_instance.is_verified
+            is_verified = verify_instance_loop and verify_instance_loop.is_verified
 
             if verify_instance:
                 methods_verified.append(is_verified)
@@ -401,3 +407,15 @@ class AuthenticationManager(object):
             ).last()
 
         return is_verified
+
+    def change_phone_number(self, user, number):
+        exists = get_user_model().objects.filter(phone_number=number).last()
+
+        if exists and exists.is_active:
+            raise custom_exceptions.PhoneNumberAlreadyExist
+        elif exists and not exists.is_active:
+            exists.phone_number = exists.email[:20]
+            exists.save()
+
+        user.phone_number = number
+        user.save()
