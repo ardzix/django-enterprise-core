@@ -18,14 +18,17 @@
 
 
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import FileSystemStorage, DefaultStorage
 from enterprise.libs.google_cloud_file import GoogleCloudStorage
+from storages.backends.s3boto3 import S3Boto3Storage
 
 
+USE_S3 = getattr(settings, 'USE_S3', False)
 USE_GCS = getattr(settings, 'USE_GCS', False)
 USE_RACKSPACE = getattr(settings, 'USE_RACKSPACE', False)
 GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', '')
 RACKSPACE_BASE_URL = getattr(settings, 'RACKSPACE_BASE_URL', '')
+
 
 def generate_name(instance, filename):
     pass
@@ -118,6 +121,18 @@ elif USE_GCS:
         base_url=BASE_URL,
         purpose="PICTURE_PHOTO_SIZES"
     )
+
+elif USE_S3:
+    VIDEO_STORAGE = S3Boto3Storage(location='video', file_overwrite=False)
+    FILE_STORAGE = S3Boto3Storage(location='file', file_overwrite=False)
+    AVATAR_STORAGE = S3Boto3Storage(
+        location='picture/avatar', file_overwrite=False)
+    COVER_STORAGE = S3Boto3Storage(
+        location='picture/cover', file_overwrite=False)
+    LOGO_STORAGE = S3Boto3Storage(
+        location='picture/logo', file_overwrite=False)
+    PICTURE_STORAGE = S3Boto3Storage(
+        location='picture/others', file_overwrite=False)
 
 else:
     VIDEO_STORAGE = FileSystemStorage(
