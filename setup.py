@@ -74,6 +74,8 @@ setup(
         'google-cloud-storage==1.31.2',
         'PyJWT==2.0.0',
         'user-agents==2.2.0',
+        'boto3==1.20.16',
+        'django-storages==1.12.3'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).
