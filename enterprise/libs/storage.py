@@ -36,7 +36,7 @@ def generate_name(instance, filename):
 
 if settings.PRODUCTION:
     ROOT_URL = ""
-    MEDIA_ROOT = "/var/www/html/upload/"
+    MEDIA_ROOT = settings.MEDIA_ROOT
     UPLOAD_ROOT = "%supload/" % settings.BASE_URL
 else:
     ROOT_URL = "dev/"
@@ -123,16 +123,18 @@ elif USE_GCS:
     )
 
 elif USE_S3:
-    VIDEO_STORAGE = S3Boto3Storage(location='video', file_overwrite=False)
-    FILE_STORAGE = S3Boto3Storage(location='file', file_overwrite=False)
+    VIDEO_STORAGE = S3Boto3Storage(
+        location='%svideo' % ROOT_URL, file_overwrite=False)
+    FILE_STORAGE = S3Boto3Storage(
+        location='%sfile' % ROOT_URL, file_overwrite=False)
     AVATAR_STORAGE = S3Boto3Storage(
-        location='picture/avatar', file_overwrite=False)
+        location='%spicture/avatar' % ROOT_URL, file_overwrite=False)
     COVER_STORAGE = S3Boto3Storage(
-        location='picture/cover', file_overwrite=False)
+        location='%spicture/cover' % ROOT_URL, file_overwrite=False)
     LOGO_STORAGE = S3Boto3Storage(
-        location='picture/logo', file_overwrite=False)
+        location='%spicture/logo' % ROOT_URL, file_overwrite=False)
     PICTURE_STORAGE = S3Boto3Storage(
-        location='picture/others', file_overwrite=False)
+        location='%spicture/others' % ROOT_URL, file_overwrite=False)
 
 else:
     VIDEO_STORAGE = FileSystemStorage(
