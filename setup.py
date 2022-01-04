@@ -63,7 +63,7 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'Django==3.1.12',
+        'Django==3.1.13',
         'djangorestframework==3.11.2',
         'timeago==1.0.14',
         'postgis==1.0.4',
@@ -74,6 +74,8 @@ setup(
         'google-cloud-storage==1.31.2',
         'PyJWT==2.0.0',
         'user-agents==2.2.0',
+        'boto3==1.20.16',
+        'django-storages==1.12.3'
     ],
 
     # List additional groups of dependencies here (e.g. development dependencies).

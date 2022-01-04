@@ -23,9 +23,39 @@ from rest_framework.viewsets import GenericViewSet
 from .authentication import *
 
 
+class UGCGenericViewSet(GenericViewSet):
+    """
+    UGC means user generated content
+
+    Every authenticated user have access to the contents,
+    but only owner has permission to update/delete
+    """
+    lookup_field = 'id62'
+
+    def initialize_request(self, request, *args, **kwargs):
+        su = super().initialize_request(
+            request,
+            *
+            args,
+            **kwargs)
+        self.set_permissions()
+        return su
+
+    def set_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action in ['list', 'retrieve', 'create']:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [IsOwnerAuthenticated]
+        self.permission_classes = permission_classes
+        return [permission() for permission in permission_classes]
+
+
 class PublicGenericViewSet(GenericViewSet):
     """
-    Every authenticated user have access to the contents,
+    Every user (authenticated or not) have access to the contents,
     but only owner has permission to update/delete
     """
     lookup_field = 'id62'
@@ -49,34 +79,6 @@ class PublicGenericViewSet(GenericViewSet):
             permission_classes = [IsAuthenticated]
         else:
             permission_classes = [AllowAny]
-        self.permission_classes = permission_classes
-        return [permission() for permission in permission_classes]
-
-
-class UGCGenericViewSet(GenericViewSet):
-    """
-    Every authenticated user have access to the contents,
-    but only owner has permission to update/delete
-    """
-    lookup_field = 'id62'
-
-    def initialize_request(self, request, *args, **kwargs):
-        su = super().initialize_request(
-            request,
-            *
-            args,
-            **kwargs)
-        self.set_permissions()
-        return su
-
-    def set_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        if self.action in ['list', 'retrieve', 'create']:
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = [IsOwnerAuthenticated]
         self.permission_classes = permission_classes
         return [permission() for permission in permission_classes]
 
