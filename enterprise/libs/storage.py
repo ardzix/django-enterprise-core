@@ -101,21 +101,18 @@ elif USE_GCS:
     )
 
 elif USE_S3:
-    VIDEO_STORAGE = S3Boto3Storage(location="%svideo" % ROOT_URL, file_overwrite=False)
-    FILE_STORAGE = S3Boto3Storage(location="%sfile" % ROOT_URL, file_overwrite=False)
+    VIDEO_STORAGE = S3Boto3Storage(
+        location='%svideo' % ROOT_URL, file_overwrite=False)
+    FILE_STORAGE = S3Boto3Storage(
+        location='%sfile' % ROOT_URL, file_overwrite=False)
     AVATAR_STORAGE = S3Boto3Storage(
-        location="%spicture/avatar" % ROOT_URL, file_overwrite=False
-    )
+        location='%spicture/avatar' % ROOT_URL, file_overwrite=False)
     COVER_STORAGE = S3Boto3Storage(
-        location="%spicture/cover" % ROOT_URL, file_overwrite=False
-    )
+        location='%spicture/cover' % ROOT_URL, file_overwrite=False)
     LOGO_STORAGE = S3Boto3Storage(
-        location="%spicture/logo" % ROOT_URL, file_overwrite=False
-    )
+        location='%spicture/logo' % ROOT_URL, file_overwrite=False)
     PICTURE_STORAGE = S3Boto3Storage(
-        location="%spicture/others" % ROOT_URL, file_overwrite=False
-    )
-
+        location='%spicture/others' % ROOT_URL, file_overwrite=False)
 else:
     VIDEO_STORAGE = FileSystemStorage(
         location="%s/video" % MEDIA_ROOT, base_url="%svideo/" % UPLOAD_ROOT
