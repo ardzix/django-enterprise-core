@@ -113,6 +113,8 @@ elif USE_S3:
         location='%spicture/logo' % ROOT_URL, file_overwrite=False)
     PICTURE_STORAGE = S3Boto3Storage(
         location='%spicture/others' % ROOT_URL, file_overwrite=False)
+
+
 else:
     VIDEO_STORAGE = FileSystemStorage(
         location="%s/video" % MEDIA_ROOT, base_url="%svideo/" % UPLOAD_ROOT
