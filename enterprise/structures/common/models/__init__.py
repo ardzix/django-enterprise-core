@@ -125,15 +125,23 @@ class File(BaseModelGeneric):
     def get_safe_url(self):
         url = self.file.url
         if USE_GCS and "/download/storage/v1/b/" in url:
-            url = url.replace("/download/storage/v1/b", "").replace("/o/", "/")
-    
+            url = url.replace(
+                "dev/file/https%3A/storage.googleapis.com/download/storage/v1/b/bridgtl-prt-d-bkt-apps/o/", "")
+            url = url.replace("%252F", "%2F")
+            url = url.replace("https%3A/", "https://")
+            url = url.replace("%3F", "?")
+            url = url.replace("%3D", "=")
+            url = url.replace("%26", "&")
+            url = url.split("?X-Goog-Algorithm")
+            url = url[0]
+
         elif USE_RACKSPACE:
             rackspace_url = RACKSPACE_BASE_URL + '/'
             if 'http' in url:
-                url = url.replace(rackspace_url,'')
+                url = url.replace(rackspace_url, '')
             if not 'http' in url:
                 url = rackspace_url + url
-        
+
         return url
 
     class Meta:
