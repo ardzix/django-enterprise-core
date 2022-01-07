@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.conf import settings
+from enterprise.libs.google_cloud_file import GCS_BUCKET_NAME
 
 from enterprise.libs.moment import to_timestamp
 from enterprise.libs import storage
@@ -19,7 +20,7 @@ GCS_BASE_URL = getattr(settings, 'GCS_BASE_URL', '')
 RACKSPACE_BASE_URL = getattr(settings, 'RACKSPACE_BASE_URL', '')
 USE_GCS = getattr(settings, 'USE_GCS', False)
 USE_RACKSPACE = getattr(settings, 'USE_RACKSPACE', False)
-
+GS_BUCKET_NAME = getattr(settings, 'GS_BUCKET_NAME', '')
 # Create your models here.
 
 
@@ -126,12 +127,14 @@ class File(BaseModelGeneric):
         url = self.file.url
         if USE_GCS and "/download/storage/v1/b/" in url:
             url = url.replace(
-                "dev/file/https%3A/storage.googleapis.com/download/storage/v1/b/bridgtl-prt-d-bkt-apps/o/", "")
+                "dev/file/https%3A/storage.googleapis.com/download/storage/v1/b/%s/o/" % (GS_BUCKET_NAME,), "")
             url = url.replace("%252F", "%2F")
             url = url.replace("https%3A/", "https://")
             url = url.replace("%3F", "?")
             url = url.replace("%3D", "=")
             url = url.replace("%26", "&")
+
+            # removing url after ?X-Goog-Algorithm
             url = url.split("?X-Goog-Algorithm")
             url = url[0]
 
