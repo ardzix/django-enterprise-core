@@ -89,14 +89,15 @@ class _BaseAbstract(models.Model):
 
         # create first time record
         if self.created_at is None:
-            if not self.site:
-                self.site = Site.objects.get_current()
             self.created_at = now
             self.created_at_timestamp = to_timestamp(self.created_at)
             if self.created_by:
                 self.owned_by = self.created_by
                 self.owned_at = self.created_at
                 self.owned_at_timestamp = self.created_at_timestamp
+        
+        if not self.site:
+            self.site = Site.objects.get_current()
 
         # always update
         self.updated_at = now
