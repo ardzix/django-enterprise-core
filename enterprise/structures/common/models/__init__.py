@@ -133,11 +133,9 @@ class File(BaseModelGeneric):
                 url = url.replace(
                     "file/https%3A/storage.googleapis.com/download/storage/v1/b/%s/o/" % (GS_BUCKET_NAME,), "")
             url = url.replace("%252F", "%2F")
-            url = url.replace("https%3A/", "https://")
             url = url.replace("%3F", "?")
             url = url.replace("%3D", "=")
             url = url.replace("%26", "&")
-
             # removing url after ?X-Goog-Algorithm
             url = url.split("?X-Goog-Algorithm")
             url = url[0]
