@@ -128,10 +128,10 @@ class File(BaseModelGeneric):
         if USE_GCS and "/download/storage/v1/b/" in url:
             if settings.PRODUCTION:
                 url = url.replace(
-                    "dev/file/https%3A/storage.googleapis.com/download/storage/v1/b/%s/o/" % (GS_BUCKET_NAME,), "")
+                    "file/https%3A/storage.googleapis.com/download/storage/v1/b/%s/o/" % (GS_BUCKET_NAME,), "")
             else:
                 url = url.replace(
-                    "file/https%3A/storage.googleapis.com/download/storage/v1/b/%s/o/" % (GS_BUCKET_NAME,), "")
+                    "dev/file/https%3A/storage.googleapis.com/download/storage/v1/b/%s/o/" % (GS_BUCKET_NAME,), "")
             url = url.replace("%252F", "%2F")
             url = url.replace("%3F", "?")
             url = url.replace("%3D", "=")
