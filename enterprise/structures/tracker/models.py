@@ -24,7 +24,7 @@ class Tracker(models.Model):
     trigger_action = models.CharField(max_length=100)
     visited_page = models.URLField(blank=True, null=True)
     OS = models.CharField(max_length=128, blank=True, null=True)
-    referer = models.CharField(max_length=128, null=True, blank=True)
+    referer = models.TextField(blank=True, null=True)
     tracking_id = models.CharField(max_length=100, null=True, blank=True)
     objects = GeoManager()
     log = models.TextField(blank=True, null=True)
