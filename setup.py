@@ -72,7 +72,7 @@ setup(
         'rackspacesdk==0.7.5',
         'openstacksdk==0.17.2',
         'google-cloud-storage==1.31.2',
-        'PyJWT==2.0.0',
+        'PyJWT==2.4.0',
         'user-agents==2.2.0',
         'boto3==1.20.16',
         'django-storages==1.12.3'
