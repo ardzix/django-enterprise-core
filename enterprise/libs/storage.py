@@ -24,15 +24,24 @@ from storages.backends.gcloud import GoogleCloudStorage
 
 
 USE_S3 = getattr(settings, "USE_S3", False)
+USE_DO_SPACE = getattr(settings, "USE_DO_SPACE", False) # use S3 credentials
 USE_GCS = getattr(settings, "USE_GCS", False)
 USE_RACKSPACE = getattr(settings, "USE_RACKSPACE", False)
 GCS_BASE_URL = getattr(settings, "GCS_BASE_URL", "")
 RACKSPACE_BASE_URL = getattr(settings, "RACKSPACE_BASE_URL", "")
 
+# for DO bucket location
+USE_DEFAULT_LOCATION = getattr(settings, "USE_DEFAULT_LOCATION", False)
+DO_SPACE_LOCATION = getattr(settings, "DO_SPACE_LOCATION", False)
 
 def generate_name(instance, filename):
     pass
 
+def get_bucket_location(storage_type):
+    if USE_DEFAULT_LOCATION and DO_SPACE_LOCATION:
+        return ROOT_URL+storage_type
+    
+    return ROOT_URL
 
 if settings.PRODUCTION:
     ROOT_URL = ""
@@ -42,6 +51,9 @@ else:
     ROOT_URL = "dev/"
     MEDIA_ROOT = settings.MEDIA_ROOT
     UPLOAD_ROOT = "%sstatic/upload/" % settings.BASE_URL
+
+if USE_DO_SPACE and DO_SPACE_LOCATION:
+    ROOT_URL = DO_SPACE_LOCATION
 
 
 if USE_RACKSPACE:
@@ -100,19 +112,19 @@ elif USE_GCS:
         location="%spicture/others" % ROOT_URL, file_overwrite=False
     )
 
-elif USE_S3:
+elif USE_S3 or USE_DO_SPACE:
     VIDEO_STORAGE = S3Boto3Storage(
-        location='%svideo' % ROOT_URL, file_overwrite=False)
+        location=get_bucket_location('video'), file_overwrite=False)
     FILE_STORAGE = S3Boto3Storage(
-        location='%sfile' % ROOT_URL, file_overwrite=False)
+        location=get_bucket_location('file'), file_overwrite=False)
     AVATAR_STORAGE = S3Boto3Storage(
-        location='%spicture/avatar' % ROOT_URL, file_overwrite=False)
+        location=get_bucket_location('picture/avatar'), file_overwrite=False)
     COVER_STORAGE = S3Boto3Storage(
-        location='%spicture/cover' % ROOT_URL, file_overwrite=False)
+        location=get_bucket_location('picture/cover'), file_overwrite=False)
     LOGO_STORAGE = S3Boto3Storage(
-        location='%spicture/logo' % ROOT_URL, file_overwrite=False)
+        location=get_bucket_location('picture/logo'), file_overwrite=False)
     PICTURE_STORAGE = S3Boto3Storage(
-        location='%spicture/others' % ROOT_URL, file_overwrite=False)
+        location=get_bucket_location('picture/others'), file_overwrite=False)
 
 else:
     VIDEO_STORAGE = FileSystemStorage(
