@@ -126,14 +126,17 @@ class File(BaseModelGeneric):
     def get_safe_url(self):
         url = self.file.url
         if USE_GCS and "/download/storage/v1/b/" in url:
-            url = url.replace(
-                "dev/file/https%3A/storage.googleapis.com/download/storage/v1/b/%s/o/" % (GS_BUCKET_NAME,), "")
-            url = url.replace("%252F", "%2F")
             url = url.replace("https%3A/", "https://")
+            if settings.PRODUCTION:
+                url = url.replace(
+                    "file/https://storage.googleapis.com/download/storage/v1/b/%s/o/" % (GS_BUCKET_NAME,), "")
+            else:
+                url = url.replace(
+                    "dev/file/https://storage.googleapis.com/download/storage/v1/b/%s/o/" % (GS_BUCKET_NAME,), "")
+            url = url.replace("%252F", "%2F")
             url = url.replace("%3F", "?")
             url = url.replace("%3D", "=")
             url = url.replace("%26", "&")
-
             # removing url after ?X-Goog-Algorithm
             url = url.split("?X-Goog-Algorithm")
             url = url[0]

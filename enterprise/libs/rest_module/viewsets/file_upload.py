@@ -6,6 +6,8 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from django.conf import settings
+
 from enterprise.libs.storage import STORAGE_CHUNK
 from enterprise.libs.rest_module.response import DRFResponse
 from enterprise.structures.common.models import File
@@ -15,7 +17,7 @@ from enterprise.libs.rest_module.serializers.file_upload import (
     Base64UploadSerializer,
 )
 
-
+MAX_FILE_SIZE = getattr(settings, 'UPLOAD_MAX_FILE_SIZE', None)
 class ChunkUploadViewSet(GenericViewSet):
     serializer_class = ChunkUploadSerializer
     permission_classes = (IsAuthenticated,)
@@ -68,8 +70,22 @@ class ChunkUploadViewSet(GenericViewSet):
                     f.write(file)
                     storage.save(file_name, f)
 
-                # save to file
                 chunk_file = storage.open(file_name)
+                file_size = chunk_file.size
+                # check size
+                print(file_size, MAX_FILE_SIZE)
+                if MAX_FILE_SIZE and file_size > MAX_FILE_SIZE:
+                    storage.delete(file_name)
+                    response = DRFResponse(
+                        {"en": "Failed upload file", "id": "Gagal mengunggah file"}
+                    )
+                    data = {
+                        "file_size": file_size,
+                        "allowed_size": MAX_FILE_SIZE,
+                    }
+                    return response.get_error_response("400", data)
+
+                # save to file
                 file_instance = self.file_model_class.objects.create(
                     created_by=request.user, display_name=file_name
                 )
